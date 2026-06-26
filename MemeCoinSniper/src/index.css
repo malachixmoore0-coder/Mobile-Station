@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #2d2d4e transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #2d2d4e;
+    border-radius: 2px;
+  }
+
+  body {
+    @apply bg-dark-900 text-white;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    opacity: 0.5;
+  }
+}
+
+/* Wallet adapter overrides */
+.wallet-adapter-modal-wrapper {
+  background: #12121a !important;
+  border: 1px solid #22223a !important;
+}
+
+.wallet-adapter-modal-title {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.wallet-adapter-button {
+  font-family: 'JetBrains Mono', monospace !important;
+}
