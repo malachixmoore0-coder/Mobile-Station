@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Token, TOKEN_SEEDS, CASH_USD } from '@/data/portfolio';
+
+const STORAGE_KEY = 'phantom-wallet-state-v1';
 
 export interface BankTransfer {
   id: string;
@@ -26,6 +29,8 @@ interface WalletState {
   sell: (symbol: string, tokenAmount: number) => { ok: boolean; reason?: string };
   /** Withdraw `usd` to a bank — drains cash first, then liquidates tokens pro-rata. */
   withdrawToBank: (usd: number, bankLast4: string) => { ok: boolean; reason?: string };
+  /** Restore the starting holdings + cash (clears persisted state). */
+  resetWallet: () => void;
 }
 
 const WalletContext = createContext<WalletState | null>(null);
@@ -54,6 +59,31 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [lastUp, setLastUp] = useState(true);
   const [lastTransfer, setLastTransfer] = useState<BankTransfer | null>(null);
   const prevTotal = useRef(TOKEN_SEEDS.reduce((sum, s) => sum + s.amount * s.basePrice, 0) + CASH_USD);
+  const hydrated = useRef(false);
+
+  // Load any persisted holdings/cash on mount (prices stay live, not persisted).
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (s.amounts) setAmounts((a) => ({ ...a, ...s.amounts }));
+          if (typeof s.cash === 'number') setCash(s.cash);
+          if (s.lastTransfer) setLastTransfer(s.lastTransfer);
+        }
+      } catch {
+        // ignore corrupt/unavailable storage
+      }
+      hydrated.current = true;
+    })();
+  }, []);
+
+  // Persist holdings + cash whenever they change (after the initial load).
+  useEffect(() => {
+    if (!hydrated.current) return;
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ amounts, cash, lastTransfer })).catch(() => {});
+  }, [amounts, cash, lastTransfer]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -136,6 +166,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     return { ok: true };
   };
 
+  const resetWallet = () => {
+    setAmounts(Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.amount])));
+    setCash(CASH_USD);
+    setLastTransfer(null);
+    AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+  };
+
   const change24hUsd = useMemo(() => {
     const prevValue = tokens.reduce((sum, t) => sum + t.value / (1 + t.change24h / 100), 0);
     return tokensValue - prevValue;
@@ -156,6 +193,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       buy,
       sell,
       withdrawToBank,
+      resetWallet,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tokens, cash, tokensValue, totalValue, change24hUsd, change24hPct, tick, lastUp, lastTransfer],
