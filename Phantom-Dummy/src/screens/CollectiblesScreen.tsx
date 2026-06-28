@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { NFTS } from '@/data/portfolio';
 import { useToken } from '@/context/WalletContext';
+import { useSettings } from '@/context/SettingsContext';
 import { formatUsd } from '@/utils/format';
 
 export function CollectiblesScreen() {
+  const { showDemoLabels, hideBalances } = useSettings();
   const sol = useToken('SOL');
   const solPrice = sol?.price ?? 170;
 
@@ -26,7 +28,7 @@ export function CollectiblesScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <View style={styles.summary}>
           <Text style={styles.summaryLabel}>Floor value</Text>
-          <Text style={styles.summaryValue}>{formatUsd(totalUsd)}</Text>
+          <Text style={styles.summaryValue}>{hideBalances ? '••••••' : formatUsd(totalUsd)}</Text>
           <Text style={styles.summarySub}>{NFTS.length} items · {NFTS.reduce((s, n) => s + n.floorSol, 0)} SOL</Text>
         </View>
 
@@ -46,7 +48,7 @@ export function CollectiblesScreen() {
           ))}
         </View>
 
-        <Text style={styles.disclaimer}>Demo collection · simulated floor prices</Text>
+        {showDemoLabels && <Text style={styles.disclaimer}>Demo collection · simulated floor prices</Text>}
       </ScrollView>
     </SafeAreaView>
   );

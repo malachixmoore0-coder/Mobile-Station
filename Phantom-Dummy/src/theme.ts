@@ -46,4 +46,7 @@ export const tokenColors: Record<string, string> = {
   WIF: '#D4A574',
   JTO: '#3AC6C6',
   BONK: '#FB923C',
+  PYTH: '#7C3AED',
+  RNDR: '#FB4B4B',
+  PEPE: '#4CAF50',
 };

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { ACTIVITY, Activity } from '@/data/portfolio';
+import { useSettings } from '@/context/SettingsContext';
 
 const ICONS: Record<Activity['type'], keyof typeof Ionicons.glyphMap> = {
   receive: 'arrow-down',
@@ -14,6 +15,7 @@ const ICONS: Record<Activity['type'], keyof typeof Ionicons.glyphMap> = {
 };
 
 export function ActivityScreen() {
+  const { showDemoLabels } = useSettings();
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
@@ -36,7 +38,7 @@ export function ActivityScreen() {
             </View>
           </View>
         ))}
-        <Text style={styles.disclaimer}>Demo activity · not real transactions</Text>
+        {showDemoLabels && <Text style={styles.disclaimer}>Demo activity · not real transactions</Text>}
       </ScrollView>
     </SafeAreaView>
   );

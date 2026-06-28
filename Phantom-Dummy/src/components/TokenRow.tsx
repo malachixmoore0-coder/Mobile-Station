@@ -9,9 +9,10 @@ import { Sparkline } from './Sparkline';
 interface Props {
   token: Token;
   onPress: () => void;
+  hidden?: boolean;
 }
 
-export function TokenRow({ token, onPress }: Props) {
+export function TokenRow({ token, onPress, hidden }: Props) {
   const up = token.change24h >= 0;
   const spark = useMemo(
     () => buildSeries(token.price, token.symbol.charCodeAt(0) * 7 + 3, 24, up ? 0.03 : 0.04, up ? 0.18 : -0.12),
@@ -29,7 +30,7 @@ export function TokenRow({ token, onPress }: Props) {
       <Sparkline data={spark} up={up} />
 
       <View style={styles.right}>
-        <Text style={styles.value}>{formatUsd(token.value)}</Text>
+        <Text style={styles.value}>{hidden ? '••••' : formatUsd(token.value)}</Text>
         <View style={styles.priceRow}>
           <Text style={styles.price}>{formatPrice(token.price)}</Text>
           <Text style={[styles.change, { color: up ? colors.up : colors.down }]}>

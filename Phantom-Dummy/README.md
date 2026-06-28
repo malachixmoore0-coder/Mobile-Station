@@ -10,6 +10,9 @@ Drop it in someone's hands and it looks like you're a 20‑year‑old sitting on
 
 ## What it does
 
+- **Face ID lock screen** — on launch it auto‑prompts a simulated Face ID scan
+  (animated ring → checkmark → fade in), with a 6‑digit passcode fallback. Any
+  code unlocks it.
 - **Live portfolio** — a big animated balance (~$372K) that updates in real time
   as simulated prices random‑walk every ~1.6s.
 - **Interactive chart** — smooth area/line chart you can **drag to scrub**;
@@ -17,14 +20,25 @@ Drop it in someone's hands and it looks like you're a 20‑year‑old sitting on
   timeframes (1H / 1D / 1W / 1M / 1Y / ALL).
 - **Token list** — SOL, ETH, BTC, USDC, JUP, WIF, JTO, BONK, each with a live
   price, 24h %, holdings, value and an inline sparkline. Tap any token for a
-  full detail screen with its own chart and stats.
+  full detail screen with its own chart and Send / Swap / Buy buttons.
 - **Swap** — fully interactive: pick tokens, type an amount, see the live
   estimated output computed from current prices, flip direction, hit MAX, and
   get a "Swap submitted ✅" confirmation.
+- **Send** — full multi‑step flow: choose token → recipient (with saved
+  contacts) → amount (with MAX + USD value) → review (network + fee) → "Sent ✅".
+- **Explore** — a search bar, a horizontal row of featured dApps (Jupiter,
+  Tensor, Magic Eden, Marinade…) and a live trending‑tokens leaderboard.
 - **Collectibles** — an NFT grid (Mad Lads, DeGods, SMB, Okay Bears…) with
   floor prices that track the live SOL price.
 - **Activity** — a believable feed of swaps, receives, staking rewards and buys.
-- **Receive / Send / Buy** sheets — including a wallet address + QR placeholder.
+- **Multiple wallets** — switch between Main / Degen / Savings / NFT Vault from
+  the account chip in the header or in Settings.
+- **Settings** — account switcher, Face ID toggle, **hide balances** (privacy
+  mode that masks every number with dots), currency, default network, testnet
+  mode, a toggle to show/hide the demo labels, and a **Lock wallet** button.
+- **Hide balances** — tap the eye icon in the header to instantly blur every
+  balance across the app (great when handing the phone around).
+- **Receive / Buy** sheets — including a wallet address + QR placeholder.
 
 ## It's fake — on purpose
 
@@ -70,11 +84,13 @@ Phantom-Dummy/
 ├── App.tsx
 ├── src/
 │   ├── theme.ts                 # Phantom-style colour tokens
-│   ├── data/portfolio.ts        # seed holdings, NFTs, activity, chart math
-│   ├── context/WalletContext.tsx# live "market" simulator
+│   ├── data/portfolio.ts        # seed holdings, accounts, NFTs, dApps, activity
+│   ├── context/WalletContext.tsx   # live "market" simulator
+│   ├── context/SettingsContext.tsx # accounts, hide-balances, preferences
 │   ├── utils/format.ts          # currency / number formatting
 │   ├── components/              # chart, sparkline, token row, sheets, tab bar…
-│   ├── screens/                # Home, TokenDetail, Swap, Activity, Collectibles
+│   ├── screens/                # Lock, Home, TokenDetail, Swap, Send, Explore,
+│   │                           #   Settings, Activity, Collectibles
 │   └── navigation/RootNavigator.tsx
 └── ...
 ```

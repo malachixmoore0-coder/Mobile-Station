@@ -14,9 +14,10 @@ interface Props {
   symbol: string;
   onBack: () => void;
   onSwap: () => void;
+  onSend: (symbol: string) => void;
 }
 
-export function TokenDetailScreen({ symbol, onBack, onSwap }: Props) {
+export function TokenDetailScreen({ symbol, onBack, onSwap, onSend }: Props) {
   const token = useToken(symbol);
   const [timeframe, setTimeframe] = useState<Timeframe>('1D');
   const [scrub, setScrub] = useState<number | null>(null);
@@ -85,11 +86,14 @@ export function TokenDetailScreen({ symbol, onBack, onSwap }: Props) {
       </ScrollView>
 
       <View style={styles.footer}>
+        <TouchableOpacity style={[styles.footerBtn, styles.footerSecondary]} activeOpacity={0.8} onPress={() => onSend(symbol)}>
+          <Text style={styles.footerSecondaryText}>Send</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.footerBtn, styles.footerSecondary]} activeOpacity={0.8} onPress={onSwap}>
           <Text style={styles.footerSecondaryText}>Swap</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.footerBtn, styles.footerPrimary]} activeOpacity={0.8} onPress={onSwap}>
-          <Text style={styles.footerPrimaryText}>Buy more</Text>
+          <Text style={styles.footerPrimaryText}>Buy</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

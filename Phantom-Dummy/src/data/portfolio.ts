@@ -45,6 +45,62 @@ export const WALLET = {
   avatar: '🦄',
 };
 
+export interface Account {
+  id: string;
+  name: string;
+  address: string;
+  avatar: string;
+  /** Display-only USD total for the account switcher. */
+  total: number;
+}
+
+export const ACCOUNTS: Account[] = [
+  { id: 'a1', name: 'Main', address: '7xKQ9vRtPmZ4nBfA2cJhLwDeYsUgN8qXr3VkM6tHbCa', avatar: '🦄', total: 372283 },
+  { id: 'a2', name: 'Degen', address: 'D3gZ8pQ1Lk7mNvXyR2tBwCfYsUaH9qKx5VnM4eJbTac', avatar: '🔥', total: 48210 },
+  { id: 'a3', name: 'Savings', address: 'Sv9aBcD2eF3gH4jK5lM6nP7qR8sT1uV2wX3yZ4aBcDe', avatar: '🏦', total: 156400 },
+  { id: 'a4', name: 'NFT Vault', address: 'Nf7tVa1uLt2xY3zA4bC5dE6fG7hJ8kL9mN1pQ2rS3tU', avatar: '🖼️', total: 89750 },
+];
+
+export const NETWORKS = ['All networks', 'Solana', 'Ethereum', 'Bitcoin', 'Base', 'Polygon'] as const;
+export const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'AUD'] as const;
+
+export interface TrendingToken {
+  symbol: string;
+  name: string;
+  price: number;
+  change24h: number;
+}
+
+/** Movers shown on the Explore tab (a mix of held + not-held tokens). */
+export const TRENDING: TrendingToken[] = [
+  { symbol: 'WIF', name: 'dogwifhat', price: 2.45, change24h: 11.42 },
+  { symbol: 'JUP', name: 'Jupiter', price: 1.18, change24h: 7.94 },
+  { symbol: 'BONK', name: 'Bonk', price: 0.000027, change24h: 9.65 },
+  { symbol: 'PYTH', name: 'Pyth Network', price: 0.41, change24h: 6.12 },
+  { symbol: 'RNDR', name: 'Render', price: 8.74, change24h: 5.38 },
+  { symbol: 'JTO', name: 'Jito', price: 3.1, change24h: -3.18 },
+  { symbol: 'PEPE', name: 'Pepe', price: 0.0000123, change24h: 14.07 },
+];
+
+export interface Dapp {
+  id: string;
+  name: string;
+  category: string;
+  glyph: string;
+  tint: string;
+}
+
+export const DAPPS: Dapp[] = [
+  { id: 'jupiter', name: 'Jupiter', category: 'Trade', glyph: '🪐', tint: '#22C55E' },
+  { id: 'tensor', name: 'Tensor', category: 'NFT Market', glyph: '⚡', tint: '#9B8CFF' },
+  { id: 'magiceden', name: 'Magic Eden', category: 'NFT Market', glyph: '🪄', tint: '#E94F8A' },
+  { id: 'marinade', name: 'Marinade', category: 'Staking', glyph: '🥩', tint: '#F2A65A' },
+  { id: 'drift', name: 'Drift', category: 'Perps', glyph: '🌊', tint: '#5AA9E6' },
+  { id: 'kamino', name: 'Kamino', category: 'Lending', glyph: '🏯', tint: '#3AC6C6' },
+  { id: 'pumpfun', name: 'Pump.fun', category: 'Launchpad', glyph: '💊', tint: '#7DCB8B' },
+  { id: 'phantom', name: 'Phantom Learn', category: 'Education', glyph: '👻', tint: '#AB9FF2' },
+];
+
 /** A flex-worthy book for a 20-year-old: ~$372k spread across majors + memes. */
 export const TOKEN_SEEDS: TokenSeed[] = [
   { symbol: 'SOL', name: 'Solana', amount: 820, basePrice: 172.4, change24h: 4.82 },

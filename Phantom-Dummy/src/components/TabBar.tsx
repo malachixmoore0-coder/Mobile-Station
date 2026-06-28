@@ -4,11 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/theme';
 
-export type TabKey = 'home' | 'swap' | 'collectibles' | 'activity';
+export type TabKey = 'home' | 'swap' | 'explore' | 'collectibles' | 'activity';
 
 const TABS: { key: TabKey; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { key: 'home', label: 'Home', icon: 'home' },
   { key: 'swap', label: 'Swap', icon: 'swap-horizontal' },
+  { key: 'explore', label: 'Explore', icon: 'compass' },
   { key: 'collectibles', label: 'NFTs', icon: 'images' },
   { key: 'activity', label: 'Activity', icon: 'time' },
 ];

@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { useWallet } from '@/context/WalletContext';
+import { useSettings } from '@/context/SettingsContext';
 import {
-  WALLET,
+  ACCOUNTS,
   buildSeries,
   Timeframe,
   TIMEFRAME_SHAPE,
@@ -20,15 +21,17 @@ import { BottomSheet } from '@/components/BottomSheet';
 interface Props {
   onSelectToken: (symbol: string) => void;
   onSwap: () => void;
+  onOpenSettings: () => void;
+  onSend: () => void;
 }
 
-export function HomeScreen({ onSelectToken, onSwap }: Props) {
+export function HomeScreen({ onSelectToken, onSwap, onOpenSettings, onSend }: Props) {
   const { tokens, totalValue, change24hUsd, change24hPct, lastUp } = useWallet();
+  const { account, setAccountId, hideBalances, toggleHideBalances, showDemoLabels } = useSettings();
   const [timeframe, setTimeframe] = useState<Timeframe>('1D');
   const [scrubValue, setScrubValue] = useState<number | null>(null);
-  const [sheet, setSheet] = useState<null | 'receive' | 'send' | 'buy'>(null);
+  const [sheet, setSheet] = useState<null | 'receive' | 'accounts'>(null);
 
-  // The chart line lands exactly on the live total so the curve tracks reality.
   const series = useMemo(() => {
     const shape = TIMEFRAME_SHAPE[timeframe];
     return buildSeries(totalValue, shape.seed, 60, shape.vol, shape.trend);
@@ -37,7 +40,6 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
   const up = change24hUsd >= 0;
   const displayValue = scrubValue ?? totalValue;
   const scrubbing = scrubValue != null;
-
   const sorted = useMemo(() => [...tokens].sort((a, b) => b.value - a.value), [tokens]);
 
   return (
@@ -45,31 +47,32 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {/* Account header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.account} activeOpacity={0.7}>
-            <Text style={styles.avatar}>{WALLET.avatar}</Text>
+          <TouchableOpacity style={styles.account} activeOpacity={0.7} onPress={() => setSheet('accounts')}>
+            <Text style={styles.avatar}>{account.avatar}</Text>
             <View>
-              <Text style={styles.accountName}>{WALLET.name}</Text>
-              <Text style={styles.accountAddr}>{shortAddress(WALLET.address)}</Text>
+              <Text style={styles.accountName}>{account.name}</Text>
+              <Text style={styles.accountAddr}>{shortAddress(account.address)}</Text>
             </View>
             <Ionicons name="chevron-down" size={16} color={colors.textDim} />
           </TouchableOpacity>
           <View style={styles.headerIcons}>
             <View style={[styles.liveDot, { backgroundColor: lastUp ? colors.up : colors.down }]} />
-            <Ionicons name="scan-outline" size={22} color={colors.textDim} />
+            <TouchableOpacity onPress={toggleHideBalances} hitSlop={8}>
+              <Ionicons name={hideBalances ? 'eye-off-outline' : 'eye-outline'} size={22} color={colors.textDim} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onOpenSettings} hitSlop={8}>
+              <Ionicons name="settings-outline" size={22} color={colors.textDim} />
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Balance */}
         <View style={styles.balanceBlock}>
-          <Text style={styles.balance}>{formatUsd(displayValue)}</Text>
+          <Text style={styles.balance}>{hideBalances ? '••••••' : formatUsd(displayValue)}</Text>
           <View style={styles.changeRow}>
-            <Ionicons
-              name={up ? 'caret-up' : 'caret-down'}
-              size={14}
-              color={up ? colors.up : colors.down}
-            />
+            <Ionicons name={up ? 'caret-up' : 'caret-down'} size={14} color={up ? colors.up : colors.down} />
             <Text style={[styles.change, { color: up ? colors.up : colors.down }]}>
-              {formatSignedUsd(change24hUsd)} ({formatPct(change24hPct)})
+              {hideBalances ? '••••' : `${formatSignedUsd(change24hUsd)} (${formatPct(change24hPct)})`}
             </Text>
             <Text style={styles.changePeriod}>{scrubbing ? '' : 'Today'}</Text>
           </View>
@@ -86,9 +89,9 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
         {/* Quick actions */}
         <View style={styles.actions}>
           <ActionButton icon="arrow-down-outline" label="Receive" onPress={() => setSheet('receive')} />
-          <ActionButton icon="arrow-up-outline" label="Send" onPress={() => setSheet('send')} />
+          <ActionButton icon="arrow-up-outline" label="Send" onPress={onSend} />
           <ActionButton icon="swap-horizontal-outline" label="Swap" onPress={onSwap} />
-          <ActionButton icon="card-outline" label="Buy" onPress={() => setSheet('buy')} />
+          <ActionButton icon="card-outline" label="Buy" onPress={() => setSheet('receive')} />
         </View>
 
         {/* Token list */}
@@ -98,11 +101,11 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
         </View>
         <View style={styles.list}>
           {sorted.map((t) => (
-            <TokenRow key={t.symbol} token={t} onPress={() => onSelectToken(t.symbol)} />
+            <TokenRow key={t.symbol} token={t} hidden={hideBalances} onPress={() => onSelectToken(t.symbol)} />
           ))}
         </View>
 
-        <Text style={styles.disclaimer}>Demo wallet · simulated balances</Text>
+        {showDemoLabels && <Text style={styles.disclaimer}>Demo wallet · simulated balances</Text>}
       </ScrollView>
 
       {/* Receive sheet */}
@@ -112,7 +115,7 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
         </View>
         <Text style={styles.receiveLabel}>Your Solana address</Text>
         <View style={styles.addrPill}>
-          <Text style={styles.addrText} numberOfLines={1}>{WALLET.address}</Text>
+          <Text style={styles.addrText} numberOfLines={1}>{account.address}</Text>
           <TouchableOpacity hitSlop={10}>
             <Ionicons name="copy-outline" size={18} color={colors.accent} />
           </TouchableOpacity>
@@ -120,25 +123,27 @@ export function HomeScreen({ onSelectToken, onSwap }: Props) {
         <Text style={styles.sheetHint}>Send only Solana (SOL) and SPL tokens to this address.</Text>
       </BottomSheet>
 
-      {/* Send sheet */}
-      <BottomSheet visible={sheet === 'send'} title="Send" onClose={() => setSheet(null)}>
-        <Text style={styles.sheetHint}>Choose a token, then enter a recipient and amount.</Text>
-        <View style={{ marginTop: spacing.md, gap: 10 }}>
-          {sorted.slice(0, 4).map((t) => (
-            <TouchableOpacity key={t.symbol} style={styles.sendRow} activeOpacity={0.7} onPress={() => setSheet(null)}>
-              <Text style={styles.sendSym}>{t.symbol}</Text>
-              <Text style={styles.sendVal}>{formatUsd(t.value)}</Text>
+      {/* Account switcher */}
+      <BottomSheet visible={sheet === 'accounts'} title="Wallets" onClose={() => setSheet(null)}>
+        {ACCOUNTS.map((a) => {
+          const active = a.id === account.id;
+          return (
+            <TouchableOpacity
+              key={a.id}
+              style={styles.accSheetRow}
+              activeOpacity={0.7}
+              onPress={() => { setAccountId(a.id); setSheet(null); }}
+            >
+              <Text style={styles.accSheetAvatar}>{a.avatar}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.accSheetName}>{a.name}</Text>
+                <Text style={styles.accSheetAddr}>{shortAddress(a.address)}</Text>
+              </View>
+              <Text style={styles.accSheetTotal}>{hideBalances ? '••••' : formatUsd(a.total, { compact: true })}</Text>
+              {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent} />}
             </TouchableOpacity>
-          ))}
-        </View>
-      </BottomSheet>
-
-      {/* Buy sheet */}
-      <BottomSheet visible={sheet === 'buy'} title="Buy crypto" onClose={() => setSheet(null)}>
-        <Text style={styles.sheetHint}>Add funds with a card, bank transfer or Apple Pay.</Text>
-        <TouchableOpacity style={styles.primaryBtn} activeOpacity={0.8} onPress={() => setSheet(null)}>
-          <Text style={styles.primaryBtnText}>Continue with Apple Pay</Text>
-        </TouchableOpacity>
+          );
+        })}
       </BottomSheet>
     </SafeAreaView>
   );
@@ -163,12 +168,11 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: colors.cardAlt,
     textAlign: 'center',
-    textAlignVertical: 'center',
     lineHeight: 38,
   },
   accountName: { color: colors.text, fontSize: 15, fontWeight: '700' },
   accountAddr: { color: colors.textDim, fontSize: 12 },
-  headerIcons: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  headerIcons: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   liveDot: { width: 8, height: 8, borderRadius: 4 },
   balanceBlock: { alignItems: 'center', marginTop: spacing.md, marginBottom: spacing.lg },
   balance: { color: colors.text, fontSize: 46, fontWeight: '800', letterSpacing: -1.5 },
@@ -200,13 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: 4,
   },
-  disclaimer: {
-    color: colors.textFaint,
-    fontSize: 11,
-    textAlign: 'center',
-    marginTop: spacing.lg,
-  },
-  // Sheets
+  disclaimer: { color: colors.textFaint, fontSize: 11, textAlign: 'center', marginTop: spacing.lg },
   qrBox: {
     alignSelf: 'center',
     backgroundColor: colors.white,
@@ -226,22 +224,17 @@ const styles = StyleSheet.create({
   },
   addrText: { color: colors.text, fontSize: 13, flex: 1 },
   sheetHint: { color: colors.textDim, fontSize: 13, lineHeight: 19, marginTop: 8, textAlign: 'center' },
-  sendRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: colors.card,
-    borderRadius: radius.sm,
-    paddingVertical: 14,
-    paddingHorizontal: spacing.lg,
+  accSheetRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: 13 },
+  accSheetAvatar: {
+    fontSize: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.cardAlt,
+    textAlign: 'center',
+    lineHeight: 40,
   },
-  sendSym: { color: colors.text, fontSize: 15, fontWeight: '700' },
-  sendVal: { color: colors.textDim, fontSize: 15 },
-  primaryBtn: {
-    backgroundColor: colors.accent,
-    borderRadius: radius.pill,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  primaryBtnText: { color: '#1A1130', fontSize: 16, fontWeight: '700' },
+  accSheetName: { color: colors.text, fontSize: 15, fontWeight: '600' },
+  accSheetAddr: { color: colors.textDim, fontSize: 13 },
+  accSheetTotal: { color: colors.textDim, fontSize: 14, fontWeight: '600' },
 });
