@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { useSettings } from '@/context/SettingsContext';
+import { useWallet } from '@/context/WalletContext';
 import { ACCOUNTS, CURRENCIES, NETWORKS } from '@/data/portfolio';
 import { formatUsd, shortAddress } from '@/utils/format';
 import { BottomSheet } from '@/components/BottomSheet';
@@ -15,7 +16,9 @@ interface Props {
 
 export function SettingsScreen({ onClose, onLock }: Props) {
   const s = useSettings();
+  const { resetWallet } = useWallet();
   const [picker, setPicker] = useState<null | 'currency' | 'network'>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -124,6 +127,15 @@ export function SettingsScreen({ onClose, onLock }: Props) {
           </Row>
         </View>
 
+        <Text style={styles.section}>Demo</Text>
+        <View style={styles.card}>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => setConfirmReset(true)}>
+            <Row icon="refresh" label="Reset demo balances">
+              <Ionicons name="chevron-forward" size={18} color={colors.textFaint} />
+            </Row>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity style={styles.lockBtn} activeOpacity={0.8} onPress={onLock}>
           <Ionicons name="lock-closed" size={18} color={colors.accent} />
           <Text style={styles.lockText}>Lock wallet</Text>
@@ -131,6 +143,20 @@ export function SettingsScreen({ onClose, onLock }: Props) {
 
         <Text style={styles.version}>Phantom · Demo build v1.0.0 · simulated wallet</Text>
       </ScrollView>
+
+      {/* Reset confirmation */}
+      <BottomSheet visible={confirmReset} title="Reset demo balances?" onClose={() => setConfirmReset(false)}>
+        <Text style={styles.resetText}>
+          This restores the starting holdings and cash, undoing any buys, sells and bank transfers.
+        </Text>
+        <TouchableOpacity
+          style={styles.resetBtn}
+          activeOpacity={0.85}
+          onPress={() => { resetWallet(); setConfirmReset(false); }}
+        >
+          <Text style={styles.resetBtnText}>Reset balances</Text>
+        </TouchableOpacity>
+      </BottomSheet>
 
       {/* Pickers */}
       <BottomSheet visible={picker === 'currency'} title="Currency" onClose={() => setPicker(null)}>
@@ -240,4 +266,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   pickText: { color: colors.text, fontSize: 16 },
+  resetText: { color: colors.textDim, fontSize: 14, lineHeight: 20, marginBottom: spacing.lg },
+  resetBtn: { backgroundColor: colors.down + '22', borderRadius: radius.pill, paddingVertical: 15, alignItems: 'center' },
+  resetBtnText: { color: colors.down, fontSize: 16, fontWeight: '700' },
 });
