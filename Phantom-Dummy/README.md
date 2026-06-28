@@ -8,37 +8,33 @@ price, chart and transaction is simulated on‑device.
 Drop it in someone's hands and it looks like you're a 20‑year‑old sitting on a
 ~$370K multi‑chain portfolio with live, ticking markets.
 
+Modelled on the **current** Phantom layout: top tab pills
+(`Home · Trade · Predict · Explore`), no chart on Home, and a persistent
+`Search Phantom` bar with a `＋` button at the bottom.
+
 ## What it does
 
 - **Face ID lock screen** — on launch it auto‑prompts a simulated Face ID scan
   (animated ring → checkmark → fade in), with a 6‑digit passcode fallback. Any
   code unlocks it.
-- **Live portfolio** — a big animated balance (~$372K) that updates in real time
-  as simulated prices random‑walk every ~1.6s.
-- **Interactive chart** — smooth area/line chart you can **drag to scrub**;
-  a tooltip follows your finger showing the value at that point. Switch
-  timeframes (1H / 1D / 1W / 1M / 1Y / ALL).
-- **Token list** — SOL, ETH, BTC, USDC, JUP, WIF, JTO, BONK, each with a live
-  price, 24h %, holdings, value and an inline sparkline. Tap any token for a
-  full detail screen with its own chart and Send / Swap / Buy buttons.
-- **Swap** — fully interactive: pick tokens, type an amount, see the live
-  estimated output computed from current prices, flip direction, hit MAX, and
-  get a "Swap submitted ✅" confirmation.
-- **Send** — full multi‑step flow: choose token → recipient (with saved
-  contacts) → amount (with MAX + USD value) → review (network + fee) → "Sent ✅".
-- **Explore** — a search bar, a horizontal row of featured dApps (Jupiter,
-  Tensor, Magic Eden, Marinade…) and a live trending‑tokens leaderboard.
-- **Collectibles** — an NFT grid (Mad Lads, DeGods, SMB, Okay Bears…) with
-  floor prices that track the live SOL price.
-- **Activity** — a believable feed of swaps, receives, staking rewards and buys.
-- **Multiple wallets** — switch between Main / Degen / Savings / NFT Vault from
-  the account chip in the header or in Settings.
-- **Settings** — account switcher, Face ID toggle, **hide balances** (privacy
-  mode that masks every number with dots), currency, default network, testnet
-  mode, a toggle to show/hide the demo labels, and a **Lock wallet** button.
-- **Hide balances** — tap the eye icon in the header to instantly blur every
-  balance across the app (great when handing the phone around).
-- **Receive / Buy** sheets — including a wallet address + QR placeholder.
+- **Home** — a big live balance (~$373K) with a green change pill, a `Cash`
+  row, and a `Tokens ›` list (SOL, ETH, BTC, USDC, JUP, WIF, JTO, BONK) each
+  with a blue verified check, holdings, value and a live 24h %. Prices
+  random‑walk every ~1.6s. Tap a token for a detail screen with a chart.
+- **Trade** — a `You Pay / You Receive (Cash)` swap widget plus a
+  Tokens/Perps leaderboard with `Featured / Top Volume / Top Gainers` filters
+  (Bonk, Ansem, Kled, Asteroid… with market caps + % change).
+- **Predict** — prediction markets: a crypto target market (e.g. "Will Bitcoin
+  hit $59,833.53?" with Up/Down odds) and World‑Cup match cards with odds bars.
+- **Explore** — `Tokens / Perps / People` toggle, Trending Tokens, Recent News
+  cards (with Bullish/Bearish tags) and a row of Lists.
+- **Send** — full multi‑step flow: token → recipient (saved contacts) → amount
+  (MAX + USD) → review (network + fee) → "Sent ✅".
+- **Multiple wallets** — tap the avatar to switch Main / Degen / Savings / NFT
+  Vault in the "Your Accounts" sheet.
+- **＋ quick actions / Settings** — Send, Receive, Swap, Buy, Settings, Lock.
+  Settings has Face ID toggle, **hide balances** (masks every number), currency,
+  network, testnet and demo‑label toggles.
 
 ## It's fake — on purpose
 
@@ -110,9 +106,10 @@ All the numbers live in **`src/data/portfolio.ts`**:
 
 - `TOKEN_SEEDS` — change `amount` / `basePrice` / `change24h` per token to set
   the size of the portfolio.
-- `NFTS` — the collectibles and their floor prices.
-- `ACTIVITY` — the transaction history feed.
-- `WALLET` — the account name, avatar and displayed address.
+- `CASH_USD` — the Home "Cash" balance.
+- `TRENDING` — the Trade/Explore leaderboard tokens + market caps.
+- `PREDICT_*` / `NEWS` — the Predict markets and Explore news cards.
+- `ACCOUNTS` / `WALLET` — account names, avatars and addresses.
 
 Market behaviour (volatility, upward drift, tick speed) lives in
 `src/context/WalletContext.tsx`.
@@ -123,14 +120,14 @@ Market behaviour (volatility, upward drift, tick speed) lives in
 Phantom-Dummy/
 ├── App.tsx
 ├── src/
-│   ├── theme.ts                 # Phantom-style colour tokens
-│   ├── data/portfolio.ts        # seed holdings, accounts, NFTs, dApps, activity
+│   ├── theme.ts                 # Phantom-style colour tokens (near-black)
+│   ├── data/portfolio.ts        # holdings, accounts, trending, predict, news
 │   ├── context/WalletContext.tsx   # live "market" simulator
 │   ├── context/SettingsContext.tsx # accounts, hide-balances, preferences
 │   ├── utils/format.ts          # currency / number formatting
-│   ├── components/              # chart, sparkline, token row, sheets, tab bar…
-│   ├── screens/                # Lock, Home, TokenDetail, Swap, Send, Explore,
-│   │                           #   Settings, Activity, Collectibles
+│   ├── components/              # TopTabs, SearchDock, TokenGlyph, chart, sheets
+│   ├── screens/                # Lock, Home, Trade, Predict, Explore,
+│   │                           #   TokenDetail, Send, Settings
 │   └── navigation/RootNavigator.tsx
 └── ...
 ```

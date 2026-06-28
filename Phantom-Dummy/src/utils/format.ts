@@ -43,7 +43,15 @@ export function formatAmount(amount: number, symbol?: string): string {
 
 export function formatPct(pct: number): string {
   const sign = pct >= 0 ? '+' : '';
-  return `${sign}${pct.toFixed(2)}%`;
+  return `${sign}${pct.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+}
+
+/** Compact market-cap label, e.g. "$344M". */
+export function formatMcap(value: number): string {
+  return (
+    '$' +
+    value.toLocaleString('en-US', { notation: 'compact', maximumFractionDigits: value >= 1e9 ? 2 : 0 })
+  );
 }
 
 export function formatSignedUsd(value: number): string {
