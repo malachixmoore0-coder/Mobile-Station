@@ -4,20 +4,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { useWallet } from '@/context/WalletContext';
 import { useSettings } from '@/context/SettingsContext';
-import { CASH_USD } from '@/data/portfolio';
 import { formatUsd, formatSignedUsd, formatPct, formatAmount } from '@/utils/format';
 import { TokenGlyph } from '@/components/TokenGlyph';
 
 interface Props {
   onSelectToken: (symbol: string) => void;
   onOpenAccounts: () => void;
+  onOpenCash: () => void;
 }
 
 // Majors get the blue verified check in the real app.
 const VERIFIED = new Set(['SOL', 'ETH', 'BTC', 'USDC', 'JUP', 'JTO']);
 
-export function HomeScreen({ onSelectToken, onOpenAccounts }: Props) {
-  const { tokens, totalValue, change24hUsd, change24hPct } = useWallet();
+export function HomeScreen({ onSelectToken, onOpenAccounts, onOpenCash }: Props) {
+  const { tokens, totalValue, change24hUsd, change24hPct, cash } = useWallet();
   const { account, hideBalances } = useSettings();
   const up = change24hUsd >= 0;
   const sorted = useMemo(() => [...tokens].sort((a, b) => b.value - a.value), [tokens]);
@@ -40,13 +40,14 @@ export function HomeScreen({ onSelectToken, onOpenAccounts }: Props) {
       </View>
 
       {/* Cash */}
-      <View style={styles.cashRow}>
+      <TouchableOpacity style={styles.cashRow} activeOpacity={0.75} onPress={onOpenCash}>
         <View style={[styles.cashIcon]}>
           <Ionicons name="cash-outline" size={20} color={colors.up} />
         </View>
         <Text style={styles.cashLabel}>Cash</Text>
-        <Text style={styles.cashValue}>{hideBalances ? '••••' : formatUsd(CASH_USD)}</Text>
-      </View>
+        <Text style={styles.cashValue}>{hideBalances ? '••••' : formatUsd(cash)}</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.textFaint} />
+      </TouchableOpacity>
 
       {/* Tokens */}
       <TouchableOpacity style={styles.sectionRow} activeOpacity={0.7}>

@@ -5,20 +5,27 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#131419"
+      "backgroundColor": "#AB9FF2"
     },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dummy.phantom"
     },
     "android": {
-      "package": "com.dummy.phantom"
+      "package": "com.dummy.phantom",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#AB9FF2"
+      }
     },
     "web": {
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "favicon": "./assets/favicon.png"
     },
     "scheme": "phantomdummy",
     "experiments": {
