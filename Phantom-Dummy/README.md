@@ -28,8 +28,18 @@ Modelled on the **current** Phantom layout: top tab pills
   hit $59,833.53?" with Up/Down odds) and World‑Cup match cards with odds bars.
 - **Explore** — `Tokens / Perps / People` toggle, Trending Tokens, Recent News
   cards (with Bullish/Bearish tags) and a row of Lists.
+- **Real token logos** — SOL, ETH, BTC, USDC, JUP, WIF, JTO, BONK use the
+  actual coin logos (bundled), with blue verified checks.
+- **Buy / Sell with your Cash** — open a token → *Buy more* spends Cash to add
+  to the position; *Sell* converts back to Cash at the live price. Because
+  prices move every tick, buying and selling after a rise really grows your
+  Cash. The headline balance = tokens + cash, so it updates instantly.
+- **Send to bank** — tap the Cash row (or ＋ → Send to bank): enter an amount,
+  pick the bank, review, confirm → a "Transfer initiated" page, and the wallet
+  balance drops by that amount (Cash first, then tokens sold pro‑rata).
 - **Send** — full multi‑step flow: token → recipient (saved contacts) → amount
   (MAX + USD) → review (network + fee) → "Sent ✅".
+- **Phantom‑style app icon** — lavender ghost icon + splash.
 - **Multiple wallets** — tap the avatar to switch Main / Degen / Savings / NFT
   Vault in the "Your Accounts" sheet.
 - **＋ quick actions / Settings** — Send, Receive, Swap, Buy, Settings, Lock.

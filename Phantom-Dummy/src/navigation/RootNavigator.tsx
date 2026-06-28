@@ -16,6 +16,7 @@ import { ExploreScreen } from '@/screens/ExploreScreen';
 import { TokenDetailScreen } from '@/screens/TokenDetailScreen';
 import { SendScreen } from '@/screens/SendScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
+import { BankTransferScreen } from '@/screens/BankTransferScreen';
 
 interface Props {
   onLock: () => void;
@@ -27,6 +28,7 @@ export function RootNavigator({ onLock }: Props) {
   const [selectedToken, setSelectedToken] = useState<string | null>(null);
   const [sendSymbol, setSendSymbol] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showBank, setShowBank] = useState(false);
   const [sheet, setSheet] = useState<null | 'accounts' | 'actions'>(null);
 
   const openToken = (s: string) => setSelectedToken(s);
@@ -48,6 +50,7 @@ export function RootNavigator({ onLock }: Props) {
           <HomeScreen
             onSelectToken={openToken}
             onOpenAccounts={() => setSheet('accounts')}
+            onOpenCash={() => setShowBank(true)}
           />
         )}
         {tab === 'trade' && <TradeScreen onSelectToken={openToken} />}
@@ -73,6 +76,13 @@ export function RootNavigator({ onLock }: Props) {
       {sendSymbol && (
         <View style={StyleSheet.absoluteFill}>
           <SendScreen initialSymbol={sendSymbol} onClose={() => setSendSymbol(null)} />
+        </View>
+      )}
+
+      {/* Bank transfer overlay */}
+      {showBank && (
+        <View style={StyleSheet.absoluteFill}>
+          <BankTransferScreen onClose={() => setShowBank(false)} />
         </View>
       )}
 
@@ -124,6 +134,7 @@ export function RootNavigator({ onLock }: Props) {
           { icon: 'arrow-down' as const, label: 'Receive', run: () => setSheet(null) },
           { icon: 'swap-horizontal' as const, label: 'Swap', run: () => { setSheet(null); goTrade(); } },
           { icon: 'card' as const, label: 'Buy', run: () => setSheet(null) },
+          { icon: 'business' as const, label: 'Send to bank', run: () => { setSheet(null); setShowBank(true); } },
           { icon: 'settings-outline' as const, label: 'Settings', run: () => { setSheet(null); setShowSettings(true); } },
           { icon: 'lock-closed' as const, label: 'Lock wallet', run: () => { setSheet(null); onLock(); } },
         ].map((a) => (
