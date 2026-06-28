@@ -16,6 +16,13 @@
     "android": {
       "package": "com.dummy.phantom"
     },
-    "scheme": "phantomdummy"
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "scheme": "phantomdummy",
+    "experiments": {
+      "baseUrl": "/mobile-station"
+    }
   }
 }

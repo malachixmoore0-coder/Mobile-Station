@@ -1,0 +1,74 @@
+name: Deploy Phantom Dummy (web)
+
+# Builds the Phantom dummy wallet as a static web app and publishes it to
+# GitHub Pages, so it can be opened from any browser with no Expo account.
+#
+# One-time setup: repo Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions". Then run this workflow (it also runs on push).
+#
+# The site is served at: https://<owner>.github.io/mobile-station/
+# (the base path is set via app.json -> experiments.baseUrl = "/mobile-station").
+
+on:
+  push:
+    branches:
+      - main
+      - claude/phantom-wallet-prank-tuwtj9
+    paths:
+      - 'Phantom-Dummy/**'
+      - '.github/workflows/deploy-phantom-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Phantom-Dummy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Phantom-Dummy/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export web build
+        # Base path must match the GitHub Pages project path (the repo name,
+        # exact casing) so assets load from https://<owner>.github.io/<repo>/.
+        env:
+          EXPO_BASE_URL: /${{ github.event.repository.name }}
+        run: npx expo export --platform web
+
+      - name: Add SPA fallback
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: Phantom-Dummy/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

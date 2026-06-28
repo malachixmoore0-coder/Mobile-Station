@@ -64,6 +64,46 @@ npx expo start
 Then press `i` for the iOS simulator, `a` for Android, or scan the QR code with
 the Expo Go app on your phone.
 
+## Share it online (no Expo account needed)
+
+This repo includes a GitHub Actions workflow
+(`.github/workflows/deploy-phantom-web.yml`) that builds the wallet as a static
+**web app** and publishes it to **GitHub Pages**. Anyone can then open it in a
+browser — no cloning, no Expo Go.
+
+**One-time setup (in the GitHub repo):**
+
+1. Go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+
+That's it. The workflow runs automatically on pushes that touch `Phantom-Dummy/`
+(and can be run manually from the **Actions** tab → *Deploy Phantom Dummy (web)*
+→ *Run workflow*). When it finishes, your link is:
+
+```
+https://<your-github-username>.github.io/<repo-name>/
+```
+
+The base path is set automatically from the repo name, so the link just works.
+
+> Note: GitHub Pages may restrict deployments to the default branch. If the
+> deploy step is skipped from the feature branch, either merge this branch into
+> `main`, or add the branch under **Settings → Environments → github-pages →
+> Deployment branches**.
+
+### Build the web bundle yourself
+
+```bash
+cd Phantom-Dummy
+npm install
+npx expo export --platform web      # outputs to ./dist
+npx serve dist                      # preview locally
+```
+
+Drop the `dist/` folder onto any static host (Netlify, Vercel, Cloudflare
+Pages, S3…). If hosting under a sub-path, set the base first, e.g.
+`EXPO_BASE_URL=/my-path npx expo export --platform web`.
+
 ## Tweak the flex
 
 All the numbers live in **`src/data/portfolio.ts`**:
