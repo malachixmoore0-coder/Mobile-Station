@@ -26,30 +26,45 @@ export function LockScreen({ onUnlock }: Props) {
   const ring = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(1)).current;
   const successScale = useRef(new Animated.Value(0)).current;
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const unlocked = useRef(false);
 
   const finishUnlock = useCallback(() => {
-    Animated.timing(fade, { toValue: 0, duration: 280, useNativeDriver: true }).start(() => onUnlock());
+    if (unlocked.current) return;
+    unlocked.current = true;
+    // Drive the unlock on a timer (not the animation callback) so it always
+    // fires, including on web where native-driver completion can be a no-op.
+    Animated.timing(fade, { toValue: 0, duration: 280, useNativeDriver: true }).start();
+    timers.current.push(setTimeout(onUnlock, 300));
   }, [fade, onUnlock]);
 
   const runScan = useCallback(() => {
     setPhase('scanning');
     ring.setValue(0);
+    // Visual spin only; state transitions are timer-driven below.
     Animated.loop(
       Animated.timing(ring, { toValue: 1, duration: 1100, easing: Easing.linear, useNativeDriver: true }),
-      { iterations: 2 },
-    ).start(() => {
-      setPhase('success');
-      Animated.spring(successScale, { toValue: 1, friction: 5, useNativeDriver: true }).start();
-      setTimeout(finishUnlock, 480);
-    });
+    ).start();
+    timers.current.push(
+      setTimeout(() => {
+        setPhase('success');
+        Animated.spring(successScale, { toValue: 1, friction: 5, useNativeDriver: true }).start();
+      }, 2000),
+    );
+    timers.current.push(setTimeout(finishUnlock, 2480));
   }, [ring, successScale, finishUnlock]);
 
   // Auto-prompt Face ID shortly after launch, mirroring iOS behaviour.
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (!usePasscode) runScan();
-    }, 550);
-    return () => clearTimeout(t);
+    timers.current.push(
+      setTimeout(() => {
+        if (!usePasscode) runScan();
+      }, 550),
+    );
+    return () => {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -112,7 +127,15 @@ export function LockScreen({ onUnlock }: Props) {
                 ? 'Face ID'
                 : 'Tap to unlock with Face ID'}
             </Text>
-            <TouchableOpacity style={styles.altBtn} onPress={() => setUsePasscode(true)}>
+            <TouchableOpacity
+              style={styles.altBtn}
+              onPress={() => {
+                timers.current.forEach(clearTimeout);
+                timers.current = [];
+                setPhase('idle');
+                setUsePasscode(true);
+              }}
+            >
               <Text style={styles.altBtnText}>Use passcode</Text>
             </TouchableOpacity>
           </View>
