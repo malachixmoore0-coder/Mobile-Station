@@ -45,6 +45,9 @@ export const WALLET = {
   avatar: '🦄',
 };
 
+/** "Cash" balance shown as its own row on Home (like Phantom's USD cash). */
+export const CASH_USD = 12840.55;
+
 export interface Account {
   id: string;
   name: string;
@@ -69,37 +72,108 @@ export interface TrendingToken {
   name: string;
   price: number;
   change24h: number;
+  /** Market cap in USD (drives the "$344M MC" label). */
+  marketCap: number;
+  verified?: boolean;
 }
 
-/** Movers shown on the Explore tab (a mix of held + not-held tokens). */
+/** Movers shown on the Trade + Explore leaderboards, mirroring the app. */
 export const TRENDING: TrendingToken[] = [
-  { symbol: 'WIF', name: 'dogwifhat', price: 2.45, change24h: 11.42 },
-  { symbol: 'JUP', name: 'Jupiter', price: 1.18, change24h: 7.94 },
-  { symbol: 'BONK', name: 'Bonk', price: 0.000027, change24h: 9.65 },
-  { symbol: 'PYTH', name: 'Pyth Network', price: 0.41, change24h: 6.12 },
-  { symbol: 'RNDR', name: 'Render', price: 8.74, change24h: 5.38 },
-  { symbol: 'JTO', name: 'Jito', price: 3.1, change24h: -3.18 },
-  { symbol: 'PEPE', name: 'Pepe', price: 0.0000123, change24h: 14.07 },
+  { symbol: 'BONK', name: 'Bonk', price: 0.00000412, change24h: -2.39, marketCap: 344_000_000, verified: true },
+  { symbol: 'ANSEM', name: 'Ansem', price: 0.0237, change24h: 9715.1, marketCap: 24_000_000, verified: true },
+  { symbol: 'KLED', name: 'Kled', price: 0.0229, change24h: 10.05, marketCap: 23_000_000, verified: true },
+  { symbol: 'ASTEROID', name: 'Asteroid', price: 0.00603383, change24h: 9.82, marketCap: 6_000_000 },
+  { symbol: 'WORLD', name: 'world', price: 0.00170142, change24h: -61.36, marketCap: 1_700_000 },
+  { symbol: 'WIF', name: 'dogwifhat', price: 2.45, change24h: 11.42, marketCap: 2_450_000_000, verified: true },
+  { symbol: 'JUP', name: 'Jupiter', price: 1.18, change24h: 7.94, marketCap: 1_590_000_000, verified: true },
 ];
 
-export interface Dapp {
+/** Prediction markets (Predict tab). */
+export interface PredictOutcome {
+  label: string;
+  flag?: string;
+  pct: number;
+}
+export interface PredictMatch {
   id: string;
-  name: string;
   category: string;
-  glyph: string;
-  tint: string;
+  title: string;
+  when: string;
+  outcomes: PredictOutcome[];
 }
 
-export const DAPPS: Dapp[] = [
-  { id: 'jupiter', name: 'Jupiter', category: 'Trade', glyph: '🪐', tint: '#22C55E' },
-  { id: 'tensor', name: 'Tensor', category: 'NFT Market', glyph: '⚡', tint: '#9B8CFF' },
-  { id: 'magiceden', name: 'Magic Eden', category: 'NFT Market', glyph: '🪄', tint: '#E94F8A' },
-  { id: 'marinade', name: 'Marinade', category: 'Staking', glyph: '🥩', tint: '#F2A65A' },
-  { id: 'drift', name: 'Drift', category: 'Perps', glyph: '🌊', tint: '#5AA9E6' },
-  { id: 'kamino', name: 'Kamino', category: 'Lending', glyph: '🏯', tint: '#3AC6C6' },
-  { id: 'pumpfun', name: 'Pump.fun', category: 'Launchpad', glyph: '💊', tint: '#7DCB8B' },
-  { id: 'phantom', name: 'Phantom Learn', category: 'Education', glyph: '👻', tint: '#AB9FF2' },
+export const PREDICT_FEATURED = {
+  category: 'Sports',
+  emoji: '⚽️',
+  a: { label: 'Canada', flag: '🇨🇦', pct: 57 },
+  b: { label: 'South Africa', flag: '🇿🇦', pct: 17 },
+  draw: 26,
+  when: 'Jun 28 · 3:00PM EDT',
+};
+
+/** A crypto price market with an up/down split. */
+export const PREDICT_CRYPTO = {
+  asset: 'Bitcoin',
+  symbol: 'BTC',
+  target: 59833.53,
+  up: 76,
+  down: 24,
+};
+
+export const PREDICT_MATCHES: PredictMatch[] = [
+  {
+    id: 'm1',
+    category: 'World Cup',
+    title: 'South Africa vs Canada',
+    when: 'in 13h',
+    outcomes: [
+      { label: 'South Africa', flag: '🇿🇦', pct: 17 },
+      { label: 'Canada', flag: '🇨🇦', pct: 57 },
+      { label: 'Draw', pct: 26 },
+    ],
+  },
+  {
+    id: 'm2',
+    category: 'World Cup',
+    title: 'Brazil vs Japan',
+    when: 'in 1d',
+    outcomes: [
+      { label: 'Brazil', flag: '🇧🇷', pct: 57 },
+      { label: 'Japan', flag: '🇯🇵', pct: 19 },
+      { label: 'Draw', pct: 24 },
+    ],
+  },
+  {
+    id: 'm3',
+    category: 'World Cup',
+    title: 'Germany vs Paraguay',
+    when: 'in 2d',
+    outcomes: [
+      { label: 'Germany', flag: '🇩🇪', pct: 72 },
+      { label: 'Paraguay', flag: '🇵🇾', pct: 10 },
+      { label: 'Draw', pct: 18 },
+    ],
+  },
 ];
+
+/** Recent News (Explore tab). */
+export interface NewsItem {
+  id: string;
+  source: string;
+  time: string;
+  title: string;
+  ticker: string;
+  sentiment: 'Bullish' | 'Bearish';
+}
+
+export const NEWS: NewsItem[] = [
+  { id: 'n1', source: 'Reuters', time: '27m ago', title: "Google limits Meta's use of its Gemini AI models, FT reports", ticker: 'GOOGL', sentiment: 'Bearish' },
+  { id: 'n2', source: 'Bloomberg', time: '1h ago', title: 'Solana ETF inflows hit record as SOL reclaims key level', ticker: 'SOL', sentiment: 'Bullish' },
+  { id: 'n3', source: 'CoinDesk', time: '3h ago', title: 'Bitcoin holds above $64K ahead of jobs data', ticker: 'BTC', sentiment: 'Bullish' },
+];
+
+export const EXPLORE_LISTS = ['Featured', 'Top Gainers', 'Majors', 'Top Volume', 'Top Losers', 'AI'] as const;
+export const TRADE_FILTERS = ['Featured', 'Top Volume', 'Top Gainers'] as const;
 
 /** A flex-worthy book for a 20-year-old: ~$372k spread across majors + memes. */
 export const TOKEN_SEEDS: TokenSeed[] = [

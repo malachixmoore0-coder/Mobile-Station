@@ -4,20 +4,21 @@
  * (deep charcoal background, signature lavender accent, mint/coral deltas).
  */
 export const colors = {
-  bg: '#131419',
-  bgElevated: '#1B1C24',
-  card: '#21222C',
-  cardAlt: '#272834',
-  border: '#2C2D3A',
+  bg: '#000000', // current Phantom is near-pure black
+  bgElevated: '#121214',
+  card: '#1C1C1F',
+  cardAlt: '#242427',
+  border: '#222224',
   accent: '#AB9FF2', // Phantom lavender
   accentSoft: '#7A6FE0',
   text: '#FFFFFF',
-  textDim: '#9B9CB0',
-  textFaint: '#6B6C7C',
-  up: '#21D07A',
+  textDim: '#9A9AA2',
+  textFaint: '#6A6A72',
+  up: '#34C77B',
   upSoft: '#1F8A57',
-  down: '#FF6B6B',
+  down: '#FF5C5C',
   downSoft: '#C24B4B',
+  verified: '#4DA8FF',
   white: '#FFFFFF',
 };
 
@@ -49,4 +50,11 @@ export const tokenColors: Record<string, string> = {
   PYTH: '#7C3AED',
   RNDR: '#FB4B4B',
   PEPE: '#4CAF50',
+  MON: '#7B5BD6',
+  SOLPUMP: '#3DBF6B',
+  ANSEM: '#E8A33D',
+  KLED: '#5B8DEF',
+  ASTEROID: '#C77DFF',
+  WORLD: '#4FD9C9',
+  CASH: '#34C77B',
 };

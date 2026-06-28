@@ -1,240 +1,118 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius } from '@/theme';
 import { useWallet } from '@/context/WalletContext';
 import { useSettings } from '@/context/SettingsContext';
-import {
-  ACCOUNTS,
-  buildSeries,
-  Timeframe,
-  TIMEFRAME_SHAPE,
-} from '@/data/portfolio';
-import { formatUsd, formatSignedUsd, formatPct, shortAddress } from '@/utils/format';
-import { LineChart } from '@/components/LineChart';
-import { TimeframeSelector } from '@/components/TimeframeSelector';
-import { TokenRow } from '@/components/TokenRow';
-import { ActionButton } from '@/components/ActionButton';
-import { BottomSheet } from '@/components/BottomSheet';
+import { CASH_USD } from '@/data/portfolio';
+import { formatUsd, formatSignedUsd, formatPct, formatAmount } from '@/utils/format';
+import { TokenGlyph } from '@/components/TokenGlyph';
 
 interface Props {
   onSelectToken: (symbol: string) => void;
-  onSwap: () => void;
-  onOpenSettings: () => void;
-  onSend: () => void;
+  onOpenAccounts: () => void;
 }
 
-export function HomeScreen({ onSelectToken, onSwap, onOpenSettings, onSend }: Props) {
-  const { tokens, totalValue, change24hUsd, change24hPct, lastUp } = useWallet();
-  const { account, setAccountId, hideBalances, toggleHideBalances, showDemoLabels } = useSettings();
-  const [timeframe, setTimeframe] = useState<Timeframe>('1D');
-  const [scrubValue, setScrubValue] = useState<number | null>(null);
-  const [sheet, setSheet] = useState<null | 'receive' | 'accounts'>(null);
+// Majors get the blue verified check in the real app.
+const VERIFIED = new Set(['SOL', 'ETH', 'BTC', 'USDC', 'JUP', 'JTO']);
 
-  const series = useMemo(() => {
-    const shape = TIMEFRAME_SHAPE[timeframe];
-    return buildSeries(totalValue, shape.seed, 60, shape.vol, shape.trend);
-  }, [timeframe, totalValue]);
-
+export function HomeScreen({ onSelectToken, onOpenAccounts }: Props) {
+  const { tokens, totalValue, change24hUsd, change24hPct } = useWallet();
+  const { account, hideBalances } = useSettings();
   const up = change24hUsd >= 0;
-  const displayValue = scrubValue ?? totalValue;
-  const scrubbing = scrubValue != null;
   const sorted = useMemo(() => [...tokens].sort((a, b) => b.value - a.value), [tokens]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        {/* Account header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.account} activeOpacity={0.7} onPress={() => setSheet('accounts')}>
-            <Text style={styles.avatar}>{account.avatar}</Text>
-            <View>
-              <Text style={styles.accountName}>{account.name}</Text>
-              <Text style={styles.accountAddr}>{shortAddress(account.address)}</Text>
-            </View>
-            <Ionicons name="chevron-down" size={16} color={colors.textDim} />
-          </TouchableOpacity>
-          <View style={styles.headerIcons}>
-            <View style={[styles.liveDot, { backgroundColor: lastUp ? colors.up : colors.down }]} />
-            <TouchableOpacity onPress={toggleHideBalances} hitSlop={8}>
-              <Ionicons name={hideBalances ? 'eye-off-outline' : 'eye-outline'} size={22} color={colors.textDim} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onOpenSettings} hitSlop={8}>
-              <Ionicons name="settings-outline" size={22} color={colors.textDim} />
-            </TouchableOpacity>
-          </View>
-        </View>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+      <TouchableOpacity style={styles.accountRow} activeOpacity={0.7} onPress={onOpenAccounts}>
+        <Text style={styles.accountName}>{account.name}</Text>
+        <Ionicons name="chevron-down" size={14} color={colors.textDim} />
+      </TouchableOpacity>
 
-        {/* Balance */}
-        <View style={styles.balanceBlock}>
-          <Text style={styles.balance}>{hideBalances ? '••••••' : formatUsd(displayValue)}</Text>
-          <View style={styles.changeRow}>
-            <Ionicons name={up ? 'caret-up' : 'caret-down'} size={14} color={up ? colors.up : colors.down} />
-            <Text style={[styles.change, { color: up ? colors.up : colors.down }]}>
-              {hideBalances ? '••••' : `${formatSignedUsd(change24hUsd)} (${formatPct(change24hPct)})`}
-            </Text>
-            <Text style={styles.changePeriod}>{scrubbing ? '' : 'Today'}</Text>
-          </View>
+      <Text style={styles.balance}>{hideBalances ? '••••••' : formatUsd(totalValue)}</Text>
+      <View style={styles.changeRow}>
+        <Text style={[styles.changeUsd, { color: up ? colors.up : colors.down }]}>
+          {hideBalances ? '••••' : formatSignedUsd(change24hUsd)}
+        </Text>
+        <View style={[styles.pill, { backgroundColor: (up ? colors.up : colors.down) + '22' }]}>
+          <Text style={[styles.pillText, { color: up ? colors.up : colors.down }]}>{formatPct(change24hPct)}</Text>
         </View>
+      </View>
 
-        {/* Interactive chart */}
-        <View style={styles.chartWrap}>
-          <LineChart data={series} up={up} onScrub={setScrubValue} />
+      {/* Cash */}
+      <View style={styles.cashRow}>
+        <View style={[styles.cashIcon]}>
+          <Ionicons name="cash-outline" size={20} color={colors.up} />
         </View>
-        <View style={styles.tfWrap}>
-          <TimeframeSelector value={timeframe} onChange={setTimeframe} />
-        </View>
+        <Text style={styles.cashLabel}>Cash</Text>
+        <Text style={styles.cashValue}>{hideBalances ? '••••' : formatUsd(CASH_USD)}</Text>
+      </View>
 
-        {/* Quick actions */}
-        <View style={styles.actions}>
-          <ActionButton icon="arrow-down-outline" label="Receive" onPress={() => setSheet('receive')} />
-          <ActionButton icon="arrow-up-outline" label="Send" onPress={onSend} />
-          <ActionButton icon="swap-horizontal-outline" label="Swap" onPress={onSwap} />
-          <ActionButton icon="card-outline" label="Buy" onPress={() => setSheet('receive')} />
-        </View>
+      {/* Tokens */}
+      <TouchableOpacity style={styles.sectionRow} activeOpacity={0.7}>
+        <Text style={styles.sectionTitle}>Tokens</Text>
+        <Ionicons name="chevron-forward" size={16} color={colors.textFaint} />
+      </TouchableOpacity>
 
-        {/* Token list */}
-        <View style={styles.listHeader}>
-          <Text style={styles.listTitle}>Tokens</Text>
-          <Text style={styles.listCount}>{tokens.length}</Text>
-        </View>
-        <View style={styles.list}>
-          {sorted.map((t) => (
-            <TokenRow key={t.symbol} token={t} hidden={hideBalances} onPress={() => onSelectToken(t.symbol)} />
-          ))}
-        </View>
-
-        {showDemoLabels && <Text style={styles.disclaimer}>Demo wallet · simulated balances</Text>}
-      </ScrollView>
-
-      {/* Receive sheet */}
-      <BottomSheet visible={sheet === 'receive'} title="Receive" onClose={() => setSheet(null)}>
-        <View style={styles.qrBox}>
-          <Ionicons name="qr-code" size={140} color={colors.text} />
-        </View>
-        <Text style={styles.receiveLabel}>Your Solana address</Text>
-        <View style={styles.addrPill}>
-          <Text style={styles.addrText} numberOfLines={1}>{account.address}</Text>
-          <TouchableOpacity hitSlop={10}>
-            <Ionicons name="copy-outline" size={18} color={colors.accent} />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.sheetHint}>Send only Solana (SOL) and SPL tokens to this address.</Text>
-      </BottomSheet>
-
-      {/* Account switcher */}
-      <BottomSheet visible={sheet === 'accounts'} title="Wallets" onClose={() => setSheet(null)}>
-        {ACCOUNTS.map((a) => {
-          const active = a.id === account.id;
+      <View style={styles.list}>
+        {sorted.map((t) => {
+          const tUp = t.change24h >= 0;
           return (
-            <TouchableOpacity
-              key={a.id}
-              style={styles.accSheetRow}
-              activeOpacity={0.7}
-              onPress={() => { setAccountId(a.id); setSheet(null); }}
-            >
-              <Text style={styles.accSheetAvatar}>{a.avatar}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.accSheetName}>{a.name}</Text>
-                <Text style={styles.accSheetAddr}>{shortAddress(a.address)}</Text>
+            <TouchableOpacity key={t.symbol} style={styles.row} activeOpacity={0.65} onPress={() => onSelectToken(t.symbol)}>
+              <TokenGlyph symbol={t.symbol} size={40} verified={VERIFIED.has(t.symbol)} />
+              <View style={styles.info}>
+                <Text style={styles.name}>{t.name}</Text>
+                <Text style={styles.amount}>{formatAmount(t.amount, t.symbol)}</Text>
               </View>
-              <Text style={styles.accSheetTotal}>{hideBalances ? '••••' : formatUsd(a.total, { compact: true })}</Text>
-              {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent} />}
+              <View style={styles.right}>
+                <Text style={styles.value}>{hideBalances ? '••••' : formatUsd(t.value)}</Text>
+                <Text style={[styles.change, { color: tUp ? colors.up : colors.down }]}>{formatPct(t.change24h)}</Text>
+              </View>
             </TouchableOpacity>
           );
         })}
-      </BottomSheet>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
-  scroll: { paddingBottom: 32 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  account: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  avatar: {
-    fontSize: 20,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: colors.cardAlt,
-    textAlign: 'center',
-    lineHeight: 38,
-  },
-  accountName: { color: colors.text, fontSize: 15, fontWeight: '700' },
-  accountAddr: { color: colors.textDim, fontSize: 12 },
-  headerIcons: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  liveDot: { width: 8, height: 8, borderRadius: 4 },
-  balanceBlock: { alignItems: 'center', marginTop: spacing.md, marginBottom: spacing.lg },
-  balance: { color: colors.text, fontSize: 46, fontWeight: '800', letterSpacing: -1.5 },
-  changeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 },
-  change: { fontSize: 15, fontWeight: '600' },
-  changePeriod: { color: colors.textFaint, fontSize: 15, marginLeft: 2 },
-  chartWrap: { paddingHorizontal: spacing.sm },
-  tfWrap: { paddingHorizontal: spacing.lg, marginTop: spacing.md },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.xl,
-    marginBottom: spacing.sm,
-  },
-  listHeader: {
+  scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg },
+  accountRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.sm },
+  accountName: { color: colors.textDim, fontSize: 15, fontWeight: '500' },
+  balance: { color: colors.text, fontSize: 42, fontWeight: '800', letterSpacing: -1.2, marginTop: 4 },
+  changeRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6, marginBottom: spacing.lg },
+  changeUsd: { fontSize: 15, fontWeight: '600' },
+  pill: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill },
+  pillText: { fontSize: 13, fontWeight: '700' },
+  cashRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.xl,
-    marginBottom: spacing.xs,
-  },
-  listTitle: { color: colors.text, fontSize: 18, fontWeight: '700' },
-  listCount: { color: colors.textFaint, fontSize: 15, fontWeight: '600' },
-  list: {
+    gap: spacing.md,
     backgroundColor: colors.bgElevated,
-    marginHorizontal: spacing.md,
     borderRadius: radius.md,
-    paddingVertical: 4,
-  },
-  disclaimer: { color: colors.textFaint, fontSize: 11, textAlign: 'center', marginTop: spacing.lg },
-  qrBox: {
-    alignSelf: 'center',
-    backgroundColor: colors.white,
-    padding: 18,
-    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 14,
     marginBottom: spacing.lg,
   },
-  receiveLabel: { color: colors.textDim, fontSize: 13, marginBottom: 8, textAlign: 'center' },
-  addrPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.card,
-    borderRadius: radius.pill,
-    paddingVertical: 12,
-    paddingHorizontal: spacing.lg,
-  },
-  addrText: { color: colors.text, fontSize: 13, flex: 1 },
-  sheetHint: { color: colors.textDim, fontSize: 13, lineHeight: 19, marginTop: 8, textAlign: 'center' },
-  accSheetRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: 13 },
-  accSheetAvatar: {
-    fontSize: 18,
+  cashIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.cardAlt,
-    textAlign: 'center',
-    lineHeight: 40,
+    backgroundColor: colors.up + '1F',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  accSheetName: { color: colors.text, fontSize: 15, fontWeight: '600' },
-  accSheetAddr: { color: colors.textDim, fontSize: 13 },
-  accSheetTotal: { color: colors.textDim, fontSize: 14, fontWeight: '600' },
+  cashLabel: { color: colors.text, fontSize: 16, fontWeight: '600', flex: 1 },
+  cashValue: { color: colors.text, fontSize: 16, fontWeight: '600' },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: spacing.xs },
+  sectionTitle: { color: colors.text, fontSize: 17, fontWeight: '700' },
+  list: { gap: 2 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: 11 },
+  info: { flex: 1, gap: 3 },
+  name: { color: colors.text, fontSize: 16, fontWeight: '600' },
+  amount: { color: colors.textDim, fontSize: 13 },
+  right: { alignItems: 'flex-end', gap: 3 },
+  value: { color: colors.text, fontSize: 16, fontWeight: '600' },
+  change: { fontSize: 13, fontWeight: '600' },
 });
