@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Phantom",
+    "slug": "phantom-dummy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#131419"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dummy.phantom"
+    },
+    "android": {
+      "package": "com.dummy.phantom"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "scheme": "phantomdummy",
+    "experiments": {
+      "baseUrl": "/mobile-station"
+    }
+  }
+}
