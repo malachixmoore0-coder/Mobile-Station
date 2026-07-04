@@ -41,7 +41,11 @@ Modelled on the **current** Phantom layout: top tab pills
   (MAX + USD) → review (network + fee) → "Sent ✅".
 - **Phantom‑style app icon** — lavender ghost icon + splash.
 - **Multiple wallets** — tap the avatar to switch Main / Degen / Savings / NFT
-  Vault in the "Your Accounts" sheet.
+  Vault in the "Your Accounts" sheet. **Each account has its own portfolio**
+  (holdings + cash), so switching changes the whole balance, and each is saved
+  separately.
+- **Add money** — ＋ → *Add money*: pick an amount and a method (Apple Pay /
+  card / bank) → the Cash balance (and headline balance) go up.
 - **＋ quick actions / Settings** — Send, Receive, Swap, Buy, Settings, Lock.
   Settings has Face ID toggle, **hide balances** (masks every number), currency,
   network, testnet and demo‑label toggles.
