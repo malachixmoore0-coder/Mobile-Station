@@ -1,8 +1,31 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Token, TOKEN_SEEDS, CASH_USD } from '@/data/portfolio';
+import { Token, TOKEN_SEEDS, CASH_USD, ACCOUNTS } from '@/data/portfolio';
+import { useSettings } from '@/context/SettingsContext';
 
-const STORAGE_KEY = 'phantom-wallet-state-v1';
+const STORAGE_KEY = 'phantom-wallet-books-v2';
+
+/** Per-account holdings + cash. */
+interface Book {
+  amounts: Record<string, number>;
+  cash: number;
+}
+
+const MAIN_TOKENS_VALUE = TOKEN_SEEDS.reduce((sum, s) => sum + s.amount * s.basePrice, 0);
+
+/** A believable starting book for an account, scaled to its headline total. */
+function defaultBook(accountId: string): Book {
+  const acct = ACCOUNTS.find((a) => a.id === accountId) ?? ACCOUNTS[0];
+  const scale = acct.total / MAIN_TOKENS_VALUE;
+  return {
+    amounts: Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.amount * scale])),
+    cash: CASH_USD * scale,
+  };
+}
+
+function initialBooks(): Record<string, Book> {
+  return Object.fromEntries(ACCOUNTS.map((a) => [a.id, defaultBook(a.id)]));
+}
 
 export interface BankTransfer {
   id: string;
@@ -14,22 +37,19 @@ export interface BankTransfer {
 interface WalletState {
   tokens: Token[];
   cash: number;
-  /** Tokens value only (excludes cash). */
   tokensValue: number;
-  /** Headline balance = tokens + cash. */
   totalValue: number;
   change24hUsd: number;
   change24hPct: number;
   tick: number;
   lastUp: boolean;
   lastTransfer: BankTransfer | null;
-  /** Spend `usd` of cash to buy `symbol` at the live price. */
   buy: (symbol: string, usd: number) => { ok: boolean; reason?: string };
-  /** Sell `tokenAmount` of `symbol` back to cash at the live price. */
   sell: (symbol: string, tokenAmount: number) => { ok: boolean; reason?: string };
-  /** Withdraw `usd` to a bank — drains cash first, then liquidates tokens pro-rata. */
   withdrawToBank: (usd: number, bankLast4: string) => { ok: boolean; reason?: string };
-  /** Restore the starting holdings + cash (clears persisted state). */
+  /** Deposit `usd` into the active account's cash balance. */
+  addCash: (usd: number) => { ok: boolean; reason?: string };
+  /** Restore the active account's starting holdings + cash. */
   resetWallet: () => void;
 }
 
@@ -38,38 +58,42 @@ const WalletContext = createContext<WalletState | null>(null);
 const TICK_MS = 1600;
 
 /**
- * Stateful, simulated wallet. Holdings (per-token amounts) and a cash balance
- * are mutable: you can buy with cash, sell back to cash, and "send to bank"
- * which lowers the headline balance. Prices random-walk every tick, so buying
- * and waiting for a rise then selling really does grow the cash balance.
- * Entirely client-side theatre — no keys, no chain, no funds.
+ * Stateful, per-account simulated wallet. Each account keeps its own holdings
+ * and cash "book"; switching accounts (via Settings) swaps the whole portfolio.
+ * You can buy/sell against cash, add money, and send to a bank. Prices random-
+ * walk every tick. Persisted to storage. No keys, no chain, no funds.
  */
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [amounts, setAmounts] = useState<Record<string, number>>(() =>
-    Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.amount])),
-  );
+  const { account } = useSettings();
+  const activeId = account.id;
+
+  const [books, setBooks] = useState<Record<string, Book>>(initialBooks);
   const [prices, setPrices] = useState<Record<string, number>>(() =>
     Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.basePrice])),
   );
   const [changes, setChanges] = useState<Record<string, number>>(() =>
     Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.change24h])),
   );
-  const [cash, setCash] = useState(CASH_USD);
   const [tick, setTick] = useState(0);
   const [lastUp, setLastUp] = useState(true);
   const [lastTransfer, setLastTransfer] = useState<BankTransfer | null>(null);
-  const prevTotal = useRef(TOKEN_SEEDS.reduce((sum, s) => sum + s.amount * s.basePrice, 0) + CASH_USD);
+  const prevTotal = useRef(MAIN_TOKENS_VALUE + CASH_USD);
   const hydrated = useRef(false);
 
-  // Load any persisted holdings/cash on mount (prices stay live, not persisted).
+  const book = books[activeId] ?? defaultBook(activeId);
+
+  /** Update the active account's book. */
+  const updateBook = (fn: (b: Book) => Book) =>
+    setBooks((prev) => ({ ...prev, [activeId]: fn(prev[activeId] ?? defaultBook(activeId)) }));
+
+  // Load persisted books on mount.
   useEffect(() => {
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
         if (raw) {
           const s = JSON.parse(raw);
-          if (s.amounts) setAmounts((a) => ({ ...a, ...s.amounts }));
-          if (typeof s.cash === 'number') setCash(s.cash);
+          if (s.books) setBooks((prev) => ({ ...prev, ...s.books }));
           if (s.lastTransfer) setLastTransfer(s.lastTransfer);
         }
       } catch {
@@ -79,12 +103,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  // Persist holdings + cash whenever they change (after the initial load).
+  // Persist books after the initial load.
   useEffect(() => {
     if (!hydrated.current) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ amounts, cash, lastTransfer })).catch(() => {});
-  }, [amounts, cash, lastTransfer]);
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ books, lastTransfer })).catch(() => {});
+  }, [books, lastTransfer]);
 
+  // Live market simulation (shared across accounts).
   useEffect(() => {
     const id = setInterval(() => {
       setPrices((prev) => {
@@ -114,13 +139,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     () =>
       TOKEN_SEEDS.map((s) => {
         const price = prices[s.symbol];
-        const amount = amounts[s.symbol];
+        const amount = book.amounts[s.symbol] ?? 0;
         return { ...s, amount, price, change24h: changes[s.symbol], value: amount * price };
       }),
-    [prices, amounts, changes],
+    [prices, book, changes],
   );
 
   const tokensValue = useMemo(() => tokens.reduce((sum, t) => sum + t.value, 0), [tokens]);
+  const cash = book.cash;
   const totalValue = tokensValue + cash;
 
   useEffect(() => {
@@ -130,47 +156,47 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const buy = (symbol: string, usd: number) => {
     if (!(usd > 0)) return { ok: false, reason: 'Enter an amount' };
-    if (usd > cash + 1e-6) return { ok: false, reason: 'Not enough cash' };
+    if (usd > book.cash + 1e-6) return { ok: false, reason: 'Not enough cash' };
     const price = prices[symbol];
     if (!price) return { ok: false, reason: 'Unknown token' };
-    setCash((c) => c - usd);
-    setAmounts((a) => ({ ...a, [symbol]: a[symbol] + usd / price }));
+    updateBook((b) => ({ cash: b.cash - usd, amounts: { ...b.amounts, [symbol]: b.amounts[symbol] + usd / price } }));
     return { ok: true };
   };
 
   const sell = (symbol: string, tokenAmount: number) => {
     if (!(tokenAmount > 0)) return { ok: false, reason: 'Enter an amount' };
-    if (tokenAmount > amounts[symbol] + 1e-9) return { ok: false, reason: 'Not enough balance' };
+    if (tokenAmount > book.amounts[symbol] + 1e-9) return { ok: false, reason: 'Not enough balance' };
     const proceeds = tokenAmount * prices[symbol];
-    setAmounts((a) => ({ ...a, [symbol]: a[symbol] - tokenAmount }));
-    setCash((c) => c + proceeds);
+    updateBook((b) => ({ cash: b.cash + proceeds, amounts: { ...b.amounts, [symbol]: b.amounts[symbol] - tokenAmount } }));
     return { ok: true };
   };
 
   const withdrawToBank = (usd: number, bankLast4: string) => {
     if (!(usd > 0)) return { ok: false, reason: 'Enter an amount' };
     if (usd > totalValue + 1e-6) return { ok: false, reason: 'Amount exceeds balance' };
-    // Take from cash first; cover the remainder by liquidating tokens pro-rata.
-    const fromCash = Math.min(cash, usd);
-    let remainder = usd - fromCash;
-    setCash((c) => c - fromCash);
-    if (remainder > 0 && tokensValue > 0) {
-      const frac = remainder / tokensValue;
-      setAmounts((a) => {
-        const next = { ...a };
-        for (const s of TOKEN_SEEDS) next[s.symbol] = a[s.symbol] * (1 - frac);
-        return next;
-      });
-    }
+    updateBook((b) => {
+      const bTokensValue = TOKEN_SEEDS.reduce((sum, s) => sum + (b.amounts[s.symbol] ?? 0) * prices[s.symbol], 0);
+      const fromCash = Math.min(b.cash, usd);
+      const remainder = usd - fromCash;
+      const amounts = { ...b.amounts };
+      if (remainder > 0 && bTokensValue > 0) {
+        const frac = remainder / bTokensValue;
+        for (const s of TOKEN_SEEDS) amounts[s.symbol] = (amounts[s.symbol] ?? 0) * (1 - frac);
+      }
+      return { cash: b.cash - fromCash, amounts };
+    });
     setLastTransfer({ id: `${Date.now()}`, amount: usd, bankLast4, date: Date.now() });
     return { ok: true };
   };
 
+  const addCash = (usd: number) => {
+    if (!(usd > 0)) return { ok: false, reason: 'Enter an amount' };
+    updateBook((b) => ({ ...b, cash: b.cash + usd }));
+    return { ok: true };
+  };
+
   const resetWallet = () => {
-    setAmounts(Object.fromEntries(TOKEN_SEEDS.map((s) => [s.symbol, s.amount])));
-    setCash(CASH_USD);
-    setLastTransfer(null);
-    AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+    setBooks((prev) => ({ ...prev, [activeId]: defaultBook(activeId) }));
   };
 
   const change24hUsd = useMemo(() => {
@@ -193,10 +219,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       buy,
       sell,
       withdrawToBank,
+      addCash,
       resetWallet,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tokens, cash, tokensValue, totalValue, change24hUsd, change24hPct, tick, lastUp, lastTransfer],
+    [tokens, cash, tokensValue, totalValue, change24hUsd, change24hPct, tick, lastUp, lastTransfer, activeId],
   );
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
