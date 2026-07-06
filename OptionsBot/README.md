@@ -94,6 +94,46 @@ python main.py
 # LIVE_TRADING=true - this will place REAL orders with REAL money. Type 'yes' to continue:
 ```
 
+## Running/controlling it from an iPhone
+
+OptionsBot is a plain Python process - there's nothing iPhone-specific in
+the code, but iOS itself can't host it directly: the OS suspends
+background app execution within seconds of the app losing focus, so a
+scanning/trading loop running *inside* an iPhone app would silently stop
+the moment you switch apps or the screen locks. That rules out on-device
+options like Pythonista/a-Shell for anything that needs to keep running.
+
+The practical setup is the same one professional traders use for any bot:
+run OptionsBot on an always-on Linux host (a small VPS, a home server, a
+Raspberry Pi - anything that stays powered on), and use your iPhone 15 Pro
+Max purely as a **terminal into that host**:
+
+1. Deploy `OptionsBot/` to that host, set up `.env` there (see Setup above).
+2. Install it as a systemd service so it survives reboots and doesn't care
+   whether anything is connected to it:
+   ```bash
+   sudo cp deploy/optionsbot.service /etc/systemd/system/
+   # edit the WorkingDirectory/ExecStart/EnvironmentFile paths first
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now optionsbot
+   ```
+   (`deploy/run.sh` is what it runs - same script works fine standalone
+   under `tmux`/`screen` if you'd rather not use systemd.)
+3. On the iPhone, install an SSH client - Termius, Blink Shell, and Prompt
+   all work well on iPhone 15 Pro Max/iOS 17+ - and SSH into the host.
+4. Control/monitor it from there:
+   ```bash
+   journalctl -u optionsbot -f      # tail live logs
+   systemctl restart optionsbot     # after editing .env or pulling an update
+   systemctl stop optionsbot        # e.g. before flipping LIVE_TRADING
+   sqlite3 optionsbot.sqlite3 "select * from orders order by placed_at desc limit 20;"
+   ```
+
+Because the bot itself doesn't live on the phone, backgrounding the SSH
+app or locking the screen doesn't affect it at all - the systemd service
+keeps scanning/trading on the host regardless of whether anything is
+connected to it.
+
 ## Architecture
 
 ```
