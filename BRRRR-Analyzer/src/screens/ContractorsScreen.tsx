@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ScrollView, StyleSheet, Linking, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
@@ -81,16 +81,16 @@ export function ContractorsScreen() {
 
       {mode === 'contractors' ? (
         <>
-          <FlatList
+          <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={['All', ...ALL_TRADES]}
-            keyExtractor={(t) => t}
+            style={styles.tradeRowScroll}
             contentContainerStyle={styles.tradeRow}
-            renderItem={({ item }) => (
-              <Chip label={item} active={trade === item} onPress={() => setTrade(item as TradeCategory | 'All')} />
-            )}
-          />
+          >
+            {['All', ...ALL_TRADES].map((item) => (
+              <Chip key={item} label={item} active={trade === item} onPress={() => setTrade(item as TradeCategory | 'All')} />
+            ))}
+          </ScrollView>
           <FlatList
             data={contractorList}
             keyExtractor={(c) => c.id}
@@ -106,20 +106,21 @@ export function ContractorsScreen() {
         </>
       ) : (
         <>
-          <FlatList
+          <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={['All', ...ALL_LENDER_CATEGORIES]}
-            keyExtractor={(c) => c}
+            style={styles.tradeRowScroll}
             contentContainerStyle={styles.tradeRow}
-            renderItem={({ item }) => (
+          >
+            {['All', ...ALL_LENDER_CATEGORIES].map((item) => (
               <Chip
+                key={item}
                 label={item}
                 active={lenderCategory === item}
                 onPress={() => setLenderCategory(item as LenderCategory | 'All')}
               />
-            )}
-          />
+            ))}
+          </ScrollView>
           <FlatList
             data={lenderList}
             keyExtractor={(l) => l.id}
@@ -202,7 +203,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 26, fontWeight: '800', color: colors.ink },
   subtitle: { fontSize: 13, color: colors.inkDim, marginTop: 2 },
   modeRow: { flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, marginBottom: spacing.md },
-  tradeRow: { paddingHorizontal: spacing.lg, gap: 8, paddingBottom: spacing.md },
+  tradeRowScroll: { flexGrow: 0, flexShrink: 0, height: 52 },
+  tradeRow: { paddingHorizontal: spacing.lg, gap: 8, alignItems: 'center', paddingBottom: spacing.md },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   card: {
     backgroundColor: colors.card,
