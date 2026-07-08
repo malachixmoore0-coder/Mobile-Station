@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing } from '@/theme';
 import { Chip } from '@/components/Chip';
+import { TownChips } from '@/components/TownChips';
 import { useSettings } from '@/context/SettingsContext';
 
 const BUDGET_PRESETS: [number, number, string][] = [
@@ -24,10 +25,6 @@ export function OnboardingScreen({ onDone }: Props) {
   const [budget, setBudget] = useState<[number, number]>([preferences.minBudget, preferences.maxBudget]);
   const [neighborhoods, setNeighborhoods] = useState<string[]>(preferences.targetNeighborhoods);
   const [minUnits, setMinUnits] = useState(preferences.minUnits);
-
-  const toggleNeighborhood = (n: string) => {
-    setNeighborhoods((prev) => (prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]));
-  };
 
   const finish = () => {
     updatePreferences({
@@ -57,14 +54,14 @@ export function OnboardingScreen({ onDone }: Props) {
         <Text style={styles.label}>Market (city & state)</Text>
         <View style={styles.row}>
           <TextInput
-            style={[styles.input, { flex: 2 }]}
+            style={[styles.input, styles.inputCity]}
             value={city}
             onChangeText={setCity}
             placeholder="City"
             placeholderTextColor={colors.inkFaint}
           />
           <TextInput
-            style={[styles.input, { flex: 1 }]}
+            style={[styles.input, styles.inputState]}
             value={state}
             onChangeText={setState}
             placeholder="State"
@@ -86,12 +83,8 @@ export function OnboardingScreen({ onDone }: Props) {
           ))}
         </View>
 
-        <Text style={styles.label}>Target neighborhoods (optional)</Text>
-        <View style={styles.wrapRow}>
-          {allNeighborhoods.map((n) => (
-            <Chip key={n} label={n} active={neighborhoods.includes(n)} onPress={() => toggleNeighborhood(n)} />
-          ))}
-        </View>
+        <Text style={styles.label}>Nearby towns (optional)</Text>
+        <TownChips values={neighborhoods} onChange={setNeighborhoods} suggestions={allNeighborhoods} />
 
         <Text style={styles.label}>Minimum units</Text>
         <View style={styles.stepperRow}>
@@ -133,15 +126,18 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, fontWeight: '700', color: colors.inkDim, marginTop: spacing.lg, marginBottom: spacing.sm },
   row: { flexDirection: 'row', gap: spacing.sm },
   input: {
+    minWidth: 0,
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 12,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.ink,
   },
+  inputCity: { flex: 2 },
+  inputState: { flex: 1 },
   wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   stepperRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   stepBtn: {

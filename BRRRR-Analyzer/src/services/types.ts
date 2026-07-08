@@ -89,6 +89,8 @@ export interface Property {
   description: string;
   latitude: number;
   longitude: number;
+  /** True when unit rent couldn't be pulled from the data source and was estimated instead. */
+  rentEstimated?: boolean;
 }
 
 export type PriceTier = 1 | 2 | 3;

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { applyOverride, DealRecord, Property, SearchFilters } from '@/services/types';
 import { mockListingsEngine } from '@/services/mockListingsEngine';
+import { liveListingsCache } from '@/services/liveListingsCache';
 import { subscribeLiveListings } from '@/services/liveListings';
 import { useSettings } from '@/context/SettingsContext';
 import { usePortfolio } from '@/context/PortfolioContext';
@@ -76,6 +77,7 @@ export function useListings(filters: SearchFilters): UseListingsResult {
         (props) => {
           if (cancelled) return;
           setAll(props);
+          liveListingsCache.setAll(props);
           setLastUpdated(Date.now());
           setLoading(false);
         },
@@ -114,17 +116,26 @@ export function useListings(filters: SearchFilters): UseListingsResult {
 }
 
 export function getPropertyById(id: string): Property | undefined {
-  return mockListingsEngine.getSnapshot().find((p) => p.id === id);
+  return mockListingsEngine.getSnapshot().find((p) => p.id === id) ?? liveListingsCache.getById(id);
 }
 
 export function usePropertyById(id: string): Property | undefined {
   const [property, setProperty] = useState<Property | undefined>(() => getPropertyById(id));
 
   useEffect(() => {
-    const unsub = mockListingsEngine.subscribe((props) => {
-      setProperty(props.find((p) => p.id === id));
+    setProperty(getPropertyById(id));
+    const unsubMock = mockListingsEngine.subscribe((props) => {
+      const found = props.find((p) => p.id === id);
+      if (found) setProperty(found);
     });
-    return unsub;
+    const unsubLive = liveListingsCache.subscribe((props) => {
+      const found = props.find((p) => p.id === id);
+      if (found) setProperty(found);
+    });
+    return () => {
+      unsubMock();
+      unsubLive();
+    };
   }, [id]);
 
   return property;

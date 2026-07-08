@@ -3,7 +3,7 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, StyleSheet
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
-import { Chip } from '@/components/Chip';
+import { TownChips } from '@/components/TownChips';
 import { useSettings } from '@/context/SettingsContext';
 import { BrrrrAssumptions } from '@/utils/brrrr';
 
@@ -43,13 +43,6 @@ export function SettingsScreen() {
   const [showRc, setShowRc] = useState(false);
   const [showGp, setShowGp] = useState(false);
 
-  const toggleNeighborhood = (n: string) => {
-    const next = preferences.targetNeighborhoods.includes(n)
-      ? preferences.targetNeighborhoods.filter((x) => x !== n)
-      : [...preferences.targetNeighborhoods, n];
-    updatePreferences({ targetNeighborhoods: next });
-  };
-
   const hasAnyLiveKey = !!rentcastKey || !!googlePlacesKey;
 
   return (
@@ -61,18 +54,22 @@ export function SettingsScreen() {
         <View style={styles.card}>
           <View style={styles.row}>
             <TextInput
-              style={[styles.input, { flex: 2 }]}
+              style={[styles.input, styles.inputCity]}
               value={city}
-              onChangeText={setCity}
-              onEndEditing={() => updatePreferences({ city })}
+              onChangeText={(v) => {
+                setCity(v);
+                updatePreferences({ city: v });
+              }}
               placeholder="City"
               placeholderTextColor={colors.inkFaint}
             />
             <TextInput
-              style={[styles.input, { flex: 1 }]}
+              style={[styles.input, styles.inputState]}
               value={state}
-              onChangeText={setState}
-              onEndEditing={() => updatePreferences({ state })}
+              onChangeText={(v) => {
+                setState(v);
+                updatePreferences({ state: v });
+              }}
               placeholder="State"
               placeholderTextColor={colors.inkFaint}
               autoCapitalize="characters"
@@ -81,11 +78,16 @@ export function SettingsScreen() {
           </View>
         </View>
 
-        <Text style={styles.section}>Target neighborhoods</Text>
-        <View style={[styles.card, styles.wrapRow]}>
-          {allNeighborhoods.map((n) => (
-            <Chip key={n} label={n} active={preferences.targetNeighborhoods.includes(n)} onPress={() => toggleNeighborhood(n)} />
-          ))}
+        <Text style={styles.section}>Nearby towns</Text>
+        <View style={styles.card}>
+          <Text style={styles.helper}>
+            Used to filter Discover. Type any town near you — this isn't tied to the sample data's city.
+          </Text>
+          <TownChips
+            values={preferences.targetNeighborhoods}
+            onChange={(next) => updatePreferences({ targetNeighborhoods: next })}
+            suggestions={allNeighborhoods}
+          />
         </View>
 
         <Text style={styles.section}>Minimum units</Text>
@@ -270,15 +272,18 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', gap: spacing.sm },
   input: {
+    minWidth: 0,
     backgroundColor: colors.cardAlt,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 12,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.ink,
   },
+  inputCity: { flex: 2 },
+  inputState: { flex: 1 },
   wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   stepperRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   stepBtn: {
@@ -301,13 +306,14 @@ const styles = StyleSheet.create({
   keyInputRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   keyInput: {
     flex: 1,
+    minWidth: 0,
     backgroundColor: colors.cardAlt,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: 12,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.ink,
   },
   keyIconBtn: { padding: 8 },
@@ -318,17 +324,18 @@ const styles = StyleSheet.create({
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   switchLabel: { fontSize: 14, fontWeight: '700', color: colors.ink },
   switchHelper: { fontSize: 12, color: colors.inkFaint, marginTop: 2 },
-  assumptionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-  assumptionField: { width: '46%' },
-  assumptionLabel: { fontSize: 11, fontWeight: '700', color: colors.inkDim, marginBottom: 6 },
+  assumptionsGrid: { gap: spacing.md },
+  assumptionField: { width: '100%' },
+  assumptionLabel: { fontSize: 12, fontWeight: '700', color: colors.inkDim, marginBottom: 6 },
   assumptionInput: {
+    minWidth: 0,
     backgroundColor: colors.cardAlt,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 9,
-    fontSize: 14,
+    paddingVertical: 10,
+    fontSize: 16,
     color: colors.ink,
   },
   resetLink: { color: colors.inkFaint, fontSize: 12, fontWeight: '600', textDecorationLine: 'underline' },

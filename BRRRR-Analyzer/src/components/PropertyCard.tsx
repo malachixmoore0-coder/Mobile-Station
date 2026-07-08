@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Property } from '@/services/types';
 import { colors, radius, shadow, spacing } from '@/theme';
@@ -7,24 +7,32 @@ import { formatUsd } from '@/utils/format';
 import { analyzeBrrrr } from '@/utils/brrrr';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { StatusPill } from '@/components/StatusPill';
+import { PropertyPhoto } from '@/components/PropertyPhoto';
 import { usePortfolio } from '@/context/PortfolioContext';
 import { useSettings } from '@/context/SettingsContext';
 
 interface Props {
   property: Property;
   onPress: () => void;
+  isTopPick?: boolean;
 }
 
-export function PropertyCard({ property, onPress }: Props) {
+export function PropertyCard({ property, onPress, isTopPick }: Props) {
   const { isSaved, toggleSaved } = usePortfolio();
   const { assumptions } = useSettings();
   const analysis = analyzeBrrrr(property, assumptions);
   const saved = isSaved(property.id);
 
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onPress}>
+    <TouchableOpacity style={[styles.card, isTopPick && styles.cardTopPick]} activeOpacity={0.9} onPress={onPress}>
+      {isTopPick && (
+        <View style={styles.topPickRibbon}>
+          <Ionicons name="trophy" size={12} color={colors.white} />
+          <Text style={styles.topPickText}>Top pick</Text>
+        </View>
+      )}
       <View style={styles.photoWrap}>
-        <Image source={{ uri: property.photos[0] }} style={styles.photo} />
+        <PropertyPhoto id={property.id} propertyType={property.propertyType} />
         <View style={styles.photoOverlayTop}>
           <StatusPill status={property.status} daysOnMarket={property.daysOnMarket} />
           <TouchableOpacity style={styles.saveBtn} onPress={() => toggleSaved(property.id)} hitSlop={8}>
@@ -61,6 +69,13 @@ export function PropertyCard({ property, onPress }: Props) {
           />
           <Stat label="ARV" value={formatUsd(property.arvEstimate)} />
         </View>
+
+        {property.rentEstimated && (
+          <View style={styles.estimateNote}>
+            <Ionicons name="information-circle-outline" size={12} color={colors.gold} />
+            <Text style={styles.estimateNoteText}>Rent estimated — confirm before relying on this</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -87,8 +102,23 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     ...shadow.card,
   },
+  cardTopPick: { borderColor: colors.gold, borderWidth: 1.5 },
+  topPickRibbon: {
+    position: 'absolute',
+    top: 0,
+    right: spacing.lg,
+    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.gold,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderBottomLeftRadius: radius.sm,
+    borderBottomRightRadius: radius.sm,
+  },
+  topPickText: { color: colors.white, fontSize: 10, fontWeight: '800' },
   photoWrap: { height: 170, backgroundColor: colors.bgAlt },
-  photo: { width: '100%', height: '100%' },
   photoOverlayTop: {
     position: 'absolute',
     top: spacing.sm,
@@ -137,4 +167,6 @@ const styles = StyleSheet.create({
   stat: { alignItems: 'flex-start' },
   statValue: { color: colors.ink, fontSize: 14, fontWeight: '700' },
   statLabel: { color: colors.inkFaint, fontSize: 11, marginTop: 2 },
+  estimateNote: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.sm },
+  estimateNoteText: { color: colors.gold, fontSize: 10, fontWeight: '600', flexShrink: 1 },
 });

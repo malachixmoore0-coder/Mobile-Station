@@ -6,7 +6,7 @@ import { colors, spacing } from '@/theme';
 import { PropertyCard } from '@/components/PropertyCard';
 import { usePortfolio } from '@/context/PortfolioContext';
 import { useSettings } from '@/context/SettingsContext';
-import { mockListingsEngine } from '@/services/mockListingsEngine';
+import { getPropertyById } from '@/services/listingsProvider';
 import { analyzeBrrrr } from '@/utils/brrrr';
 import { applyOverride, DEAL_STAGES, DEAL_STAGE_LABEL, DealStage, Property } from '@/services/types';
 
@@ -19,10 +19,9 @@ export function SavedScreen({ onSelectProperty }: Props) {
   const { assumptions } = useSettings();
 
   const sections = useMemo(() => {
-    const all = mockListingsEngine.getSnapshot();
     const byStage = new Map<DealStage, Property[]>();
     for (const id of savedIds) {
-      const base = all.find((p) => p.id === id);
+      const base = getPropertyById(id);
       if (!base) continue;
       const deal = deals[id];
       const effective = applyOverride(base, deal.override);
