@@ -1,22 +1,32 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Property, SearchFilters } from '@/services/types';
+import { applyOverride, DealRecord, Property, SearchFilters } from '@/services/types';
 import { mockListingsEngine } from '@/services/mockListingsEngine';
 import { subscribeLiveListings } from '@/services/liveListings';
 import { useSettings } from '@/context/SettingsContext';
-import { analyzeBrrrr } from '@/utils/brrrr';
+import { usePortfolio } from '@/context/PortfolioContext';
+import { analyzeBrrrr, BrrrrAssumptions, DEFAULT_ASSUMPTIONS } from '@/utils/brrrr';
 
-export function applyFilters(properties: Property[], filters: SearchFilters): Property[] {
+/** Folds your saved edits (offer price, ARV, rehab scope) back into the base listings. */
+export function withOverrides(properties: Property[], deals: Record<string, DealRecord>): Property[] {
+  return properties.map((p) => (deals[p.id] ? applyOverride(p, deals[p.id].override) : p));
+}
+
+export function applyFilters(
+  properties: Property[],
+  filters: SearchFilters,
+  assumptions: BrrrrAssumptions = DEFAULT_ASSUMPTIONS
+): Property[] {
   const filtered = properties.filter((p) => {
     if (p.price < filters.minPrice || p.price > filters.maxPrice) return false;
     if (p.unitCount < filters.minUnits || p.unitCount > filters.maxUnits) return false;
     if (filters.neighborhoods.length > 0 && !filters.neighborhoods.includes(p.neighborhood)) return false;
     if (p.transit.transitScore < filters.minTransitScore) return false;
     if (filters.status.length > 0 && !filters.status.includes(p.status)) return false;
-    if (filters.minBrrrrScore > 0 && analyzeBrrrr(p).score < filters.minBrrrrScore) return false;
+    if (filters.minBrrrrScore > 0 && analyzeBrrrr(p, assumptions).score < filters.minBrrrrScore) return false;
     return true;
   });
 
-  const withScore = filtered.map((p) => ({ property: p, analysis: analyzeBrrrr(p) }));
+  const withScore = filtered.map((p) => ({ property: p, analysis: analyzeBrrrr(p, assumptions) }));
   withScore.sort((a, b) => {
     switch (filters.sortBy) {
       case 'price':
@@ -43,7 +53,8 @@ interface UseListingsResult {
 }
 
 export function useListings(filters: SearchFilters): UseListingsResult {
-  const { rentcastKey, forceDemoMode, preferences } = useSettings();
+  const { rentcastKey, forceDemoMode, preferences, assumptions } = useSettings();
+  const { deals } = usePortfolio();
   const [all, setAll] = useState<Property[]>(mockListingsEngine.getSnapshot());
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,7 +72,7 @@ export function useListings(filters: SearchFilters): UseListingsResult {
       setIsLive(true);
       const unsub = subscribeLiveListings(
         rentcastKey,
-        { city: preferences.city, state: preferences.state },
+        { city: preferences.city, state: preferences.state, minPrice: filters.minPrice, maxPrice: filters.maxPrice },
         (props) => {
           if (cancelled) return;
           setAll(props);
@@ -91,9 +102,13 @@ export function useListings(filters: SearchFilters): UseListingsResult {
       cancelled = true;
       unsub();
     };
-  }, [useLive, rentcastKey, preferences.city, preferences.state]);
+  }, [useLive, rentcastKey, preferences.city, preferences.state, filters.minPrice, filters.maxPrice]);
 
-  const properties = useMemo(() => applyFilters(all, filters), [all, filters]);
+  const properties = useMemo(
+    () => applyFilters(withOverrides(all, deals), filters, assumptions),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [all, filters, assumptions, deals]
+  );
 
   return { properties, allCount: all.length, isLive, loading, lastUpdated, error };
 }

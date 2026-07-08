@@ -5,9 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
 import { Chip } from '@/components/Chip';
 import { LiveIndicator } from '@/components/LiveIndicator';
-import { Contractor, TradeCategory } from '@/services/types';
+import { LenderCard } from '@/components/LenderCard';
+import { Contractor, LenderCategory, TradeCategory } from '@/services/types';
 import { MOCK_CONTRACTORS } from '@/data/mockContractors';
 import { useContractors, costEfficiencyScore } from '@/services/contractorsProvider';
+import { lendersForCategory, lenderScore } from '@/services/lendersProvider';
+import { useSettings } from '@/context/SettingsContext';
 
 const ALL_TRADES: TradeCategory[] = [
   'General Contractor',
@@ -23,50 +26,114 @@ const ALL_TRADES: TradeCategory[] = [
   'Landscaping',
 ];
 
+const ALL_LENDER_CATEGORIES: LenderCategory[] = [
+  'Hard Money / Bridge',
+  'DSCR Refinance',
+  'Conventional / Bank',
+  'Portfolio Lender',
+];
+
 export function ContractorsScreen() {
+  const [mode, setMode] = useState<'contractors' | 'lenders'>('contractors');
   const [trade, setTrade] = useState<TradeCategory | 'All'>('All');
+  const [lenderCategory, setLenderCategory] = useState<LenderCategory | 'All'>('All');
+  const { preferences } = useSettings();
   const tradesNeeded = trade === 'All' ? [] : [trade];
   const { contractors, isLive } = useContractors(tradesNeeded);
   const pool = tradesNeeded.length > 0 ? contractors : MOCK_CONTRACTORS;
 
-  const list = useMemo(() => {
+  const contractorList = useMemo(() => {
     const filtered = trade === 'All' ? pool : pool.filter((c) => c.trades.includes(trade));
     return [...filtered].sort((a, b) => costEfficiencyScore(b) - costEfficiencyScore(a));
   }, [pool, trade]);
+
+  const lenderList = useMemo(() => {
+    if (lenderCategory === 'All') {
+      const seen = new Set<string>();
+      const all = ALL_LENDER_CATEGORIES.flatMap((c) => lendersForCategory(c, preferences.state)).filter((l) => {
+        if (seen.has(l.id)) return false;
+        seen.add(l.id);
+        return true;
+      });
+      return all.sort((a, b) => lenderScore(b) - lenderScore(a));
+    }
+    return lendersForCategory(lenderCategory, preferences.state);
+  }, [lenderCategory, preferences.state]);
 
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Contractors</Text>
-          <Text style={styles.subtitle}>{list.length} pros ready for your rehab</Text>
+          <Text style={styles.title}>Team</Text>
+          <Text style={styles.subtitle}>
+            {mode === 'contractors'
+              ? `${contractorList.length} pros ready for your rehab`
+              : `${lenderList.length} lenders serving ${preferences.state}`}
+          </Text>
         </View>
-        <LiveIndicator isLive={isLive} lastUpdated={Date.now()} />
+        {mode === 'contractors' && <LiveIndicator isLive={isLive} lastUpdated={Date.now()} />}
       </View>
 
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={['All', ...ALL_TRADES]}
-        keyExtractor={(t) => t}
-        contentContainerStyle={styles.tradeRow}
-        renderItem={({ item }) => (
-          <Chip label={item} active={trade === item} onPress={() => setTrade(item as TradeCategory | 'All')} />
-        )}
-      />
+      <View style={styles.modeRow}>
+        <Chip label="Contractors" active={mode === 'contractors'} onPress={() => setMode('contractors')} />
+        <Chip label="Lenders" active={mode === 'lenders'} onPress={() => setMode('lenders')} />
+      </View>
 
-      <FlatList
-        data={list}
-        keyExtractor={(c) => c.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => <ContractorCard contractor={item} />}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Ionicons name="people-outline" size={32} color={colors.inkFaint} />
-            <Text style={styles.emptyText}>No contractors found for this trade yet.</Text>
-          </View>
-        }
-      />
+      {mode === 'contractors' ? (
+        <>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={['All', ...ALL_TRADES]}
+            keyExtractor={(t) => t}
+            contentContainerStyle={styles.tradeRow}
+            renderItem={({ item }) => (
+              <Chip label={item} active={trade === item} onPress={() => setTrade(item as TradeCategory | 'All')} />
+            )}
+          />
+          <FlatList
+            data={contractorList}
+            keyExtractor={(c) => c.id}
+            contentContainerStyle={styles.list}
+            renderItem={({ item }) => <ContractorCard contractor={item} />}
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                <Ionicons name="people-outline" size={32} color={colors.inkFaint} />
+                <Text style={styles.emptyText}>No contractors found for this trade yet.</Text>
+              </View>
+            }
+          />
+        </>
+      ) : (
+        <>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={['All', ...ALL_LENDER_CATEGORIES]}
+            keyExtractor={(c) => c}
+            contentContainerStyle={styles.tradeRow}
+            renderItem={({ item }) => (
+              <Chip
+                label={item}
+                active={lenderCategory === item}
+                onPress={() => setLenderCategory(item as LenderCategory | 'All')}
+              />
+            )}
+          />
+          <FlatList
+            data={lenderList}
+            keyExtractor={(l) => l.id}
+            contentContainerStyle={styles.list}
+            renderItem={({ item }) => <LenderCard lender={item} />}
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                <Ionicons name="cash-outline" size={32} color={colors.inkFaint} />
+                <Text style={styles.emptyText}>No lenders found for this category yet.</Text>
+              </View>
+            }
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -134,6 +201,7 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 26, fontWeight: '800', color: colors.ink },
   subtitle: { fontSize: 13, color: colors.inkDim, marginTop: 2 },
+  modeRow: { flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, marginBottom: spacing.md },
   tradeRow: { paddingHorizontal: spacing.lg, gap: 8, paddingBottom: spacing.md },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
   card: {

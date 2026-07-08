@@ -94,13 +94,18 @@ function mapListing(raw: any): Property | null {
 }
 
 export async function fetchLiveListings(apiKey: string, params: LiveSearchParams): Promise<Property[]> {
-  const raw = await rentcastFetch('/listings/sale', apiKey, {
+  const query: Record<string, string> = {
     city: params.city,
     state: params.state,
     status: 'Active',
     propertyType: 'Multi-Family',
     limit: '50',
-  });
+  };
+  // RentCast filters server-side on list price — keeps the payload (and your monthly call quota) tight
+  // instead of pulling every multi-family listing in the metro and discarding most of it client-side.
+  if (params.minPrice) query.minPrice = String(params.minPrice);
+  if (params.maxPrice) query.maxPrice = String(params.maxPrice);
+  const raw = await rentcastFetch('/listings/sale', apiKey, query);
   const list: any[] = Array.isArray(raw) ? raw : raw.listings ?? [];
   return list.map(mapListing).filter((p): p is Property => p !== null);
 }

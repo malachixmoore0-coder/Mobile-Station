@@ -8,6 +8,7 @@ import { analyzeBrrrr } from '@/utils/brrrr';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { StatusPill } from '@/components/StatusPill';
 import { usePortfolio } from '@/context/PortfolioContext';
+import { useSettings } from '@/context/SettingsContext';
 
 interface Props {
   property: Property;
@@ -16,7 +17,8 @@ interface Props {
 
 export function PropertyCard({ property, onPress }: Props) {
   const { isSaved, toggleSaved } = usePortfolio();
-  const analysis = analyzeBrrrr(property);
+  const { assumptions } = useSettings();
+  const analysis = analyzeBrrrr(property, assumptions);
   const saved = isSaved(property.id);
 
   return (

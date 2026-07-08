@@ -9,8 +9,8 @@ export type TabKey = 'discover' | 'saved' | 'contractors' | 'settings';
 
 const TABS: { key: TabKey; label: string; icon: keyof typeof Ionicons.glyphMap; iconActive: keyof typeof Ionicons.glyphMap }[] = [
   { key: 'discover', label: 'Discover', icon: 'search-outline', iconActive: 'search' },
-  { key: 'saved', label: 'Saved', icon: 'heart-outline', iconActive: 'heart' },
-  { key: 'contractors', label: 'Contractors', icon: 'hammer-outline', iconActive: 'hammer' },
+  { key: 'saved', label: 'Pipeline', icon: 'heart-outline', iconActive: 'heart' },
+  { key: 'contractors', label: 'Team', icon: 'hammer-outline', iconActive: 'hammer' },
   { key: 'settings', label: 'Settings', icon: 'settings-outline', iconActive: 'settings' },
 ];
 

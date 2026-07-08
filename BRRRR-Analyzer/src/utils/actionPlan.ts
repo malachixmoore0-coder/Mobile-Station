@@ -5,6 +5,7 @@ import { formatUsd } from '@/utils/format';
 export type PlanPhase = 'Buy' | 'Rehab' | 'Rent' | 'Refinance' | 'Repeat';
 
 export interface PlanStep {
+  id: string;
   phase: PlanPhase;
   title: string;
   detail: string;
@@ -51,6 +52,7 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   const critical = tradeGroups.filter((g) => g.topPriority === 'critical');
 
   steps.push({
+    id: 'buy-offer',
     phase: 'Buy',
     title: `Offer at or below ${formatUsd(property.price, { compact: false })}`,
     detail:
@@ -60,12 +62,14 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   });
 
   steps.push({
+    id: 'buy-financing',
     phase: 'Buy',
     title: 'Line up rehab financing before you are under contract',
     detail: `Budget ${formatUsd(analysis.rehabBudget.low, { compact: false })}–${formatUsd(analysis.rehabBudget.high, { compact: false })} for rehab. A hard-money or bridge lender will typically cover 85-90% of purchase + 100% of rehab draws — get pre-approved so your offer can close in 15-21 days.`,
   });
 
   steps.push({
+    id: 'buy-inspection',
     phase: 'Buy',
     title: 'Order inspection focused on the critical-priority items',
     detail:
@@ -75,6 +79,7 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   });
 
   steps.push({
+    id: 'rehab-sequence',
     phase: 'Rehab',
     title: `Sequence trades over ~${property.rehabTimelineMonths} month${property.rehabTimelineMonths === 1 ? '' : 's'}`,
     detail: `Start with structural/systems work (${tradeGroups
@@ -85,6 +90,7 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
 
   if (vacant.length > 0) {
     steps.push({
+      id: 'rehab-vacant-units',
       phase: 'Rehab',
       title: `Prioritize the ${vacant.length} vacant unit${vacant.length === 1 ? '' : 's'} first`,
       detail: `${vacant.map((u) => u.label).join(', ')} can be fully rehabbed without displacing tenants — get these rent-ready first so you're collecting income while occupied units turn over.`,
@@ -92,12 +98,14 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   }
 
   steps.push({
+    id: 'rehab-bids',
     phase: 'Rehab',
     title: 'Get 2-3 bids per trade from the recommended contractor list',
     detail: `Use the cost-efficient picks below as your baseline bid — anything more than ~15% over their quote needs a reason (warranty, timeline, material grade).`,
   });
 
   steps.push({
+    id: 'rent-relist',
     phase: 'Rent',
     title: 'Re-list turned units at market rent',
     detail: `Target ${formatUsd(
@@ -107,12 +115,14 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   });
 
   steps.push({
+    id: 'rent-hold',
     phase: 'Rent',
     title: 'Hold occupancy 60-90 days before refinancing',
     detail: `Most lenders want either a seasoned lease or a completed-and-stabilized property before they'll use market rent (not just appraised value) to qualify the refinance.`,
   });
 
   steps.push({
+    id: 'refi-execute',
     phase: 'Refinance',
     title: `Refinance into a ${DEFAULT_REFI_LABEL} at ~75% of ARV`,
     detail: `Target appraisal at or above ${formatUsd(property.arvEstimate, { compact: false })}. At 75% LTV that's a ${formatUsd(
@@ -122,6 +132,7 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   });
 
   steps.push({
+    id: 'refi-cash-left',
     phase: 'Refinance',
     title:
       analysis.cashLeftInDeal <= 0
@@ -139,6 +150,7 @@ export function buildActionPlan(property: Property, analysis: BrrrrAnalysis): Pl
   });
 
   steps.push({
+    id: 'repeat-redeploy',
     phase: 'Repeat',
     title: 'Redeploy the cash-out into the next property',
     detail: `Monthly cash flow after refinance is projected at ${formatUsd(analysis.monthlyCashFlow, {

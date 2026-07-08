@@ -2,8 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getApiKey, setApiKey } from '@/services/apiKeys';
 import { NEIGHBORHOODS } from '@/data/mockListings';
+import { BrrrrAssumptions, DEFAULT_ASSUMPTIONS } from '@/utils/brrrr';
 
 const STORAGE_KEY = 'brrrr-scout.preferences.v1';
+const ASSUMPTIONS_KEY = 'brrrr-scout.assumptions.v1';
 
 export interface Preferences {
   city: string;
@@ -40,6 +42,10 @@ interface SettingsState {
   forceDemoMode: boolean;
   setForceDemoMode: (v: boolean) => void;
 
+  assumptions: BrrrrAssumptions;
+  updateAssumptions: (patch: Partial<BrrrrAssumptions>) => void;
+  resetAssumptions: () => void;
+
   allNeighborhoods: string[];
 }
 
@@ -51,12 +57,19 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [rentcastKey, setRentcastKeyState] = useState<string | null>(null);
   const [googlePlacesKey, setGooglePlacesKeyState] = useState<string | null>(null);
   const [forceDemoMode, setForceDemoMode] = useState(false);
+  const [assumptions, setAssumptions] = useState<BrrrrAssumptions>(DEFAULT_ASSUMPTIONS);
 
   useEffect(() => {
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
         if (raw) setPreferences({ ...DEFAULT_PREFERENCES, ...JSON.parse(raw) });
+      } catch {
+        // fall back to defaults
+      }
+      try {
+        const rawA = await AsyncStorage.getItem(ASSUMPTIONS_KEY);
+        if (rawA) setAssumptions({ ...DEFAULT_ASSUMPTIONS, ...JSON.parse(rawA) });
       } catch {
         // fall back to defaults
       }
@@ -85,6 +98,19 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setGooglePlacesKeyState(key || null);
   };
 
+  const updateAssumptions = (patch: Partial<BrrrrAssumptions>) => {
+    setAssumptions((prev) => {
+      const next = { ...prev, ...patch };
+      AsyncStorage.setItem(ASSUMPTIONS_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  };
+
+  const resetAssumptions = () => {
+    setAssumptions(DEFAULT_ASSUMPTIONS);
+    AsyncStorage.removeItem(ASSUMPTIONS_KEY).catch(() => {});
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -97,6 +123,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setGooglePlacesKey,
         forceDemoMode,
         setForceDemoMode,
+        assumptions,
+        updateAssumptions,
+        resetAssumptions,
         allNeighborhoods: [...NEIGHBORHOODS],
       }}
     >

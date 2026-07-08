@@ -5,6 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
 import { Chip } from '@/components/Chip';
 import { useSettings } from '@/context/SettingsContext';
+import { BrrrrAssumptions } from '@/utils/brrrr';
+
+const ASSUMPTION_FIELDS: { key: keyof BrrrrAssumptions; label: string; suffix: string }[] = [
+  { key: 'refiLtvPct', label: 'Refinance LTV', suffix: '%' },
+  { key: 'refiRatePct', label: 'Refinance rate', suffix: '%' },
+  { key: 'refiTermYears', label: 'Refinance term', suffix: 'yrs' },
+  { key: 'purchaseClosingCostPct', label: 'Purchase closing costs', suffix: '%' },
+  { key: 'refiClosingCostPct', label: 'Refi closing costs', suffix: '%' },
+  { key: 'vacancyPct', label: 'Vacancy reserve', suffix: '%' },
+  { key: 'managementPct', label: 'Management fee', suffix: '%' },
+  { key: 'maintenanceReservePct', label: 'Maintenance reserve', suffix: '%' },
+  { key: 'insuranceMonthlyPerUnit', label: 'Insurance', suffix: '$/unit/mo' },
+  { key: 'holdingCostMonthlyPerUnit', label: 'Holding cost', suffix: '$/unit/mo' },
+];
 
 export function SettingsScreen() {
   const {
@@ -17,6 +31,9 @@ export function SettingsScreen() {
     setGooglePlacesKey,
     forceDemoMode,
     setForceDemoMode,
+    assumptions,
+    updateAssumptions,
+    resetAssumptions,
   } = useSettings();
 
   const [city, setCity] = useState(preferences.city);
@@ -85,6 +102,35 @@ export function SettingsScreen() {
             onPress={() => updatePreferences({ minUnits: Math.min(20, preferences.minUnits + 1) })}
           >
             <Ionicons name="add" size={18} color={colors.ink} />
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.section}>Investment assumptions</Text>
+        <View style={styles.card}>
+          <Text style={styles.helper}>
+            These drive every BRRRR score, cash-flow projection, and action-plan number in the app. Match
+            them to your actual lender's terms — the defaults are reasonable but generic.
+          </Text>
+          <View style={styles.assumptionsGrid}>
+            {ASSUMPTION_FIELDS.map((f) => (
+              <View key={f.key} style={styles.assumptionField}>
+                <Text style={styles.assumptionLabel} numberOfLines={1}>
+                  {f.label} ({f.suffix})
+                </Text>
+                <TextInput
+                  style={styles.assumptionInput}
+                  defaultValue={String(assumptions[f.key])}
+                  keyboardType="numeric"
+                  onEndEditing={(e) => {
+                    const v = Number(e.nativeEvent.text);
+                    if (!Number.isNaN(v)) updateAssumptions({ [f.key]: v });
+                  }}
+                />
+              </View>
+            ))}
+          </View>
+          <TouchableOpacity onPress={resetAssumptions} style={{ marginTop: spacing.sm }}>
+            <Text style={styles.resetLink}>Reset to defaults</Text>
           </TouchableOpacity>
         </View>
 
@@ -272,4 +318,18 @@ const styles = StyleSheet.create({
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   switchLabel: { fontSize: 14, fontWeight: '700', color: colors.ink },
   switchHelper: { fontSize: 12, color: colors.inkFaint, marginTop: 2 },
+  assumptionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  assumptionField: { width: '46%' },
+  assumptionLabel: { fontSize: 11, fontWeight: '700', color: colors.inkDim, marginBottom: 6 },
+  assumptionInput: {
+    backgroundColor: colors.cardAlt,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 9,
+    fontSize: 14,
+    color: colors.ink,
+  },
+  resetLink: { color: colors.inkFaint, fontSize: 12, fontWeight: '600', textDecorationLine: 'underline' },
 });

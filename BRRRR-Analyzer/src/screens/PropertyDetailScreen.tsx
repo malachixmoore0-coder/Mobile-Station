@@ -17,11 +17,16 @@ import { analyzeBrrrr } from '@/utils/brrrr';
 import { buildActionPlan, groupRehabByTrade, PlanPhase } from '@/utils/actionPlan';
 import { usePropertyById } from '@/services/listingsProvider';
 import { usePortfolio } from '@/context/PortfolioContext';
+import { useSettings } from '@/context/SettingsContext';
 import { useContractors, contractorsForTrade } from '@/services/contractorsProvider';
+import { lendersForCategory } from '@/services/lendersProvider';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { StatusPill } from '@/components/StatusPill';
+import { DealStageStepper } from '@/components/DealStageStepper';
+import { EditDealModal } from '@/components/EditDealModal';
+import { LenderCard } from '@/components/LenderCard';
 import { ContractorCard } from '@/screens/ContractorsScreen';
-import { RehabItem } from '@/services/types';
+import { applyOverride, RehabItem } from '@/services/types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -52,16 +57,33 @@ const PRIORITY_COLOR: Record<RehabItem['priority'], string> = {
 
 export function PropertyDetailScreen({ propertyId, onBack }: Props) {
   const property = usePropertyById(propertyId);
-  const { isSaved, toggleSaved } = usePortfolio();
-  const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set());
+  const { isSaved, toggleSaved, getStage, setStage, isStepChecked, toggleStep, getOverride, setOverride } =
+    usePortfolio();
+  const { assumptions, preferences } = useSettings();
+  const [editOpen, setEditOpen] = useState(false);
 
-  const analysis = useMemo(() => (property ? analyzeBrrrr(property) : null), [property]);
-  const plan = useMemo(() => (property && analysis ? buildActionPlan(property, analysis) : []), [property, analysis]);
-  const tradeGroups = useMemo(() => (property ? groupRehabByTrade(property) : []), [property]);
+  const override = property ? getOverride(property.id) : {};
+  const effectiveProperty = useMemo(
+    () => (property ? applyOverride(property, override) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [property, JSON.stringify(override)]
+  );
+  const analysis = useMemo(
+    () => (effectiveProperty ? analyzeBrrrr(effectiveProperty, assumptions) : null),
+    [effectiveProperty, assumptions]
+  );
+  const plan = useMemo(
+    () => (effectiveProperty && analysis ? buildActionPlan(effectiveProperty, analysis) : []),
+    [effectiveProperty, analysis]
+  );
+  const tradeGroups = useMemo(() => (effectiveProperty ? groupRehabByTrade(effectiveProperty) : []), [effectiveProperty]);
   const tradesNeeded = useMemo(() => tradeGroups.map((g) => g.trade), [tradeGroups]);
   const { contractors } = useContractors(tradesNeeded);
 
-  if (!property || !analysis) {
+  const bridgeLenders = useMemo(() => lendersForCategory('Hard Money / Bridge', preferences.state).slice(0, 2), [preferences.state]);
+  const dscrLenders = useMemo(() => lendersForCategory('DSCR Refinance', preferences.state).slice(0, 2), [preferences.state]);
+
+  if (!property || !effectiveProperty || !analysis) {
     return (
       <SafeAreaView style={styles.root}>
         <View style={styles.missing}>
@@ -75,14 +97,9 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
   }
 
   const saved = isSaved(property.id);
-  const toggleStep = (i: number) => {
-    setCheckedSteps((prev) => {
-      const next = new Set(prev);
-      if (next.has(i)) next.delete(i);
-      else next.add(i);
-      return next;
-    });
-  };
+  const stage = getStage(property.id) ?? 'watching';
+  const hasOfferOverride = override.offerPrice != null && override.offerPrice !== property.price;
+  const hasArvOverride = override.arvOverride != null && override.arvOverride !== property.arvEstimate;
 
   return (
     <View style={styles.root}>
@@ -108,6 +125,16 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             <Text style={styles.price}>{formatUsd(property.price)}</Text>
             <ScoreBadge score={analysis.score} size="lg" />
           </View>
+          {(hasOfferOverride || hasArvOverride) && (
+            <View style={styles.overrideNote}>
+              <Ionicons name="pencil" size={11} color={colors.primaryTint} />
+              <Text style={styles.overrideNoteText}>
+                {hasOfferOverride ? `Your offer ${formatUsd(override.offerPrice!)}` : ''}
+                {hasOfferOverride && hasArvOverride ? ' · ' : ''}
+                {hasArvOverride ? `Your ARV ${formatUsd(override.arvOverride!)}` : ''}
+              </Text>
+            </View>
+          )}
           <Text style={styles.address}>
             {property.address}
             {property.unit ? ` ${property.unit}` : ''}
@@ -126,6 +153,20 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             <Fact label="Sqft" value={property.sqftTotal.toLocaleString()} />
             <Fact label="Built" value={String(property.yearBuilt)} />
           </View>
+
+          {saved ? (
+            <>
+              <SectionTitle icon="git-branch-outline" title="Deal stage" />
+              <View style={{ marginBottom: spacing.lg }}>
+                <DealStageStepper stage={stage} onChange={(s) => setStage(property.id, s)} />
+              </View>
+            </>
+          ) : (
+            <View style={styles.trackHint}>
+              <Ionicons name="heart-outline" size={14} color={colors.inkFaint} />
+              <Text style={styles.trackHintText}>Save this property to track its stage and keep notes.</Text>
+            </View>
+          )}
 
           <SectionTitle icon="layers-outline" title="Also listed on" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing.lg }}>
@@ -157,7 +198,13 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
           <Text style={styles.description}>{property.description}</Text>
 
           {/* BRRRR Analysis */}
-          <SectionTitle icon="calculator-outline" title="BRRRR analysis" />
+          <View style={styles.analysisHeaderRow}>
+            <SectionTitle icon="calculator-outline" title="BRRRR analysis" />
+            <TouchableOpacity style={styles.editDealBtn} onPress={() => setEditOpen(true)} activeOpacity={0.75}>
+              <Ionicons name="pencil-outline" size={13} color={colors.primary} />
+              <Text style={styles.editDealBtnText}>Edit deal numbers</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.analysisCard}>
             <AnalysisRow label="Purchase price" value={formatUsd(analysis.purchasePrice)} />
             <AnalysisRow
@@ -207,10 +254,25 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             ))}
           </View>
 
+          {/* Financing */}
+          <SectionTitle icon="cash-outline" title="Financing — recommended lenders" />
+          <Text style={styles.lenderGroupLabel}>Hard money / bridge, for the purchase + rehab</Text>
+          {bridgeLenders.length === 0 ? (
+            <Text style={styles.noContractors}>No bridge lenders on file for {preferences.state} yet.</Text>
+          ) : (
+            bridgeLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+          )}
+          <Text style={styles.lenderGroupLabel}>DSCR refinance, to pull your cash back out</Text>
+          {dscrLenders.length === 0 ? (
+            <Text style={styles.noContractors}>No DSCR lenders on file for {preferences.state} yet.</Text>
+          ) : (
+            dscrLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+          )}
+
           {/* Action plan */}
           <SectionTitle icon="checkbox-outline" title="Step-by-step action plan" />
           {PHASE_ORDER.map((phase) => {
-            const steps = plan.map((s, i) => ({ ...s, i })).filter((s) => s.phase === phase);
+            const steps = plan.filter((s) => s.phase === phase);
             if (steps.length === 0) return null;
             return (
               <View key={phase} style={styles.phaseBlock}>
@@ -218,26 +280,27 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
                   <Ionicons name={PHASE_ICON[phase]} size={16} color={colors.primary} />
                   <Text style={styles.phaseTitle}>{phase}</Text>
                 </View>
-                {steps.map((step) => (
-                  <TouchableOpacity
-                    key={step.i}
-                    style={styles.stepRow}
-                    activeOpacity={0.7}
-                    onPress={() => toggleStep(step.i)}
-                  >
-                    <Ionicons
-                      name={checkedSteps.has(step.i) ? 'checkbox' : 'square-outline'}
-                      size={20}
-                      color={checkedSteps.has(step.i) ? colors.great : colors.inkFaint}
-                    />
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.stepTitle, checkedSteps.has(step.i) && styles.stepTitleDone]}>
-                        {step.title}
-                      </Text>
-                      <Text style={styles.stepDetail}>{step.detail}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                {steps.map((step) => {
+                  const checked = isStepChecked(property.id, step.id);
+                  return (
+                    <TouchableOpacity
+                      key={step.id}
+                      style={styles.stepRow}
+                      activeOpacity={0.7}
+                      onPress={() => toggleStep(property.id, step.id)}
+                    >
+                      <Ionicons
+                        name={checked ? 'checkbox' : 'square-outline'}
+                        size={20}
+                        color={checked ? colors.great : colors.inkFaint}
+                      />
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.stepTitle, checked && styles.stepTitleDone]}>{step.title}</Text>
+                        <Text style={styles.stepDetail}>{step.detail}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             );
           })}
@@ -292,6 +355,17 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
           <View style={{ height: spacing.xxl }} />
         </View>
       </ScrollView>
+
+      <EditDealModal
+        visible={editOpen}
+        property={property}
+        override={override}
+        onClose={() => setEditOpen(false)}
+        onSave={(patch) => {
+          setOverride(property.id, patch);
+          setEditOpen(false);
+        }}
+      />
     </View>
   );
 }
@@ -395,6 +469,32 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg },
   titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   price: { fontSize: 28, fontWeight: '800', color: colors.ink },
+  overrideNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 6,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  overrideNoteText: { fontSize: 11, fontWeight: '700', color: colors.primaryTint },
+  trackHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: spacing.lg,
+    padding: spacing.sm,
+    backgroundColor: colors.cardAlt,
+    borderRadius: radius.sm,
+  },
+  trackHintText: { fontSize: 12, color: colors.inkFaint },
+  analysisHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  editDealBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  editDealBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  lenderGroupLabel: { fontSize: 12, fontWeight: '700', color: colors.inkDim, marginBottom: spacing.sm, marginTop: spacing.xs },
   address: { fontSize: 17, fontWeight: '700', color: colors.ink, marginTop: spacing.sm },
   cityLine: { fontSize: 13, color: colors.inkDim, marginTop: 2 },
   statusRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm },

@@ -134,3 +134,76 @@ export const DEFAULT_FILTERS: SearchFilters = {
   status: ['Active', 'Pending'],
   sortBy: 'brrrrScore',
 };
+
+/** Per-property corrections you make once you've actually looked at the deal —
+ * overrides the listing's own numbers wherever set. */
+export interface PropertyOverride {
+  offerPrice?: number;
+  arvOverride?: number;
+  customRehabItems?: RehabItem[];
+  notes?: string;
+}
+
+export type DealStage =
+  | 'watching'
+  | 'offer_made'
+  | 'under_contract'
+  | 'rehabbing'
+  | 'refinanced'
+  | 'stabilized';
+
+export const DEAL_STAGES: DealStage[] = [
+  'watching',
+  'offer_made',
+  'under_contract',
+  'rehabbing',
+  'refinanced',
+  'stabilized',
+];
+
+export const DEAL_STAGE_LABEL: Record<DealStage, string> = {
+  watching: 'Watching',
+  offer_made: 'Offer made',
+  under_contract: 'Under contract',
+  rehabbing: 'Rehabbing',
+  refinanced: 'Refinanced',
+  stabilized: 'Stabilized',
+};
+
+export interface DealRecord {
+  stage: DealStage;
+  stageHistory: { stage: DealStage; at: number }[];
+  checkedSteps: string[];
+  override: PropertyOverride;
+}
+
+export type LenderCategory = 'Hard Money / Bridge' | 'DSCR Refinance' | 'Conventional / Bank' | 'Portfolio Lender';
+
+export interface Lender {
+  id: string;
+  name: string;
+  categories: LenderCategory[];
+  rating: number;
+  reviewCount: number;
+  ratesFromPct: number;
+  maxLtvPct: number;
+  pointsFrom: number;
+  minLoanAmount: number;
+  maxLoanAmount: number;
+  closingTimelineDays: number;
+  statesServed: string[];
+  phone: string;
+  website: string;
+  bio: string;
+}
+
+/** Applies your overrides on top of a listing's own numbers for analysis purposes. */
+export function applyOverride(property: Property, override: PropertyOverride | undefined): Property {
+  if (!override) return property;
+  return {
+    ...property,
+    price: override.offerPrice ?? property.price,
+    arvEstimate: override.arvOverride ?? property.arvEstimate,
+    rehabItems: override.customRehabItems ?? property.rehabItems,
+  };
+}
