@@ -1,0 +1,163 @@
+# BRRRR Scout 📈
+
+A mobile app for finding, saving, and analyzing multi-family properties for
+the **BRRRR method** (Buy, Rehab, Rent, Refinance, Repeat) — with a
+contractor directory matched to each property's actual rehab scope.
+
+## What it does
+
+- **Discover** — browse multi-family listings (duplex → 5+ units) filtered by
+  budget, neighborhood, unit count, transit score, and listing status. Every
+  card shows a 0–100 **BRRRR fit score**, projected monthly cash flow,
+  cash-on-cash return, and ARV at a glance. A live indicator shows whether
+  you're on sample data or a real feed, and when it last refreshed.
+- **Aggregated sources** — each listing shows every site it's posted on (MLS,
+  Zillow, Realtor.com, Redfin, FSBO, auction sites) with its own price and
+  "last seen" timestamp, so you're not missing a listing because it's only on
+  one site.
+- **Real-time-feeling updates** — days-on-market ticks up, and listings flip
+  between Active / Pending / Sold / Off Market on their own, so the feed
+  behaves like it's watching the market instead of a static snapshot.
+- **Save properties** — tap the heart on any listing to add it to your
+  watchlist (Saved tab), sortable by score, cash flow, or price. Persisted on
+  device.
+- **Property detail & analysis** — for any property: photos, unit-by-unit
+  rent breakdown (current vs. post-rehab market rent), transit/walk/bike
+  scores, and a full **BRRRR analysis card** — purchase price, rehab budget,
+  ARV, refinance loan at 75% LTV, cash left in the deal, monthly cash flow,
+  cap rate, cash-on-cash return, DSCR, and 1%/50% rule checks. A breakdown
+  panel shows exactly which factors are driving the score.
+- **Step-by-step action plan** — a generated, property-specific checklist
+  across all five BRRRR phases (Buy → Rehab → Rent → Refinance → Repeat),
+  with real numbers pulled from that property's analysis — not generic advice.
+- **Rehab scope → contractor recommendations** — the rehab items on a
+  property are grouped by trade (roofing, electrical, plumbing, HVAC,
+  kitchen & bath, etc.) with a cost range and priority (critical / recommended
+  / cosmetic), each paired with the top cost-efficient contractors for that
+  trade and neighborhood — rating, price tier, license/insurance status,
+  response time, and a tap-to-call number.
+- **Contractors tab** — browse the full directory by trade independent of any
+  one property.
+
+## It ships on sample data — on purpose
+
+No real-estate or contractor API key was available when this app was built,
+so it runs on a realistic **sample dataset** (10 multi-family properties
+across 6 Columbus, OH neighborhoods, 16 contractors across every trade) that
+updates itself in the background to feel live. Every screen, filter, save,
+and analysis works fully today with zero setup.
+
+The moment you add your own API key in **Settings**, that category switches
+to live data automatically — no code changes needed.
+
+## Add real data sources
+
+### Listings — RentCast
+
+1. Get a key at [rentcast.io](https://www.rentcast.io/api) (free tier
+   available) — see `src/services/liveListings.ts` for the request/response
+   mapping.
+2. In the app: **Settings → Live data sources → RentCast** → paste your key
+   → Save.
+3. Discover now polls RentCast for your configured city/state every 5
+   minutes instead of the simulated feed.
+
+> RentCast's sale-listing payload doesn't include a rehab scope or an ARV —
+> the client currently falls back to their AVM/valuation for ARV and leaves
+> `rehabItems` empty. You'll want a walkthrough or a GC bid to fill in real
+> rehab line items per property before trusting the BRRRR score on live data.
+
+### Contractors — Google Places
+
+1. Enable the **Places API (New)** in Google Cloud Console and get a key —
+   see `src/services/liveContractors.ts`.
+2. In the app: **Settings → Live data sources → Google Places** → paste your
+   key → Save.
+3. The Contractors tab and each property's rehab section now pull real
+   businesses per trade near your configured market.
+
+> Google Places has no concept of license/insurance status — those fields
+> come back unverified from a live search. Confirm directly with any
+> contractor before hiring.
+
+Both integrations are additive: adding one key doesn't require the other,
+and a **"Force demo data"** switch in Settings lets you preview the sample
+data again even with live keys configured.
+
+## Run it
+
+```bash
+cd BRRRR-Analyzer
+npm install
+npx expo start
+```
+
+Press `i` for the iOS simulator, `a` for Android, or `w` for web — or scan
+the QR code with the Expo Go app on your phone.
+
+### Build the web bundle yourself
+
+```bash
+cd BRRRR-Analyzer
+npm install
+npx expo export --platform web      # outputs to ./dist
+npx serve dist                      # preview locally
+```
+
+If hosting under a sub-path, set the base first, e.g.
+`EXPO_BASE_URL=/my-path npx expo export --platform web`.
+
+## How the BRRRR score works
+
+`src/utils/brrrr.ts` runs the same analysis on every property:
+
+1. **Cash invested** = purchase price + closing costs + rehab budget +
+   holding costs during the rehab window.
+2. **Refinance** at 75% of ARV (configurable), minus refi closing costs, to
+   get cash pulled back out.
+3. **Cash left in deal** = cash invested − cash out at refi. The whole point
+   of BRRRR is driving this toward zero (or negative — pulling out more than
+   you put in).
+4. **Monthly cash flow** = post-rehab market rent − vacancy/management/
+   maintenance reserves − insurance − taxes − the new mortgage payment.
+5. The **0–100 score** is a weighted blend of: cash recycled at refi (30%),
+   cash-on-cash return (25%), cash flow per unit (20%), cap rate (15%), and
+   debt-service coverage ratio (10%).
+
+All assumptions (LTV, rates, reserve percentages) live in
+`DEFAULT_ASSUMPTIONS` in that same file if you want to tune them for your
+market or lender.
+
+## Structure
+
+```
+BRRRR-Analyzer/
+├── App.tsx
+├── src/
+│   ├── theme.ts                      # design tokens
+│   ├── services/
+│   │   ├── types.ts                  # Property, Contractor, RehabItem, ...
+│   │   ├── listingsProvider.ts       # filtering/sorting + useListings hook
+│   │   ├── contractorsProvider.ts    # trade matching + useContractors hook
+│   │   ├── mockListingsEngine.ts     # simulated live feed over sample data
+│   │   ├── liveListings.ts           # RentCast client (bring your own key)
+│   │   ├── liveContractors.ts        # Google Places client (bring your own key)
+│   │   ├── apiKeys.ts / secureStorage.ts
+│   ├── utils/
+│   │   ├── brrrr.ts                  # the analysis engine + scoring
+│   │   ├── actionPlan.ts             # step-by-step plan + rehab/trade grouping
+│   │   └── format.ts
+│   ├── data/
+│   │   ├── mockListings.ts           # sample property inventory
+│   │   └── mockContractors.ts        # sample contractor directory
+│   ├── context/
+│   │   ├── SettingsContext.tsx       # preferences + API keys
+│   │   └── PortfolioContext.tsx      # saved properties (watchlist)
+│   ├── components/                   # PropertyCard, ScoreBadge, FiltersModal, ...
+│   ├── screens/                      # Discover, PropertyDetail, Saved,
+│   │                                 #   Contractors, Settings, Onboarding
+│   └── navigation/RootNavigator.tsx
+└── ...
+```
+
+Built with Expo + React Native + TypeScript.
