@@ -124,6 +124,42 @@ npx serve dist                      # preview locally
 If hosting under a sub-path, set the base first, e.g.
 `EXPO_BASE_URL=/my-path npx expo export --platform web`.
 
+## Add it to your phone's home screen
+
+This repo includes a GitHub Actions workflow (`.github/workflows/deploy-web.yml`)
+that builds this app as a static web app with a proper manifest and home-screen
+icon, and publishes it to **GitHub Pages** alongside the other app in this repo.
+
+**One-time setup (in the GitHub repo):**
+
+1. Go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+
+The workflow runs automatically on pushes that touch `BRRRR-Analyzer/` (or run
+it manually from the **Actions** tab → *Deploy web apps (Phantom + BRRRR
+Scout)* → *Run workflow*). Once it finishes, your link is:
+
+```
+https://<your-github-username>.github.io/<repo-name>/brrrr-scout/
+```
+
+Then, on your phone:
+
+- **iPhone (Safari):** open the link → tap the **Share** icon → **Add to Home
+  Screen**. It installs with its own icon and opens full-screen, no browser
+  bar.
+- **Android (Chrome):** open the link → tap the **⋮** menu → **Add to Home
+  screen** (or **Install app** if Chrome offers it directly).
+
+Data (saved deals, your edited numbers, preferences, API keys) is stored
+locally in that browser's storage on your phone — it isn't synced anywhere,
+so it stays put across app opens but is specific to that one device/browser.
+
+> Note: GitHub Pages may restrict deployments to the default branch. If the
+> deploy step is skipped from a feature branch, either merge into `main`, or
+> add the branch under **Settings → Environments → github-pages → Deployment
+> branches**.
+
 ## How the BRRRR score works
 
 `src/utils/brrrr.ts` runs the same analysis on every property:

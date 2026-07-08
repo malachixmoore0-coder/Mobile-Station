@@ -29,7 +29,7 @@
     },
     "scheme": "brrrrscout",
     "experiments": {
-      "baseUrl": "/mobile-station"
+      "baseUrl": "/mobile-station/brrrr-scout"
     }
   }
 }
