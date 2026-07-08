@@ -63,6 +63,11 @@ export function useListings(filters: SearchFilters): UseListingsResult {
   const [error, setError] = useState<string | null>(null);
 
   const useLive = !!rentcastKey && !forceDemoMode;
+  // Search the primary Market city plus every configured "nearby town" — otherwise picking
+  // a different town in Filters just re-filters the same single-city result set and never
+  // actually finds anything new.
+  const cities = [preferences.city, ...preferences.targetNeighborhoods];
+  const citiesKey = cities.join('|');
 
   useEffect(() => {
     let cancelled = false;
@@ -73,7 +78,7 @@ export function useListings(filters: SearchFilters): UseListingsResult {
       setIsLive(true);
       const unsub = subscribeLiveListings(
         rentcastKey,
-        { city: preferences.city, state: preferences.state, minPrice: filters.minPrice, maxPrice: filters.maxPrice },
+        { cities, state: preferences.state, minPrice: filters.minPrice, maxPrice: filters.maxPrice },
         (props) => {
           if (cancelled) return;
           setAll(props);
@@ -104,7 +109,8 @@ export function useListings(filters: SearchFilters): UseListingsResult {
       cancelled = true;
       unsub();
     };
-  }, [useLive, rentcastKey, preferences.city, preferences.state, filters.minPrice, filters.maxPrice]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useLive, rentcastKey, citiesKey, preferences.state, filters.minPrice, filters.maxPrice]);
 
   const properties = useMemo(
     () => applyFilters(withOverrides(all, deals), filters, assumptions),

@@ -96,7 +96,7 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <View style={styles.photoWrap}>
-          <PropertyPhoto id={property.id} propertyType={property.propertyType} size="hero" />
+          <PropertyPhoto id={property.id} propertyType={property.propertyType} size="hero" photoUrl={property.photos[0]} />
           <SafeAreaView edges={['top']} style={styles.photoNav}>
             <TouchableOpacity style={styles.navBtn} onPress={onBack} hitSlop={8}>
               <Ionicons name="arrow-back" size={20} color={colors.white} />

@@ -5,15 +5,17 @@ import { Property, RehabItem } from '@/services/types';
  * a common starter BRRRR metro). Replace with a live feed once a listings
  * API key is added in Settings (see src/services/liveListings.ts).
  *
- * Photo URLs are deterministic picsum.photos seeds so each listing always
- * renders the same images.
+ * No photo URLs on purpose — sample listings always show the local
+ * placeholder graphic (PropertyPhoto) instead of depending on a photo CDN,
+ * so the demo experience never shows a broken/loading image.
  */
 
 const DAY = 24 * 60 * 60 * 1000;
 const now = Date.now();
 
-function photos(seed: string, count: number): string[] {
-  return Array.from({ length: count }, (_, i) => `https://picsum.photos/seed/${seed}-${i}/800/560`);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function photos(_seed: string, _count: number): string[] {
+  return [];
 }
 
 function rehab(items: Array<Omit<RehabItem, 'id'>>): RehabItem[] {
