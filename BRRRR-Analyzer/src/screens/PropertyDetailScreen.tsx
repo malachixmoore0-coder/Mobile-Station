@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Linking,
-  Dimensions,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
@@ -22,13 +13,13 @@ import { useContractors, contractorsForTrade } from '@/services/contractorsProvi
 import { lendersForCategory } from '@/services/lendersProvider';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { StatusPill } from '@/components/StatusPill';
+import { PropertyPhoto } from '@/components/PropertyPhoto';
 import { DealStageStepper } from '@/components/DealStageStepper';
 import { EditDealModal } from '@/components/EditDealModal';
 import { LenderCard } from '@/components/LenderCard';
+import { Collapsible } from '@/components/Collapsible';
 import { ContractorCard } from '@/screens/ContractorsScreen';
 import { applyOverride, RehabItem } from '@/services/types';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface Props {
   propertyId: string;
@@ -105,11 +96,7 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
     <View style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <View style={styles.photoWrap}>
-          <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
-            {property.photos.map((uri, i) => (
-              <Image key={i} source={{ uri }} style={{ width: SCREEN_WIDTH, height: 280 }} />
-            ))}
-          </ScrollView>
+          <PropertyPhoto id={property.id} propertyType={property.propertyType} size="hero" />
           <SafeAreaView edges={['top']} style={styles.photoNav}>
             <TouchableOpacity style={styles.navBtn} onPress={onBack} hitSlop={8}>
               <Ionicons name="arrow-back" size={20} color={colors.white} />
@@ -205,6 +192,15 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
               <Text style={styles.editDealBtnText}>Edit deal numbers</Text>
             </TouchableOpacity>
           </View>
+          {property.rentEstimated && !hasOfferOverride && effectiveProperty.rehabItems.length === 0 && (
+            <View style={styles.rentEstimateBanner}>
+              <Ionicons name="information-circle-outline" size={14} color={colors.gold} />
+              <Text style={styles.rentEstimateBannerText}>
+                No rent data came back for this listing, so rent is estimated from price. This score doesn't
+                yet reflect any rehab scope either — tap "Edit deal numbers" once you know real numbers.
+              </Text>
+            </View>
+          )}
           <View style={styles.analysisCard}>
             <AnalysisRow label="Purchase price" value={formatUsd(analysis.purchasePrice)} />
             <AnalysisRow
@@ -242,32 +238,33 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             <RuleRow label="50% expense rule" actual={`${analysis.fiftyPercentRuleActual.toFixed(0)}%`} pass={analysis.fiftyPercentRulePass} />
           </View>
 
-          <View style={styles.scoreBreakdownCard}>
-            <Text style={styles.scoreBreakdownTitle}>What drives the {analysis.score} score</Text>
-            {analysis.scoreBreakdown.map((b) => (
-              <View key={b.label} style={styles.scoreBar}>
-                <Text style={styles.scoreBarLabel}>{b.label}</Text>
-                <View style={styles.scoreBarTrack}>
-                  <View style={[styles.scoreBarFill, { width: `${b.score}%` }]} />
+          <Collapsible icon="stats-chart-outline" title="What drives the score" subtitle={`Currently ${analysis.score}/100`}>
+            <View style={styles.scoreBreakdownCard}>
+              {analysis.scoreBreakdown.map((b) => (
+                <View key={b.label} style={styles.scoreBar}>
+                  <Text style={styles.scoreBarLabel}>{b.label}</Text>
+                  <View style={styles.scoreBarTrack}>
+                    <View style={[styles.scoreBarFill, { width: `${b.score}%` }]} />
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          </Collapsible>
 
-          {/* Financing */}
-          <SectionTitle icon="cash-outline" title="Financing — recommended lenders" />
-          <Text style={styles.lenderGroupLabel}>Hard money / bridge, for the purchase + rehab</Text>
-          {bridgeLenders.length === 0 ? (
-            <Text style={styles.noContractors}>No bridge lenders on file for {preferences.state} yet.</Text>
-          ) : (
-            bridgeLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
-          )}
-          <Text style={styles.lenderGroupLabel}>DSCR refinance, to pull your cash back out</Text>
-          {dscrLenders.length === 0 ? (
-            <Text style={styles.noContractors}>No DSCR lenders on file for {preferences.state} yet.</Text>
-          ) : (
-            dscrLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
-          )}
+          <Collapsible icon="cash-outline" title="Financing — recommended lenders">
+            <Text style={styles.lenderGroupLabel}>Hard money / bridge, for the purchase + rehab</Text>
+            {bridgeLenders.length === 0 ? (
+              <Text style={styles.noContractors}>No bridge lenders on file for {preferences.state} yet.</Text>
+            ) : (
+              bridgeLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+            )}
+            <Text style={styles.lenderGroupLabel}>DSCR refinance, to pull your cash back out</Text>
+            {dscrLenders.length === 0 ? (
+              <Text style={styles.noContractors}>No DSCR lenders on file for {preferences.state} yet.</Text>
+            ) : (
+              dscrLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+            )}
+          </Collapsible>
 
           {/* Action plan */}
           <SectionTitle icon="checkbox-outline" title="Step-by-step action plan" />
@@ -306,33 +303,40 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
           })}
 
           {/* Rehab scope + contractors */}
-          <SectionTitle icon="construct-outline" title="Rehab scope & recommended contractors" />
-          {tradeGroups.map((group) => {
-            const picks = contractorsForTrade(contractors, group.trade, property.neighborhood).slice(0, 2);
-            return (
-              <View key={group.trade} style={styles.tradeGroup}>
-                <View style={styles.tradeGroupHeader}>
-                  <Text style={styles.tradeGroupTitle}>{group.trade}</Text>
-                  <View style={[styles.priorityTag, { backgroundColor: PRIORITY_COLOR[group.topPriority] + '1F' }]}>
-                    <Text style={[styles.priorityTagText, { color: PRIORITY_COLOR[group.topPriority] }]}>
-                      {PRIORITY_LABEL[group.topPriority]}
-                    </Text>
+          {tradeGroups.length > 0 && (
+            <Collapsible
+              icon="construct-outline"
+              title="Rehab scope & recommended contractors"
+              subtitle={`${tradeGroups.length} trade${tradeGroups.length === 1 ? '' : 's'} scoped`}
+            >
+              {tradeGroups.map((group) => {
+                const picks = contractorsForTrade(contractors, group.trade, property.neighborhood).slice(0, 2);
+                return (
+                  <View key={group.trade} style={styles.tradeGroup}>
+                    <View style={styles.tradeGroupHeader}>
+                      <Text style={styles.tradeGroupTitle}>{group.trade}</Text>
+                      <View style={[styles.priorityTag, { backgroundColor: PRIORITY_COLOR[group.topPriority] + '1F' }]}>
+                        <Text style={[styles.priorityTagText, { color: PRIORITY_COLOR[group.topPriority] }]}>
+                          {PRIORITY_LABEL[group.topPriority]}
+                        </Text>
+                      </View>
+                      <Text style={styles.tradeGroupCost}>
+                        {formatUsd(group.costLow)}–{formatUsd(group.costHigh)}
+                      </Text>
+                    </View>
+                    {group.items.map((item) => (
+                      <Text key={item.id} style={styles.tradeItemDesc}>• {item.description}</Text>
+                    ))}
+                    {picks.length === 0 ? (
+                      <Text style={styles.noContractors}>No contractors on file for this trade yet.</Text>
+                    ) : (
+                      picks.map((c, idx) => <ContractorCard key={c.id} contractor={c} highlight={idx === 0} />)
+                    )}
                   </View>
-                  <Text style={styles.tradeGroupCost}>
-                    {formatUsd(group.costLow)}–{formatUsd(group.costHigh)}
-                  </Text>
-                </View>
-                {group.items.map((item) => (
-                  <Text key={item.id} style={styles.tradeItemDesc}>• {item.description}</Text>
-                ))}
-                {picks.length === 0 ? (
-                  <Text style={styles.noContractors}>No contractors on file for this trade yet.</Text>
-                ) : (
-                  picks.map((c, idx) => <ContractorCard key={c.id} contractor={c} highlight={idx === 0} />)
-                )}
-              </View>
-            );
-          })}
+                );
+              })}
+            </Collapsible>
+          )}
 
           <SectionTitle icon="home-outline" title="Units" />
           <View style={styles.unitsCard}>
@@ -492,6 +496,16 @@ const styles = StyleSheet.create({
   },
   trackHintText: { fontSize: 12, color: colors.inkFaint },
   analysisHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  rentEstimateBanner: {
+    flexDirection: 'row',
+    gap: 6,
+    backgroundColor: colors.goldSoft,
+    borderRadius: radius.sm,
+    padding: spacing.sm,
+    marginTop: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  rentEstimateBannerText: { flex: 1, fontSize: 11, color: colors.ink, lineHeight: 16 },
   editDealBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   editDealBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
   lenderGroupLabel: { fontSize: 12, fontWeight: '700', color: colors.inkDim, marginBottom: spacing.sm, marginTop: spacing.xs },

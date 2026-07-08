@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover" />
     <title>%WEB_TITLE%</title>
 
     <!-- Home-screen install support (iOS + Android/Chrome). -->
@@ -22,16 +22,23 @@
       html,
       body {
         height: 100%;
+        overscroll-behavior: none;
       }
       /* These styles disable body scrolling if you are using <ScrollView> */
       body {
         overflow: hidden;
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        touch-action: pan-x pan-y;
+        -webkit-text-size-adjust: 100%;
       }
       /* These styles make the root element full-height */
       #root {
         display: flex;
         height: 100%;
         flex: 1;
+        overscroll-behavior: none;
       }
     </style>
   </head>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing } from '@/theme';
@@ -23,7 +23,7 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
     minUnits: preferences.minUnits,
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { properties, allCount, isLive, lastUpdated, loading, error } = useListings(filters);
+  const { properties, allCount, isLive, lastUpdated, error } = useListings(filters);
 
   const activeFilterCount =
     (filters.neighborhoods.length > 0 ? 1 : 0) +
@@ -63,13 +63,18 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
         data={properties}
         keyExtractor={(p) => p.id}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => <PropertyCard property={item} onPress={() => onSelectProperty(item.id)} />}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={() => {}} tintColor={colors.primary} />}
+        renderItem={({ item, index }) => (
+          <PropertyCard
+            property={item}
+            onPress={() => onSelectProperty(item.id)}
+            isTopPick={index === 0 && filters.sortBy === 'brrrrScore' && properties.length > 1}
+          />
+        )}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="business-outline" size={32} color={colors.inkFaint} />
             <Text style={styles.emptyText}>No properties match these filters yet.</Text>
-            <Text style={styles.emptySub}>Try widening your budget or neighborhood picks.</Text>
+            <Text style={styles.emptySub}>Try widening your budget or town picks.</Text>
           </View>
         }
       />
@@ -77,7 +82,7 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
       <FiltersModal
         visible={filtersOpen}
         filters={filters}
-        neighborhoods={allNeighborhoods}
+        neighborhoods={preferences.targetNeighborhoods.length > 0 ? preferences.targetNeighborhoods : allNeighborhoods}
         onApply={(next) => {
           setFilters(next);
           setFiltersOpen(false);

@@ -76,12 +76,18 @@ export function FiltersModal({ visible, filters, neighborhoods, onApply, onClose
               ))}
             </View>
 
-            <Text style={styles.section}>Neighborhood</Text>
-            <View style={styles.wrapRow}>
-              {neighborhoods.map((n) => (
-                <Chip key={n} label={n} active={draft.neighborhoods.includes(n)} onPress={() => toggleNeighborhood(n)} />
-              ))}
-            </View>
+            <Text style={styles.section}>Town</Text>
+            {neighborhoods.length === 0 ? (
+              <Text style={styles.emptyHint}>
+                Add towns in Settings to filter by them here.
+              </Text>
+            ) : (
+              <View style={styles.wrapRow}>
+                {neighborhoods.map((n) => (
+                  <Chip key={n} label={n} active={draft.neighborhoods.includes(n)} onPress={() => toggleNeighborhood(n)} />
+                ))}
+              </View>
+            )}
 
             <Text style={styles.section}>Minimum units</Text>
             <View style={styles.stepperRow}>
@@ -154,6 +160,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   title: { fontSize: 20, fontWeight: '800', color: colors.ink },
   section: { fontSize: 13, fontWeight: '700', color: colors.inkDim, marginTop: spacing.lg, marginBottom: spacing.sm },
+  emptyHint: { fontSize: 12, color: colors.inkFaint, fontStyle: 'italic' },
   wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   stepperRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   stepBtn: {

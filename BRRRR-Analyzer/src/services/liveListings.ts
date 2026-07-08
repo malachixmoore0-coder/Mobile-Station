@@ -37,15 +37,40 @@ function mapListing(raw: any): Property | null {
   const unitCount: number = raw.unitCount ?? raw.units?.length ?? 2;
   if (unitCount < 2) return null; // this app is scoped to multi-family (2+ units)
 
-  const units: UnitInfo[] = (raw.units ?? []).map((u: any, i: number) => ({
-    label: u.unitNumber ? `Unit ${u.unitNumber}` : `Unit ${i + 1}`,
-    bedrooms: u.bedrooms ?? raw.bedrooms ?? 2,
-    bathrooms: u.bathrooms ?? raw.bathrooms ?? 1,
-    sqft: u.squareFootage ?? Math.round((raw.squareFootage ?? 1600) / unitCount),
-    currentRent: u.rent ?? 0,
-    marketRentPostRehab: u.rentEstimate ?? u.rent ?? 0,
-    occupied: u.occupied ?? true,
-  }));
+  // RentCast's /listings/sale endpoint is a for-sale search — it usually has no
+  // per-unit rent breakdown at all (that's a separate rent-estimate product).
+  // Modeling $0 rent would make every live listing score as a guaranteed loser
+  // regardless of merit, so fall back to a property-level rent estimate field
+  // if one is present, and failing that, a conservative price-based heuristic
+  // (0.7%/mo, below the common 1%-rule threshold) — clearly flagged as
+  // estimated so the UI can surface that it needs confirming.
+  let rentEstimated = false;
+  let units: UnitInfo[];
+  if (raw.units?.length > 0) {
+    units = raw.units.map((u: any, i: number) => ({
+      label: u.unitNumber ? `Unit ${u.unitNumber}` : `Unit ${i + 1}`,
+      bedrooms: u.bedrooms ?? raw.bedrooms ?? 2,
+      bathrooms: u.bathrooms ?? raw.bathrooms ?? 1,
+      sqft: u.squareFootage ?? Math.round((raw.squareFootage ?? 1600) / unitCount),
+      currentRent: u.rent ?? 0,
+      marketRentPostRehab: u.rentEstimate ?? u.rent ?? 0,
+      occupied: u.occupied ?? true,
+    }));
+  } else {
+    const propertyLevelRent = raw.rentEstimate ?? raw.rent ?? raw.longTermRent ?? raw.avmRent ?? null;
+    rentEstimated = true;
+    const totalMonthlyRent = propertyLevelRent ?? Math.round((raw.price ?? 0) * 0.007);
+    const perUnitRent = Math.round(totalMonthlyRent / unitCount);
+    units = Array.from({ length: unitCount }, (_, i) => ({
+      label: `Unit ${i + 1}`,
+      bedrooms: raw.bedrooms ?? 2,
+      bathrooms: raw.bathrooms ?? 1,
+      sqft: Math.round((raw.squareFootage ?? 1600) / unitCount),
+      currentRent: perUnitRent,
+      marketRentPostRehab: perUnitRent,
+      occupied: true,
+    }));
+  }
 
   const propertyType: PropertyType =
     unitCount >= 5 ? 'Multi-family 5+' : unitCount === 4 ? 'Fourplex' : unitCount === 3 ? 'Triplex' : 'Duplex';
@@ -68,7 +93,7 @@ function mapListing(raw: any): Property | null {
     neighborhood: raw.neighborhood ?? raw.subdivision ?? raw.city ?? '',
     propertyType,
     unitCount,
-    units: units.length > 0 ? units : [],
+    units,
     sqftTotal: raw.squareFootage ?? 0,
     lotSqft: raw.lotSize ?? 0,
     yearBuilt: raw.yearBuilt ?? 0,
@@ -90,8 +115,15 @@ function mapListing(raw: any): Property | null {
     description: raw.description ?? '',
     latitude: raw.latitude ?? 0,
     longitude: raw.longitude ?? 0,
+    rentEstimated,
   };
 }
+
+// RentCast's documented max page size is higher than the 50 we started with —
+// pull a bigger single page rather than paginating with offset, since each
+// additional request burns another call against your monthly quota. If your
+// plan caps below this, RentCast will just return however many it allows.
+const RESULTS_PER_PAGE = 200;
 
 export async function fetchLiveListings(apiKey: string, params: LiveSearchParams): Promise<Property[]> {
   const query: Record<string, string> = {
@@ -99,7 +131,7 @@ export async function fetchLiveListings(apiKey: string, params: LiveSearchParams
     state: params.state,
     status: 'Active',
     propertyType: 'Multi-Family',
-    limit: '50',
+    limit: String(RESULTS_PER_PAGE),
   };
   // RentCast filters server-side on list price — keeps the payload (and your monthly call quota) tight
   // instead of pulling every multi-family listing in the metro and discarding most of it client-side.
