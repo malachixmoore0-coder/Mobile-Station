@@ -77,18 +77,20 @@ the Expo Go app on your phone.
 ## Share it online (no Expo account needed)
 
 This repo includes a GitHub Actions workflow
-(`.github/workflows/deploy-phantom-web.yml`) that builds the wallet as a static
-**web app** and publishes it to **GitHub Pages**. Anyone can then open it in a
-browser — no cloning, no Expo Go.
+(`.github/workflows/deploy-web.yml`) that builds this wallet **and** the
+BRRRR Scout app as static **web apps** and publishes them together to
+**GitHub Pages** (a repo only gets one live Pages site, so both apps share
+one deploy). Anyone can then open them in a browser — no cloning, no Expo Go.
 
 **One-time setup (in the GitHub repo):**
 
 1. Go to **Settings → Pages**.
 2. Under **Build and deployment → Source**, choose **GitHub Actions**.
 
-That's it. The workflow runs automatically on pushes that touch `Phantom-Dummy/`
-(and can be run manually from the **Actions** tab → *Deploy Phantom Dummy (web)*
-→ *Run workflow*). When it finishes, your link is:
+That's it. The workflow runs automatically on pushes that touch either app's
+folder (and can be run manually from the **Actions** tab → *Deploy web apps
+(Phantom + BRRRR Scout)* → *Run workflow*). When it finishes, this wallet's
+link is:
 
 ```
 https://<your-github-username>.github.io/<repo-name>/
