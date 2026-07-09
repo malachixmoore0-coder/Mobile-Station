@@ -46,7 +46,13 @@ function numericValue(v: any): number {
 
 /** Maps a RentCast sale-listing record to our internal Property shape. */
 function mapListing(raw: any): Property | null {
-  const unitCount: number = raw.unitCount ?? raw.units?.length ?? 2;
+  // RentCast's /listings/sale payload has NO unitCount and NO units array for
+  // multi-family listings (confirmed against real responses) — so without this
+  // every listing defaulted to a 2-unit duplex. Infer a better count from the
+  // bathroom count (multi-family bath count tracks unit count reasonably well),
+  // falling back to 2. This is an estimate; correct it via "Edit deal numbers."
+  const inferredFromBaths = Math.max(2, Math.floor(Number(raw.bathrooms) || 0));
+  const unitCount: number = raw.unitCount ?? raw.units?.length ?? inferredFromBaths;
   if (unitCount < 2) return null; // this app is scoped to multi-family (2+ units)
 
   // RentCast's /listings/sale endpoint is a for-sale search — it usually has no
@@ -122,19 +128,47 @@ function mapListing(raw: any): Property | null {
     // RentCast doesn't return a post-rehab ARV — approximate from their AVM
     // (raw.valuation / raw.avm) if present, else fall back to list price.
     arvEstimate: numericValue(raw.avm) || numericValue(raw.valuation) || numericValue(raw.price) || 0,
-    annualTaxes: raw.propertyTaxes?.[String(new Date().getFullYear() - 1)]?.total ?? raw.taxAssessedValue ?? 0,
+    // RentCast's sale listing omits property taxes, so a literal 0 would make
+    // cash flow look better than reality. Estimate ~1.8%/yr of price when no real
+    // figure is present — refine it per deal once you have the tax bill.
+    annualTaxes:
+      raw.propertyTaxes?.[String(new Date().getFullYear() - 1)]?.total ??
+      raw.taxAssessedValue ??
+      Math.round((raw.price ?? 0) * 0.018),
     conditionRating: 'Moderate rehab',
     rehabItems: [], // no rehab-scope data from RentCast — user/GC input required
     rehabTimelineMonths: 3,
+    // RentCast's /listings/sale endpoint returns NO photos/images at all — this
+    // fallback stays only in case they ever add the field; in practice the
+    // PropertyPhoto placeholder graphic is always what's shown for live data.
     photos: raw.photos ?? raw.images ?? [],
     status,
     listedDate: raw.listedDate ? Date.parse(raw.listedDate) : Date.now(),
     daysOnMarket: raw.daysOnMarket ?? 0,
-    sources: [{ site: 'MLS', url: raw.listingUrl ?? '', listPrice: raw.price ?? 0, lastSeen: Date.now() }],
+    // Real listing source: the MLS + brokerage/agent site that RentCast returns.
+    sources: [
+      {
+        site: 'MLS',
+        url: raw.listingOffice?.website ?? raw.listingAgent?.website ?? '',
+        listPrice: raw.price ?? 0,
+        lastSeen: raw.lastSeenDate ? Date.parse(raw.lastSeenDate) : Date.now(),
+      },
+    ],
     transit: { walkScore: 0, transitScore: 0, bikeScore: 0, nearestStop: '', commuteMinutesDowntown: 0 },
-    description: raw.description ?? '',
+    description: raw.description ?? (raw.mlsName ? `Listed on ${raw.mlsName}${raw.mlsNumber ? ` (#${raw.mlsNumber})` : ''}.` : ''),
     latitude: raw.latitude ?? 0,
     longitude: raw.longitude ?? 0,
+    // Real listing agent/brokerage from RentCast — surfaced on the detail screen
+    // and assignable to the deal team as an owner/agent contact.
+    listingAgent: raw.listingAgent
+      ? {
+          name: raw.listingAgent.name ?? 'Listing agent',
+          phone: raw.listingAgent.phone,
+          email: raw.listingAgent.email,
+          website: raw.listingAgent.website,
+          company: raw.listingOffice?.name,
+        }
+      : undefined,
     rentEstimated,
   };
 }
