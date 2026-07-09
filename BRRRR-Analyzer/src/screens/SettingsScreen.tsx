@@ -7,6 +7,7 @@ import { TownChips } from '@/components/TownChips';
 import { useSettings } from '@/context/SettingsContext';
 import { BrrrrAssumptions } from '@/utils/brrrr';
 import { fetchRawSample } from '@/services/liveListings';
+import { fetchRawContractorSample } from '@/services/liveContractors';
 
 const ASSUMPTION_FIELDS: { key: keyof BrrrrAssumptions; label: string; suffix: string }[] = [
   { key: 'refiLtvPct', label: 'Refinance LTV', suffix: '%' },
@@ -47,17 +48,40 @@ export function SettingsScreen() {
   const [rawSampleError, setRawSampleError] = useState<string | null>(null);
   const [rawSampleLoading, setRawSampleLoading] = useState(false);
   const [rawModalOpen, setRawModalOpen] = useState(false);
+  const [rawModalSource, setRawModalSource] = useState<'RentCast' | 'Google Places'>('RentCast');
 
   const hasAnyLiveKey = !!rentcastKey || !!googlePlacesKey;
 
   const testRentcastConnection = async () => {
     if (!rentcastKey) return;
+    setRawModalSource('RentCast');
     setRawModalOpen(true);
     setRawSampleLoading(true);
     setRawSampleError(null);
     setRawSample(null);
     try {
       const sample = await fetchRawSample(rentcastKey, preferences.city, preferences.state);
+      setRawSample(JSON.stringify(sample, null, 2));
+    } catch (err) {
+      setRawSampleError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRawSampleLoading(false);
+    }
+  };
+
+  const testGooglePlacesConnection = async () => {
+    if (!googlePlacesKey) return;
+    setRawModalSource('Google Places');
+    setRawModalOpen(true);
+    setRawSampleLoading(true);
+    setRawSampleError(null);
+    setRawSample(null);
+    try {
+      const sample = await fetchRawContractorSample(
+        googlePlacesKey,
+        'General Contractor',
+        `${preferences.city}, ${preferences.state}`
+      );
       setRawSample(JSON.stringify(sample, null, 2));
     } catch (err) {
       setRawSampleError(err instanceof Error ? err.message : String(err));
@@ -192,6 +216,12 @@ export function SettingsScreen() {
             onSave={() => setGooglePlacesKey(gpDraft.trim())}
             active={!!googlePlacesKey}
           />
+          {!!googlePlacesKey && (
+            <TouchableOpacity style={styles.testBtn} onPress={testGooglePlacesConnection}>
+              <Ionicons name="bug-outline" size={13} color={colors.primary} />
+              <Text style={styles.testBtnText}>Test connection & view raw sample</Text>
+            </TouchableOpacity>
+          )}
 
           {hasAnyLiveKey && (
             <>
@@ -228,15 +258,15 @@ export function SettingsScreen() {
         <View style={styles.rawOverlay}>
           <SafeAreaView edges={['bottom']} style={styles.rawSheet}>
             <View style={styles.rawHeader}>
-              <Text style={styles.rawTitle}>Raw RentCast sample</Text>
+              <Text style={styles.rawTitle}>Raw {rawModalSource} sample</Text>
               <TouchableOpacity onPress={() => setRawModalOpen(false)} hitSlop={8}>
                 <Ionicons name="close" size={24} color={colors.ink} />
               </TouchableOpacity>
             </View>
             <Text style={styles.rawHelper}>
-              One raw listing for {preferences.city}, {preferences.state} — screenshot this and send it over so
-              the photo/rent field mappings can be fixed against what RentCast actually returns, instead of
-              guessed at.
+              {rawModalSource === 'RentCast'
+                ? `One raw listing for ${preferences.city}, ${preferences.state} — screenshot this and send it over so the photo/rent field mappings can be fixed against what RentCast actually returns, instead of guessed at.`
+                : `One raw contractor result near ${preferences.city}, ${preferences.state} — screenshot this and send it over if fields still look wrong.`}
             </Text>
             <ScrollView style={styles.rawScroll}>
               {rawSampleLoading && <Text style={styles.rawText}>Loading…</Text>}

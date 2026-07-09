@@ -7,7 +7,6 @@ import { Chip } from '@/components/Chip';
 import { LiveIndicator } from '@/components/LiveIndicator';
 import { LenderCard } from '@/components/LenderCard';
 import { Contractor, LenderCategory, TradeCategory } from '@/services/types';
-import { MOCK_CONTRACTORS } from '@/data/mockContractors';
 import { useContractors, costEfficiencyScore } from '@/services/contractorsProvider';
 import { lendersForCategory, lenderScore } from '@/services/lendersProvider';
 import { useSettings } from '@/context/SettingsContext';
@@ -38,9 +37,13 @@ export function ContractorsScreen() {
   const [trade, setTrade] = useState<TradeCategory | 'All'>('All');
   const [lenderCategory, setLenderCategory] = useState<LenderCategory | 'All'>('All');
   const { preferences } = useSettings();
-  const tradesNeeded = trade === 'All' ? [] : [trade];
-  const { contractors, isLive } = useContractors(tradesNeeded);
-  const pool = tradesNeeded.length > 0 ? contractors : MOCK_CONTRACTORS;
+  // "All" still needs a concrete trade list to search live — an empty array was
+  // silently disabling live mode entirely whenever no specific trade was picked,
+  // which is the default state when the tab opens. That made a connected key look
+  // like it was doing nothing.
+  const tradesNeeded = trade === 'All' ? ALL_TRADES : [trade];
+  const { contractors, isLive, error } = useContractors(tradesNeeded);
+  const pool = contractors;
 
   const contractorList = useMemo(() => {
     const filtered = trade === 'All' ? pool : pool.filter((c) => c.trades.includes(trade));
@@ -73,6 +76,13 @@ export function ContractorsScreen() {
         </View>
         {mode === 'contractors' && <LiveIndicator isLive={isLive} lastUpdated={Date.now()} />}
       </View>
+
+      {mode === 'contractors' && error && (
+        <View style={styles.errorBanner}>
+          <Ionicons name="warning-outline" size={14} color={colors.poor} />
+          <Text style={styles.errorText}>Google Places error — showing sample contractors. {error}</Text>
+        </View>
+      )}
 
       <View style={styles.modeRow}>
         <Chip label="Contractors" active={mode === 'contractors'} onPress={() => setMode('contractors')} />
@@ -202,6 +212,17 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 26, fontWeight: '800', color: colors.ink },
   subtitle: { fontSize: 13, color: colors.inkDim, marginTop: 2 },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    padding: spacing.sm,
+    backgroundColor: colors.poorSoft,
+    borderRadius: radius.sm,
+  },
+  errorText: { color: colors.poor, fontSize: 12, flex: 1 },
   modeRow: { flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, marginBottom: spacing.md },
   tradeRowScroll: { flexGrow: 0, flexShrink: 0, height: 52 },
   tradeRow: { paddingHorizontal: spacing.lg, gap: 8, alignItems: 'center', paddingBottom: spacing.md },

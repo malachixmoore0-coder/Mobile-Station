@@ -80,3 +80,22 @@ export async function fetchLiveContractors(
   const results = await Promise.all(trades.map((t) => searchTrade(apiKey, t, cityState)));
   return results.flat();
 }
+
+/** Fetches one raw, unmapped Places result for the Settings debug tool — see fetchRawSample in liveListings.ts. */
+export async function fetchRawContractorSample(apiKey: string, trade: TradeCategory, cityState: string): Promise<any> {
+  const res = await fetch(SEARCH_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      // Request every field for the debug view, not just the trimmed mask used for real fetches.
+      'X-Goog-FieldMask': '*',
+    },
+    body: JSON.stringify({ textQuery: `${trade} contractor near ${cityState}` }),
+  });
+  if (!res.ok) {
+    throw new Error(`Google Places request failed: ${res.status} ${res.statusText}`);
+  }
+  const data = await res.json();
+  return data.places?.[0] ?? data;
+}
