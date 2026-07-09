@@ -37,6 +37,13 @@ async function rentcastFetch(path: string, apiKey: string, params: Record<string
   return res.json();
 }
 
+/** Some RentCast fields (AVM, valuation) may come back as a nested { price } object rather than a bare number. */
+function numericValue(v: any): number {
+  if (typeof v === 'number') return v;
+  if (v && typeof v === 'object') return Number(v.price ?? v.value ?? v.amount ?? 0);
+  return 0;
+}
+
 /** Maps a RentCast sale-listing record to our internal Property shape. */
 function mapListing(raw: any): Property | null {
   const unitCount: number = raw.unitCount ?? raw.units?.length ?? 2;
@@ -49,9 +56,17 @@ function mapListing(raw: any): Property | null {
   // if one is present, and failing that, a conservative price-based heuristic
   // (0.7%/mo, below the common 1%-rule threshold) — clearly flagged as
   // estimated so the UI can surface that it needs confirming.
+  // Don't trust the units-array branch just because `raw.units` exists — RentCast's
+  // sale-listing units (when present at all) are usually just bed/bath/sqft structure
+  // with no rent data, and `u.rent ?? 0` silently produces real-looking $0 rents that
+  // are indistinguishable from "no data" further down the pipeline. Only take this
+  // branch if at least one unit actually carries a positive rent figure.
+  const unitsHaveRealRent =
+    Array.isArray(raw.units) && raw.units.some((u: any) => Number(u.rent ?? u.rentEstimate ?? 0) > 0);
+
   let rentEstimated = false;
   let units: UnitInfo[];
-  if (raw.units?.length > 0) {
+  if (unitsHaveRealRent) {
     units = raw.units.map((u: any, i: number) => ({
       label: u.unitNumber ? `Unit ${u.unitNumber}` : `Unit ${i + 1}`,
       bedrooms: u.bedrooms ?? raw.bedrooms ?? 2,
@@ -106,7 +121,7 @@ function mapListing(raw: any): Property | null {
     originalListPrice: raw.originalListPrice ?? raw.price ?? 0,
     // RentCast doesn't return a post-rehab ARV — approximate from their AVM
     // (raw.valuation / raw.avm) if present, else fall back to list price.
-    arvEstimate: raw.avm ?? raw.valuation ?? raw.price ?? 0,
+    arvEstimate: numericValue(raw.avm) || numericValue(raw.valuation) || numericValue(raw.price) || 0,
     annualTaxes: raw.propertyTaxes?.[String(new Date().getFullYear() - 1)]?.total ?? raw.taxAssessedValue ?? 0,
     conditionRating: 'Moderate rehab',
     rehabItems: [], // no rehab-scope data from RentCast — user/GC input required
@@ -197,4 +212,24 @@ export function subscribeLiveListings(
     cancelled = true;
     clearInterval(interval);
   };
+}
+
+/**
+ * Fetches one raw, unmapped listing record straight from RentCast — used by
+ * the Settings "Test connection" tool so you can see exactly what fields
+ * RentCast actually sends back for your market. Every field-mapping guess in
+ * this file (photos, rent, AVM) was written against public docs without ever
+ * seeing a real payload — this is how that gets fixed for good instead of
+ * guessed at again.
+ */
+export async function fetchRawSample(apiKey: string, city: string, state: string): Promise<any> {
+  const raw = await rentcastFetch('/listings/sale', apiKey, {
+    city,
+    state,
+    status: 'Active',
+    propertyType: 'Multi-Family',
+    limit: '1',
+  });
+  const list: any[] = Array.isArray(raw) ? raw : raw.listings ?? [];
+  return list[0] ?? raw;
 }

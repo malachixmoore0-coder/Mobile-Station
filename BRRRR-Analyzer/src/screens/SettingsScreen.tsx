@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, StyleSheet, Linking } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Switch, Modal, StyleSheet, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
 import { TownChips } from '@/components/TownChips';
 import { useSettings } from '@/context/SettingsContext';
 import { BrrrrAssumptions } from '@/utils/brrrr';
+import { fetchRawSample } from '@/services/liveListings';
 
 const ASSUMPTION_FIELDS: { key: keyof BrrrrAssumptions; label: string; suffix: string }[] = [
   { key: 'refiLtvPct', label: 'Refinance LTV', suffix: '%' },
@@ -42,8 +43,28 @@ export function SettingsScreen() {
   const [gpDraft, setGpDraft] = useState(googlePlacesKey ?? '');
   const [showRc, setShowRc] = useState(false);
   const [showGp, setShowGp] = useState(false);
+  const [rawSample, setRawSample] = useState<string | null>(null);
+  const [rawSampleError, setRawSampleError] = useState<string | null>(null);
+  const [rawSampleLoading, setRawSampleLoading] = useState(false);
+  const [rawModalOpen, setRawModalOpen] = useState(false);
 
   const hasAnyLiveKey = !!rentcastKey || !!googlePlacesKey;
+
+  const testRentcastConnection = async () => {
+    if (!rentcastKey) return;
+    setRawModalOpen(true);
+    setRawSampleLoading(true);
+    setRawSampleError(null);
+    setRawSample(null);
+    try {
+      const sample = await fetchRawSample(rentcastKey, preferences.city, preferences.state);
+      setRawSample(JSON.stringify(sample, null, 2));
+    } catch (err) {
+      setRawSampleError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRawSampleLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
@@ -154,6 +175,12 @@ export function SettingsScreen() {
             onSave={() => setRentcastKey(rcDraft.trim())}
             active={!!rentcastKey}
           />
+          {!!rentcastKey && (
+            <TouchableOpacity style={styles.testBtn} onPress={testRentcastConnection}>
+              <Ionicons name="bug-outline" size={13} color={colors.primary} />
+              <Text style={styles.testBtnText}>Test connection & view raw sample</Text>
+            </TouchableOpacity>
+          )}
           <View style={styles.divider} />
           <ApiKeyRow
             label="Google Places (contractors)"
@@ -196,6 +223,33 @@ export function SettingsScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      <Modal visible={rawModalOpen} animationType="slide" transparent onRequestClose={() => setRawModalOpen(false)}>
+        <View style={styles.rawOverlay}>
+          <SafeAreaView edges={['bottom']} style={styles.rawSheet}>
+            <View style={styles.rawHeader}>
+              <Text style={styles.rawTitle}>Raw RentCast sample</Text>
+              <TouchableOpacity onPress={() => setRawModalOpen(false)} hitSlop={8}>
+                <Ionicons name="close" size={24} color={colors.ink} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.rawHelper}>
+              One raw listing for {preferences.city}, {preferences.state} — screenshot this and send it over so
+              the photo/rent field mappings can be fixed against what RentCast actually returns, instead of
+              guessed at.
+            </Text>
+            <ScrollView style={styles.rawScroll}>
+              {rawSampleLoading && <Text style={styles.rawText}>Loading…</Text>}
+              {rawSampleError && <Text style={styles.rawError}>{rawSampleError}</Text>}
+              {rawSample && (
+                <Text selectable style={styles.rawText}>
+                  {rawSample}
+                </Text>
+              )}
+            </ScrollView>
+          </SafeAreaView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -339,4 +393,28 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   resetLink: { color: colors.inkFaint, fontSize: 12, fontWeight: '600', textDecorationLine: 'underline' },
+  testBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: spacing.sm },
+  testBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  rawOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  rawSheet: {
+    backgroundColor: colors.bg,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
+    maxHeight: '85%',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+  },
+  rawHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
+  rawTitle: { fontSize: 18, fontWeight: '800', color: colors.ink },
+  rawHelper: { fontSize: 12, color: colors.inkDim, lineHeight: 17, marginBottom: spacing.md },
+  rawScroll: {
+    backgroundColor: colors.cardAlt,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  rawText: { fontSize: 11, color: colors.ink, fontFamily: 'monospace' },
+  rawError: { fontSize: 12, color: colors.poor },
 });

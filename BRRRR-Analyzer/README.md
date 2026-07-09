@@ -93,6 +93,16 @@ to live data automatically — no code changes needed.
 > Real listing photos are used when RentCast returns them; otherwise (and
 > always for the sample data) a local placeholder graphic is shown instead
 > of a broken image.
+>
+> Every field mapping above was written against RentCast's public docs
+> without ever seeing a real payload. **Settings → Live data sources →
+> Test connection & view raw sample** fetches one raw listing and shows it
+> unmodified so you can check it against what this app expects — if photos
+> or rent still look wrong once you have a key, that's the fastest way to
+> find the actual field name and fix the mapping for good.
+
+Discover also has a **Refresh now** button next to the live indicator once
+a key is connected, instead of only ever waiting on the 5-minute poll.
 
 ### Contractors — Google Places
 

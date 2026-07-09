@@ -23,7 +23,7 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
     minUnits: preferences.minUnits,
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { properties, allCount, isLive, lastUpdated, error } = useListings(filters);
+  const { properties, allCount, isLive, loading, lastUpdated, error, refresh } = useListings(filters);
 
   const activeFilterCount =
     (filters.neighborhoods.length > 0 ? 1 : 0) +
@@ -43,7 +43,17 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
             , {preferences.state} · {properties.length} of {allCount} matching
           </Text>
         </View>
-        <LiveIndicator isLive={isLive} lastUpdated={lastUpdated} />
+        <View style={styles.headerRight}>
+          <LiveIndicator isLive={isLive} lastUpdated={lastUpdated} />
+          {isLive && (
+            <TouchableOpacity onPress={refresh} disabled={loading} hitSlop={8} style={styles.refreshBtn}>
+              <Ionicons name="refresh" size={14} color={loading ? colors.inkFaint : colors.primary} />
+              <Text style={[styles.refreshText, loading && { color: colors.inkFaint }]}>
+                {loading ? 'Refreshing…' : 'Refresh now'}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {error && (
@@ -109,6 +119,9 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 26, fontWeight: '800', color: colors.ink },
   subtitle: { fontSize: 13, color: colors.inkDim, marginTop: 2 },
+  headerRight: { alignItems: 'flex-end', gap: 4 },
+  refreshBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  refreshText: { fontSize: 11, fontWeight: '700', color: colors.primary },
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
