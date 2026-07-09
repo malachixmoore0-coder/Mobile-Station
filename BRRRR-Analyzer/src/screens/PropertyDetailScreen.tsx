@@ -270,6 +270,58 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             </>
           )}
 
+          {property.listingAgent && (
+            <>
+              <SectionTitle icon="call-outline" title="Listing contact" />
+              <View style={styles.agentCard}>
+                <Text style={styles.agentName} numberOfLines={1}>
+                  {property.listingAgent.name}
+                </Text>
+                {!!property.listingAgent.company && (
+                  <Text style={styles.agentMeta} numberOfLines={1}>
+                    {property.listingAgent.company}
+                  </Text>
+                )}
+                <View style={styles.agentActions}>
+                  {!!property.listingAgent.phone && (
+                    <TouchableOpacity
+                      style={styles.agentBtn}
+                      onPress={() => Linking.openURL(`tel:${property.listingAgent!.phone}`)}
+                    >
+                      <Ionicons name="call-outline" size={13} color={colors.primary} />
+                      <Text style={styles.agentBtnText}>Call</Text>
+                    </TouchableOpacity>
+                  )}
+                  {!!property.listingAgent.email && (
+                    <TouchableOpacity
+                      style={styles.agentBtn}
+                      onPress={() => Linking.openURL(`mailto:${property.listingAgent!.email}`)}
+                    >
+                      <Ionicons name="mail-outline" size={13} color={colors.primary} />
+                      <Text style={styles.agentBtnText}>Email</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                {saved && (
+                  <AssignRow
+                    assigned={isContactAssigned(property.id, `agent-${property.id}`)}
+                    onToggle={() =>
+                      isContactAssigned(property.id, `agent-${property.id}`)
+                        ? unassignContact(property.id, `agent-${property.id}`)
+                        : assignContactToProperty(property.id, `agent-${property.id}`, 'owner', {
+                            name: property.listingAgent!.name,
+                            phone: property.listingAgent!.phone,
+                            role: property.listingAgent!.company
+                              ? `Listing agent · ${property.listingAgent!.company}`
+                              : 'Listing agent',
+                          })
+                    }
+                  />
+                )}
+              </View>
+            </>
+          )}
+
           <SectionTitle icon="layers-outline" title="Also listed on" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: spacing.lg }}>
             {property.sources.map((s) => (
@@ -708,6 +760,19 @@ const styles = StyleSheet.create({
     marginLeft: spacing.xs,
   },
   assignBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
+  agentCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  agentName: { fontSize: 15, fontWeight: '800', color: colors.ink },
+  agentMeta: { fontSize: 12, color: colors.inkDim, marginTop: 2 },
+  agentActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.sm },
+  agentBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  agentBtnText: { fontSize: 13, fontWeight: '700', color: colors.primary },
   analysisHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   rentEstimateBanner: {
     flexDirection: 'row',

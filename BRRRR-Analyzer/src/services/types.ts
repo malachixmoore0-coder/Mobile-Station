@@ -51,6 +51,15 @@ export interface RehabItem {
   priority: RehabPriority;
 }
 
+/** The real listing agent / brokerage that comes back on a live listing. */
+export interface ListingContact {
+  name: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  company?: string; // brokerage / office
+}
+
 export interface TransitInfo {
   walkScore: number; // 0-100
   transitScore: number; // 0-100
@@ -91,6 +100,8 @@ export interface Property {
   longitude: number;
   /** True when unit rent couldn't be pulled from the data source and was estimated instead. */
   rentEstimated?: boolean;
+  /** The real listing agent / brokerage, when the data source provides one (live listings). */
+  listingAgent?: ListingContact;
 }
 
 export type PriceTier = 1 | 2 | 3;
