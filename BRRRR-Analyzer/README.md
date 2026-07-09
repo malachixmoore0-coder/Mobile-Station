@@ -116,6 +116,13 @@ a key is connected, instead of only ever waiting on the 5-minute poll.
 > Google Places has no concept of license/insurance status — those fields
 > come back unverified from a live search. Confirm directly with any
 > contractor before hiring.
+>
+> **Settings → Live data sources → Test connection & view raw sample** also
+> works for Google Places once a key is saved, same as RentCast above.
+
+> The Team tab's "All" trade filter (the default when the tab opens) queries
+> every trade category live rather than skipping the live fetch — a connected
+> key with no specific trade picked used to silently fall back to sample data.
 
 Both integrations are additive: adding one key doesn't require the other,
 and a **"Force demo data"** switch in Settings lets you preview the sample
