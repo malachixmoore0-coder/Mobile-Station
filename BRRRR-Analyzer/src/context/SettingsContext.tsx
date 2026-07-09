@@ -47,6 +47,14 @@ interface SettingsState {
   resetAssumptions: () => void;
 
   allNeighborhoods: string[];
+
+  /** The towns actively driving the feed — the "Nearby towns" list, or the
+   * primary Market city when none are set. */
+  activeTowns: string[];
+  /** True when a listing belongs to the region currently selected in Settings.
+   * This is the single source of truth for region filtering, so changing the
+   * city or towns in Settings immediately re-scopes Discover. */
+  matchesActiveRegion: (p: { city: string; neighborhood: string; state: string }) => boolean;
 }
 
 const SettingsContext = createContext<SettingsState | null>(null);
@@ -111,6 +119,26 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     AsyncStorage.removeItem(ASSUMPTIONS_KEY).catch(() => {});
   };
 
+  const activeTowns = preferences.targetNeighborhoods;
+
+  const matchesActiveRegion = (p: { city: string; neighborhood: string; state: string }): boolean => {
+    const norm = (s: string) => s.trim().toLowerCase();
+    const hay = `${norm(p.city)} ${norm(p.neighborhood)}`;
+
+    // When specific towns are chosen, the feed is strictly scoped to them.
+    if (activeTowns.length > 0) {
+      return activeTowns.some((t) => {
+        const town = norm(t);
+        return town.length > 0 && (hay.includes(town) || norm(p.neighborhood).includes(town));
+      });
+    }
+
+    // Otherwise scope to the primary Market city (empty city = no restriction).
+    const city = norm(preferences.city);
+    if (!city) return true;
+    return norm(p.city).includes(city) || city.includes(norm(p.city)) || norm(p.neighborhood).includes(city);
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -127,6 +155,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         updateAssumptions,
         resetAssumptions,
         allNeighborhoods: [...NEIGHBORHOODS],
+        activeTowns,
+        matchesActiveRegion,
       }}
     >
       {children}

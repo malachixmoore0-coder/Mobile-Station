@@ -172,11 +172,29 @@ export const DEAL_STAGE_LABEL: Record<DealStage, string> = {
   stabilized: 'Stabilized',
 };
 
+/** Who a contact is on a given deal. Owners are freeform (seller/agent), while
+ * contractors and lenders are resolved from their respective directories. */
+export type ContactType = 'owner' | 'contractor' | 'lender';
+
+/** A contact uniquely linked to a single property/deal. The same underlying
+ * contractor or lender can be assigned to many deals, but each deal keeps its
+ * own independent list — nothing is shared across properties. */
+export interface AssignedContact {
+  id: string; // contractor.id / lender.id / generated id for owners
+  type: ContactType;
+  name: string;
+  phone?: string;
+  role?: string; // trade for a contractor, category for a lender, freeform for an owner
+  assignedAt: number;
+}
+
 export interface DealRecord {
   stage: DealStage;
   stageHistory: { stage: DealStage; at: number }[];
   checkedSteps: string[];
   override: PropertyOverride;
+  /** Owners, contractors, and lenders assigned specifically to THIS property. */
+  contacts: AssignedContact[];
 }
 
 export type LenderCategory = 'Hard Money / Bridge' | 'DSCR Refinance' | 'Conventional / Bank' | 'Portfolio Lender';

@@ -22,6 +22,14 @@ contractor directory matched to each property's actual rehab scope.
   it through real deal stages: Watching → Offer Made → Under Contract →
   Rehabbing → Refinanced → Stabilized. The Pipeline tab groups your
   properties by stage instead of a flat list. Persisted on device.
+- **Per-property deal team** — each saved property keeps its own contact list:
+  assign the contractors and lenders shown on that property to *that* deal (tap
+  "Add to deal team"), and they're linked to that property ID only — never
+  shared across properties. Owners/sellers are supported in the same model.
+  Everything persists locally via Async Storage.
+- **Region-scoped Discover** — the feed is strictly scoped to the city and
+  "Nearby towns" you set in Settings. Change your location there and Discover
+  re-scopes immediately, so you only ever see listings in your actual market.
 - **Edit deal numbers** — once you've actually walked a property or gotten an
   offer accepted, correct the listing's numbers: your real offer price, your
   own ARV estimate, and a fully editable rehab line-item list (add/edit/
@@ -42,8 +50,12 @@ contractor directory matched to each property's actual rehab scope.
 - **Step-by-step action plan** — a generated, property-specific checklist
   across all five BRRRR phases (Buy → Rehab → Rent → Refinance → Repeat),
   with real numbers pulled from that property's analysis — not generic
-  advice. Checked-off steps persist per property, so progress survives
-  closing the app.
+  advice. Each property has its own independent checklist (checking an item on
+  one property never affects another), and progress persists per property via
+  Async Storage. Your intake notes drive **conditional tasks**: mention
+  "foundation"/"structural", "split the utility meters", "roof", "mold/water",
+  or existing "tenants/leases" in a deal's notes and the matching step is
+  pushed into that property's checklist automatically.
 - **Rehab scope → contractor recommendations** — the rehab items on a
   property are grouped by trade (roofing, electrical, plumbing, HVAC,
   kitchen & bath, etc.) with a cost range and priority (critical / recommended
