@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, shadow, spacing } from '@/theme';
 import { formatUsd, formatPct, relativeDate } from '@/utils/format';
 import { analyzeBrrrr } from '@/utils/brrrr';
-import { buildActionPlan, groupRehabByTrade, PlanPhase } from '@/utils/actionPlan';
+import { buildActionPlan, groupRehabByTrade, PlanPhase, PlanStep } from '@/utils/actionPlan';
 import { usePropertyById } from '@/services/listingsProvider';
 import { usePortfolio } from '@/context/PortfolioContext';
 import { useSettings } from '@/context/SettingsContext';
@@ -19,7 +19,67 @@ import { EditDealModal } from '@/components/EditDealModal';
 import { LenderCard } from '@/components/LenderCard';
 import { Collapsible } from '@/components/Collapsible';
 import { ContractorCard } from '@/screens/ContractorsScreen';
-import { applyOverride, RehabItem } from '@/services/types';
+import { applyOverride, Property, PropertyOverride, RehabItem } from '@/services/types';
+
+/**
+ * Property-specific conditional tasks. The intake notes you keep on a deal (via
+ * "Edit deal numbers") plus the listing's condition decide which extra steps get
+ * pushed into THIS property's checklist — they never appear on other properties.
+ * Ids are stable so completion persists across reloads.
+ */
+function deriveIntakeSteps(property: Property, override: PropertyOverride): PlanStep[] {
+  const notes = (override.notes ?? '').toLowerCase();
+  const has = (kw: string[]) => kw.some((k) => notes.includes(k));
+  const heavy = property.conditionRating === 'Heavy rehab';
+  const steps: PlanStep[] = [];
+
+  if (heavy || has(['structural', 'foundation', 'settling', 'crack', 'beam', 'joist'])) {
+    steps.push({
+      id: 'intake-structural',
+      phase: 'Buy',
+      title: 'Get a structural/foundation engineer’s report during due diligence',
+      detail:
+        'Your intake notes or the heavy-rehab condition flag point to possible structural work. A stamped engineer’s report scopes (and caps) the fix before you own it and protects the refinance appraisal — do it in the inspection window, not after closing.',
+    });
+  }
+  if (has(['meter', 'utility', 'utilities', 'sub-meter', 'submeter', 'separate', 'split'])) {
+    steps.push({
+      id: 'intake-utility-split',
+      phase: 'Rehab',
+      title: 'Scope separating / sub-metering the utilities',
+      detail:
+        'Notes mention utility splitting. Separately metering each unit shifts utility cost to tenants and materially lifts NOI — get an electrician/plumber bid early since it can touch the panel and stacks and change your rehab sequence.',
+    });
+  }
+  if (has(['roof'])) {
+    steps.push({
+      id: 'intake-roof',
+      phase: 'Rehab',
+      title: 'Sequence the roof first — get a dedicated roofing bid',
+      detail:
+        'Notes flag the roof. It gates every interior finish (water intrusion ruins new drywall and flooring) and lenders scrutinize roof age at refi — do it before cosmetic work.',
+    });
+  }
+  if (has(['mold', 'water', 'moisture', 'leak', 'flood'])) {
+    steps.push({
+      id: 'intake-water',
+      phase: 'Rehab',
+      title: 'Remediate water / mold and fix the source before finishes',
+      detail:
+        'Notes mention water or mold. Remediate and cure the source first; a moisture problem sealed behind new finishes fails inspection and re-opens the wall later.',
+    });
+  }
+  if (has(['tenant', 'occupied', 'eviction', 'lease', 'estoppel'])) {
+    steps.push({
+      id: 'intake-tenants',
+      phase: 'Buy',
+      title: 'Collect estoppels and current leases from the seller',
+      detail:
+        'Notes mention existing tenants. Get signed estoppel certificates and every lease before closing so you inherit accurate rents, deposits, and terms — surprises here break your rent roll and the refi underwriting.',
+    });
+  }
+  return steps;
+}
 
 interface Props {
   propertyId: string;
@@ -48,8 +108,20 @@ const PRIORITY_COLOR: Record<RehabItem['priority'], string> = {
 
 export function PropertyDetailScreen({ propertyId, onBack }: Props) {
   const property = usePropertyById(propertyId);
-  const { isSaved, toggleSaved, getStage, setStage, isStepChecked, toggleStep, getOverride, setOverride } =
-    usePortfolio();
+  const {
+    isSaved,
+    toggleSaved,
+    getStage,
+    setStage,
+    isChecklistItemDone,
+    toggleChecklistItem,
+    getContacts,
+    isContactAssigned,
+    assignContactToProperty,
+    unassignContact,
+    getOverride,
+    setOverride,
+  } = usePortfolio();
   const { assumptions, preferences } = useSettings();
   const [editOpen, setEditOpen] = useState(false);
 
@@ -64,8 +136,12 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
     [effectiveProperty, assumptions]
   );
   const plan = useMemo(
-    () => (effectiveProperty && analysis ? buildActionPlan(effectiveProperty, analysis) : []),
-    [effectiveProperty, analysis]
+    () =>
+      effectiveProperty && analysis
+        ? [...buildActionPlan(effectiveProperty, analysis), ...deriveIntakeSteps(effectiveProperty, override)]
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [effectiveProperty, analysis, JSON.stringify(override)]
   );
   const tradeGroups = useMemo(() => (effectiveProperty ? groupRehabByTrade(effectiveProperty) : []), [effectiveProperty]);
   const tradesNeeded = useMemo(() => tradeGroups.map((g) => g.trade), [tradeGroups]);
@@ -89,6 +165,7 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
 
   const saved = isSaved(property.id);
   const stage = getStage(property.id) ?? 'watching';
+  const teamContacts = saved ? getContacts(property.id) : [];
   const hasOfferOverride = override.offerPrice != null && override.offerPrice !== property.price;
   const hasArvOverride = override.arvOverride != null && override.arvOverride !== property.arvEstimate;
 
@@ -151,8 +228,46 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
           ) : (
             <View style={styles.trackHint}>
               <Ionicons name="heart-outline" size={14} color={colors.inkFaint} />
-              <Text style={styles.trackHintText}>Save this property to track its stage and keep notes.</Text>
+              <Text style={styles.trackHintText}>
+                Save this property to track its stage, build its deal team, and keep notes.
+              </Text>
             </View>
+          )}
+
+          {saved && teamContacts.length > 0 && (
+            <>
+              <SectionTitle icon="people-circle-outline" title="Deal team" />
+              <View style={styles.teamCard}>
+                {teamContacts.map((c) => (
+                  <View key={c.id} style={styles.teamRow}>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={styles.teamName} numberOfLines={1}>
+                        {c.name}
+                      </Text>
+                      <Text style={styles.teamMeta} numberOfLines={1}>
+                        {(c.role ?? c.type) + (c.phone ? ` · ${c.phone}` : '')}
+                      </Text>
+                    </View>
+                    {!!c.phone && (
+                      <TouchableOpacity
+                        onPress={() => Linking.openURL(`tel:${c.phone}`)}
+                        hitSlop={8}
+                        style={styles.teamAction}
+                      >
+                        <Ionicons name="call-outline" size={16} color={colors.primary} />
+                      </TouchableOpacity>
+                    )}
+                    <TouchableOpacity
+                      onPress={() => unassignContact(property.id, c.id)}
+                      hitSlop={8}
+                      style={styles.teamAction}
+                    >
+                      <Ionicons name="close-circle" size={16} color={colors.inkFaint} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </>
           )}
 
           <SectionTitle icon="layers-outline" title="Also listed on" />
@@ -256,13 +371,49 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
             {bridgeLenders.length === 0 ? (
               <Text style={styles.noContractors}>No bridge lenders on file for {preferences.state} yet.</Text>
             ) : (
-              bridgeLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+              bridgeLenders.map((l, idx) => (
+                <View key={l.id}>
+                  <LenderCard lender={l} highlight={idx === 0} />
+                  {saved && (
+                    <AssignRow
+                      assigned={isContactAssigned(property.id, l.id)}
+                      onToggle={() =>
+                        isContactAssigned(property.id, l.id)
+                          ? unassignContact(property.id, l.id)
+                          : assignContactToProperty(property.id, l.id, 'lender', {
+                              name: l.name,
+                              phone: l.phone,
+                              role: l.categories[0],
+                            })
+                      }
+                    />
+                  )}
+                </View>
+              ))
             )}
             <Text style={styles.lenderGroupLabel}>DSCR refinance, to pull your cash back out</Text>
             {dscrLenders.length === 0 ? (
               <Text style={styles.noContractors}>No DSCR lenders on file for {preferences.state} yet.</Text>
             ) : (
-              dscrLenders.map((l, idx) => <LenderCard key={l.id} lender={l} highlight={idx === 0} />)
+              dscrLenders.map((l, idx) => (
+                <View key={l.id}>
+                  <LenderCard lender={l} highlight={idx === 0} />
+                  {saved && (
+                    <AssignRow
+                      assigned={isContactAssigned(property.id, l.id)}
+                      onToggle={() =>
+                        isContactAssigned(property.id, l.id)
+                          ? unassignContact(property.id, l.id)
+                          : assignContactToProperty(property.id, l.id, 'lender', {
+                              name: l.name,
+                              phone: l.phone,
+                              role: l.categories[0],
+                            })
+                      }
+                    />
+                  )}
+                </View>
+              ))
             )}
           </Collapsible>
 
@@ -278,13 +429,13 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
                   <Text style={styles.phaseTitle}>{phase}</Text>
                 </View>
                 {steps.map((step) => {
-                  const checked = isStepChecked(property.id, step.id);
+                  const checked = isChecklistItemDone(property.id, step.id);
                   return (
                     <TouchableOpacity
                       key={step.id}
                       style={styles.stepRow}
                       activeOpacity={0.7}
-                      onPress={() => toggleStep(property.id, step.id)}
+                      onPress={() => toggleChecklistItem(property.id, step.phase, step.id)}
                     >
                       <Ionicons
                         name={checked ? 'checkbox' : 'square-outline'}
@@ -330,7 +481,25 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
                     {picks.length === 0 ? (
                       <Text style={styles.noContractors}>No contractors on file for this trade yet.</Text>
                     ) : (
-                      picks.map((c, idx) => <ContractorCard key={c.id} contractor={c} highlight={idx === 0} />)
+                      picks.map((c, idx) => (
+                        <View key={c.id}>
+                          <ContractorCard contractor={c} highlight={idx === 0} />
+                          {saved && (
+                            <AssignRow
+                              assigned={isContactAssigned(property.id, c.id)}
+                              onToggle={() =>
+                                isContactAssigned(property.id, c.id)
+                                  ? unassignContact(property.id, c.id)
+                                  : assignContactToProperty(property.id, c.id, 'contractor', {
+                                      name: c.name,
+                                      phone: c.phone,
+                                      role: c.trades[0],
+                                    })
+                              }
+                            />
+                          )}
+                        </View>
+                      ))
                     )}
                   </View>
                 );
@@ -371,6 +540,21 @@ export function PropertyDetailScreen({ propertyId, onBack }: Props) {
         }}
       />
     </View>
+  );
+}
+
+function AssignRow({ assigned, onToggle }: { assigned: boolean; onToggle: () => void }) {
+  return (
+    <TouchableOpacity style={styles.assignBtn} onPress={onToggle} activeOpacity={0.75}>
+      <Ionicons
+        name={assigned ? 'checkmark-circle' : 'add-circle-outline'}
+        size={15}
+        color={assigned ? colors.great : colors.primary}
+      />
+      <Text style={[styles.assignBtnText, assigned && { color: colors.great }]}>
+        {assigned ? 'On deal team' : 'Add to deal team'}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
@@ -494,7 +678,36 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardAlt,
     borderRadius: radius.sm,
   },
-  trackHintText: { fontSize: 12, color: colors.inkFaint },
+  trackHintText: { fontSize: 12, color: colors.inkFaint, flex: 1 },
+  teamCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  teamRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+  },
+  teamName: { fontSize: 14, fontWeight: '700', color: colors.ink },
+  teamMeta: { fontSize: 11, color: colors.inkFaint, marginTop: 2, textTransform: 'capitalize' },
+  teamAction: { padding: 2 },
+  assignBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    alignSelf: 'flex-start',
+    marginTop: -spacing.xs,
+    marginBottom: spacing.md,
+    marginLeft: spacing.xs,
+  },
+  assignBtnText: { fontSize: 12, fontWeight: '700', color: colors.primary },
   analysisHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   rentEstimateBanner: {
     flexDirection: 'row',

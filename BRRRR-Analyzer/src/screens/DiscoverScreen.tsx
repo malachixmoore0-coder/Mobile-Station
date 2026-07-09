@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function DiscoverScreen({ onSelectProperty }: Props) {
-  const { preferences, allNeighborhoods } = useSettings();
+  const { preferences, allNeighborhoods, matchesActiveRegion } = useSettings();
   const [filters, setFilters] = useState({
     ...DEFAULT_FILTERS,
     minPrice: preferences.minBudget,
@@ -23,7 +23,17 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
     minUnits: preferences.minUnits,
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const { properties, allCount, isLive, loading, lastUpdated, error, refresh } = useListings(filters);
+  const { properties: matched, allCount, isLive, loading, lastUpdated, error, refresh } = useListings(filters);
+
+  // Strictly scope the feed to the region selected in Settings. Because this
+  // reads preferences.city/targetNeighborhoods, editing the location in Settings
+  // re-scopes Discover on the very next render — no manual refresh needed.
+  const regionKey = `${preferences.city}|${preferences.targetNeighborhoods.join(',')}`;
+  const properties = useMemo(
+    () => matched.filter((p) => matchesActiveRegion(p)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [matched, regionKey]
+  );
 
   const activeFilterCount =
     (filters.neighborhoods.length > 0 ? 1 : 0) +
@@ -87,8 +97,11 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="business-outline" size={32} color={colors.inkFaint} />
-            <Text style={styles.emptyText}>No properties match these filters yet.</Text>
-            <Text style={styles.emptySub}>Try widening your budget or town picks.</Text>
+            <Text style={styles.emptyText}>Nothing in {preferences.city} matches yet.</Text>
+            <Text style={styles.emptySub}>
+              The feed is scoped to your region in Settings — widen your budget, or change the city / nearby
+              towns in Settings to see other areas.
+            </Text>
           </View>
         }
       />
