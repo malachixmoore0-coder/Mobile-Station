@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { applyOverride, DealRecord, Property, SearchFilters } from '@/services/types';
 import { mockListingsEngine } from '@/services/mockListingsEngine';
 import { liveListingsCache } from '@/services/liveListingsCache';
@@ -20,8 +20,18 @@ export function applyFilters(
   const filtered = properties.filter((p) => {
     if (p.price < filters.minPrice || p.price > filters.maxPrice) return false;
     if (p.unitCount < filters.minUnits || p.unitCount > filters.maxUnits) return false;
-    if (filters.neighborhoods.length > 0 && !filters.neighborhoods.includes(p.neighborhood)) return false;
-    if (p.transit.transitScore < filters.minTransitScore) return false;
+    if (filters.neighborhoods.length > 0) {
+      // Live data's "neighborhood" is often a sub-area name (e.g. a subdivision) that
+      // never equals the town name you typed in, so match loosely against city OR
+      // neighborhood instead of requiring exact equality on neighborhood alone.
+      const haystack = `${p.city} ${p.neighborhood}`.toLowerCase();
+      const matchesTown = filters.neighborhoods.some((n) => haystack.includes(n.toLowerCase()));
+      if (!matchesTown) return false;
+    }
+    // Live listings have no transit data (all zeros = unknown, not literally zero) —
+    // don't let the transit filter silently wipe out every live result.
+    const hasTransitData = p.transit.walkScore > 0 || p.transit.transitScore > 0 || p.transit.bikeScore > 0;
+    if (hasTransitData && p.transit.transitScore < filters.minTransitScore) return false;
     if (filters.status.length > 0 && !filters.status.includes(p.status)) return false;
     if (filters.minBrrrrScore > 0 && analyzeBrrrr(p, assumptions).score < filters.minBrrrrScore) return false;
     return true;
@@ -51,6 +61,7 @@ interface UseListingsResult {
   loading: boolean;
   lastUpdated: number;
   error: string | null;
+  refresh: () => void;
 }
 
 export function useListings(filters: SearchFilters): UseListingsResult {
@@ -61,6 +72,8 @@ export function useListings(filters: SearchFilters): UseListingsResult {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(Date.now());
   const [error, setError] = useState<string | null>(null);
+  const [refreshNonce, setRefreshNonce] = useState(0);
+  const refresh = useCallback(() => setRefreshNonce((n) => n + 1), []);
 
   const useLive = !!rentcastKey && !forceDemoMode;
   // Search the primary Market city plus every configured "nearby town" — otherwise picking
@@ -110,7 +123,7 @@ export function useListings(filters: SearchFilters): UseListingsResult {
       unsub();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [useLive, rentcastKey, citiesKey, preferences.state, filters.minPrice, filters.maxPrice]);
+  }, [useLive, rentcastKey, citiesKey, preferences.state, filters.minPrice, filters.maxPrice, refreshNonce]);
 
   const properties = useMemo(
     () => applyFilters(withOverrides(all, deals), filters, assumptions),
@@ -118,7 +131,7 @@ export function useListings(filters: SearchFilters): UseListingsResult {
     [all, filters, assumptions, deals]
   );
 
-  return { properties, allCount: all.length, isLive, loading, lastUpdated, error };
+  return { properties, allCount: all.length, isLive, loading, lastUpdated, error, refresh };
 }
 
 export function getPropertyById(id: string): Property | undefined {
