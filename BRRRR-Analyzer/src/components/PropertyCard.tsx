@@ -32,7 +32,7 @@ export function PropertyCard({ property, onPress, isTopPick }: Props) {
         </View>
       )}
       <View style={styles.photoWrap}>
-        <PropertyPhoto id={property.id} propertyType={property.propertyType} />
+        <PropertyPhoto id={property.id} propertyType={property.propertyType} photoUrl={property.photos[0]} />
         <View style={styles.photoOverlayTop}>
           <StatusPill status={property.status} daysOnMarket={property.daysOnMarket} />
           <TouchableOpacity style={styles.saveBtn} onPress={() => toggleSaved(property.id)} hitSlop={8}>

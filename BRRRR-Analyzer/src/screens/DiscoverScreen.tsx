@@ -35,8 +35,12 @@ export function DiscoverScreen({ onSelectProperty }: Props) {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Discover</Text>
-          <Text style={styles.subtitle}>
-            {preferences.city}, {preferences.state} · {properties.length} of {allCount} matching
+          <Text style={styles.subtitle} numberOfLines={1}>
+            {preferences.city}
+            {preferences.targetNeighborhoods.length > 0
+              ? ` +${preferences.targetNeighborhoods.length} town${preferences.targetNeighborhoods.length === 1 ? '' : 's'}`
+              : ''}
+            , {preferences.state} · {properties.length} of {allCount} matching
           </Text>
         </View>
         <LiveIndicator isLive={isLive} lastUpdated={lastUpdated} />

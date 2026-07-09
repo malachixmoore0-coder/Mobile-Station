@@ -78,11 +78,21 @@ to live data automatically — no code changes needed.
    → Save.
 3. Discover now polls RentCast for your configured city/state every 5
    minutes instead of the simulated feed.
+4. Add towns in **Settings → Nearby towns** to widen the search — each town
+   is queried separately (RentCast has no multi-city search) and merged, up
+   to 6 towns per search. More towns means more API calls per poll, so keep
+   an eye on your plan's monthly quota.
 
 > RentCast's sale-listing payload doesn't include a rehab scope or an ARV —
 > the client currently falls back to their AVM/valuation for ARV and leaves
 > `rehabItems` empty. You'll want a walkthrough or a GC bid to fill in real
 > rehab line items per property before trusting the BRRRR score on live data.
+> It also usually has no per-unit rent data, so rent is estimated (flagged
+> in the UI) until you fill in real numbers via "Edit deal numbers."
+>
+> Real listing photos are used when RentCast returns them; otherwise (and
+> always for the sample data) a local placeholder graphic is shown instead
+> of a broken image.
 
 ### Contractors — Google Places
 

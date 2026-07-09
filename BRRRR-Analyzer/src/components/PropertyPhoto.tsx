@@ -1,13 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PropertyType } from '@/services/types';
 
 /**
- * A local, zero-network stand-in for a listing photo. Real photo URLs
- * (picsum in the sample data, or a live API's actual photos) are unreliable
- * over spotty connections and cause layout shift as they pop in — this
- * renders instantly and never fails to load.
+ * Shows the listing's real photo when one is available (e.g. from a live
+ * RentCast result), and falls back to a local, zero-network placeholder
+ * graphic when there isn't one or the image fails to load. Sample/demo data
+ * has no real photos, so it always shows the placeholder — which renders
+ * instantly and never shows a broken-image icon.
  */
 
 const PALETTE: [string, string][] = [
@@ -37,16 +38,25 @@ interface Props {
   id: string;
   propertyType: PropertyType;
   size?: 'card' | 'hero';
+  photoUrl?: string;
 }
 
-export function PropertyPhoto({ id, propertyType, size = 'card' }: Props) {
+export function PropertyPhoto({ id, propertyType, size = 'card', photoUrl }: Props) {
+  const [failed, setFailed] = useState(false);
   const [bg] = PALETTE[hashString(id) % PALETTE.length];
   const iconSize = size === 'hero' ? 56 : 34;
+  const showPhoto = !!photoUrl && !failed;
 
   return (
     <View style={[styles.wrap, { backgroundColor: bg }]}>
-      <Ionicons name={ICON_BY_TYPE[propertyType] ?? 'home-outline'} size={iconSize} color="rgba(255,255,255,0.28)" />
-      <Text style={[styles.label, size === 'hero' && styles.labelHero]}>{propertyType}</Text>
+      {showPhoto ? (
+        <Image source={{ uri: photoUrl }} style={StyleSheet.absoluteFill} onError={() => setFailed(true)} />
+      ) : (
+        <>
+          <Ionicons name={ICON_BY_TYPE[propertyType] ?? 'home-outline'} size={iconSize} color="rgba(255,255,255,0.28)" />
+          <Text style={[styles.label, size === 'hero' && styles.labelHero]}>{propertyType}</Text>
+        </>
+      )}
     </View>
   );
 }
@@ -58,6 +68,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    overflow: 'hidden',
   },
   label: {
     color: 'rgba(255,255,255,0.45)',

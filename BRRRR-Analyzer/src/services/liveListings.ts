@@ -15,11 +15,16 @@ const BASE_URL = 'https://api.rentcast.io/v1';
 const POLL_MS = 5 * 60_000; // RentCast free/starter tiers have tight monthly call caps — poll slowly.
 
 export interface LiveSearchParams {
-  city: string;
+  /** Primary market city plus any configured "nearby towns" — each is queried separately and merged. */
+  cities: string[];
   state: string;
   minPrice?: number;
   maxPrice?: number;
 }
+
+// RentCast has no multi-city search, so each additional town costs another API
+// call per poll cycle — cap how many we'll query at once to protect your quota.
+const MAX_CITIES_PER_SEARCH = 6;
 
 async function rentcastFetch(path: string, apiKey: string, params: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
@@ -106,7 +111,7 @@ function mapListing(raw: any): Property | null {
     conditionRating: 'Moderate rehab',
     rehabItems: [], // no rehab-scope data from RentCast — user/GC input required
     rehabTimelineMonths: 3,
-    photos: raw.photos ?? [],
+    photos: raw.photos ?? raw.images ?? [],
     status,
     listedDate: raw.listedDate ? Date.parse(raw.listedDate) : Date.now(),
     daysOnMarket: raw.daysOnMarket ?? 0,
@@ -125,9 +130,13 @@ function mapListing(raw: any): Property | null {
 // plan caps below this, RentCast will just return however many it allows.
 const RESULTS_PER_PAGE = 200;
 
-export async function fetchLiveListings(apiKey: string, params: LiveSearchParams): Promise<Property[]> {
+async function fetchLiveListingsForCity(
+  apiKey: string,
+  city: string,
+  params: Pick<LiveSearchParams, 'state' | 'minPrice' | 'maxPrice'>
+): Promise<Property[]> {
   const query: Record<string, string> = {
-    city: params.city,
+    city,
     state: params.state,
     status: 'Active',
     propertyType: 'Multi-Family',
@@ -140,6 +149,29 @@ export async function fetchLiveListings(apiKey: string, params: LiveSearchParams
   const raw = await rentcastFetch('/listings/sale', apiKey, query);
   const list: any[] = Array.isArray(raw) ? raw : raw.listings ?? [];
   return list.map(mapListing).filter((p): p is Property => p !== null);
+}
+
+/** Queries every configured city/town and merges the results (deduped by id). */
+export async function fetchLiveListings(apiKey: string, params: LiveSearchParams): Promise<Property[]> {
+  const cities = Array.from(new Set(params.cities.filter(Boolean))).slice(0, MAX_CITIES_PER_SEARCH);
+  const settled = await Promise.allSettled(cities.map((city) => fetchLiveListingsForCity(apiKey, city, params)));
+
+  const byId = new Map<string, Property>();
+  let allFailed = true;
+  let firstError: Error | null = null;
+  for (const result of settled) {
+    if (result.status === 'fulfilled') {
+      allFailed = false;
+      for (const p of result.value) byId.set(p.id, p);
+    } else {
+      firstError ??= result.reason instanceof Error ? result.reason : new Error(String(result.reason));
+    }
+  }
+  // If every city failed (bad key, network down), surface it — a single bad town name
+  // shouldn't be able to silently wipe out results from the towns that did work.
+  if (allFailed && firstError) throw firstError;
+
+  return Array.from(byId.values());
 }
 
 export function subscribeLiveListings(
