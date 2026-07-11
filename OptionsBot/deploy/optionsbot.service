@@ -1,0 +1,35 @@
+# systemd unit so OptionsBot survives SSH disconnects, phone lock/backgrounding,
+# and server reboots. Copy to /etc/systemd/system/optionsbot.service on the
+# Linux host that actually runs the bot (a VPS, home server, Raspberry Pi,
+# etc. - not the iPhone itself; iOS suspends background processes and can't
+# host a persistent trading loop).
+#
+# Install:
+#   sudo cp deploy/optionsbot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now optionsbot
+#
+# Then from an iPhone SSH client (Termius, Blink Shell, Prompt), just:
+#   journalctl -u optionsbot -f      # tail live logs
+#   systemctl restart optionsbot     # after editing .env
+#   systemctl stop optionsbot
+
+[Unit]
+Description=OptionsBot - options/Kalshi mispricing scanner and trader
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Edit these two paths for your deployment:
+WorkingDirectory=/home/YOUR_USER/Mobile-Station/OptionsBot
+ExecStart=/home/YOUR_USER/Mobile-Station/OptionsBot/deploy/run.sh
+Restart=on-failure
+RestartSec=10
+# Loads LIVE_TRADING, API keys, etc. from .env in WorkingDirectory (main.py
+# already loads it via python-dotenv, this just keeps systemd's own view
+# consistent if you ever reference %E in the unit file).
+EnvironmentFile=-/home/YOUR_USER/Mobile-Station/OptionsBot/.env
+
+[Install]
+WantedBy=multi-user.target
