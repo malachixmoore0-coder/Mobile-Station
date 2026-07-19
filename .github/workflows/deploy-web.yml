@@ -1,10 +1,11 @@
-name: Deploy web apps (Phantom + BRRRR Scout)
+name: Deploy web apps (Phantom + BRRRR Scout + CompoundForge)
 
-# Builds both static web apps and publishes them together to GitHub Pages
+# Builds all static web apps and publishes them together to GitHub Pages
 # under one site, since a repo only gets a single live Pages deployment:
 #
-#   https://<owner>.github.io/mobile-station/              -> Phantom (dummy wallet)
-#   https://<owner>.github.io/mobile-station/brrrr-scout/  -> BRRRR Scout
+#   https://<owner>.github.io/mobile-station/                  -> Phantom (dummy wallet)
+#   https://<owner>.github.io/mobile-station/brrrr-scout/       -> BRRRR Scout
+#   https://<owner>.github.io/mobile-station/compound-forge/    -> CompoundForge
 #
 # One-time setup: repo Settings -> Pages -> Build and deployment ->
 # Source: "GitHub Actions". Then run this workflow (it also runs on push).
@@ -16,9 +17,11 @@ on:
       - claude/shortsforge-mobile-app-ofusva
       - claude/phantom-wallet-prank-tuwtj9
       - claude/brrrr-property-analyzer-2rrlsb
+      - claude/3d-trading-compounding-app-15i8jj
     paths:
       - 'Phantom-Dummy/**'
       - 'BRRRR-Analyzer/**'
+      - 'CompoundForge/**'
       - '.github/workflows/deploy-web.yml'
   workflow_dispatch:
 
@@ -65,12 +68,24 @@ jobs:
           EXPO_BASE_URL: /${{ github.event.repository.name }}/brrrr-scout
         run: npx expo export --platform web
 
+      - name: Install CompoundForge dependencies
+        working-directory: CompoundForge
+        run: npm ci
+
+      - name: Export CompoundForge web build
+        working-directory: CompoundForge
+        # Nested under /compound-forge so it doesn't collide with the other apps.
+        env:
+          EXPO_BASE_URL: /${{ github.event.repository.name }}/compound-forge
+        run: npx expo export --platform web
+
       - name: Assemble combined site
         run: |
-          mkdir -p _site/brrrr-scout
+          mkdir -p _site/brrrr-scout _site/compound-forge
           cp -r Phantom-Dummy/dist/. _site/
           cp Phantom-Dummy/dist/index.html _site/404.html
           cp -r BRRRR-Analyzer/dist/. _site/brrrr-scout/
+          cp -r CompoundForge/dist/. _site/compound-forge/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
