@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NETFLIX — Video Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  html, body { background:#141414; scroll-behavior:smooth; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-track { background:#141414; }
+  ::-webkit-scrollbar-thumb { background:#e50914; border-radius:6px; }
+
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+
+  .card-wrap { transition: transform .3s ease, z-index 0s; }
+  .card-wrap:hover { transform: scale(1.12); z-index:30; }
+
+  .fade-in { animation: fadeIn .25s ease both; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  input[type=range] {
+    -webkit-appearance:none; appearance:none;
+    height:5px; border-radius:999px; background:#4d4d4d; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; appearance:none;
+    width:14px; height:14px; border-radius:50%; background:#e50914; cursor:pointer;
+    box-shadow:0 0 0 3px rgba(229,9,20,0.25);
+  }
+  input[type=range]::-moz-range-thumb {
+    width:14px; height:14px; border-radius:50%; background:#e50914; border:none; cursor:pointer;
+  }
+  #progressRange::-webkit-slider-thumb { width:12px; height:12px; }
+
+  .nav-scrolled { background:#141414; box-shadow:0 2px 10px rgba(0,0,0,.6); }
+</style>
+</head>
+<body class="bg-[#141414] text-white font-sans antialiased overflow-x-hidden">
+
+<!-- ============================= NAVBAR ============================= -->
+<header id="navbar" class="fixed top-0 left-0 right-0 z-40 transition-colors duration-300 bg-gradient-to-b from-black/80 to-transparent">
+  <div class="flex items-center justify-between px-4 md:px-10 py-3 md:py-4">
+    <div class="flex items-center gap-6 md:gap-10">
+      <span class="text-red-600 font-black text-2xl md:text-3xl tracking-tight select-none cursor-pointer">NETFLIX</span>
+      <nav class="hidden md:flex items-center gap-5 text-sm text-gray-200">
+        <a href="#" class="hover:text-gray-400 font-semibold text-white">Home</a>
+        <a href="#categories" class="hover:text-gray-400">Categories</a>
+        <a href="#" class="hover:text-gray-400">TV Shows</a>
+        <a href="#" class="hover:text-gray-400">Movies</a>
+        <a href="#" class="hover:text-gray-400">My List</a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3 md:gap-5">
+      <div class="flex items-center bg-black/60 border border-transparent focus-within:border-white/40 rounded px-2 py-1.5 transition-all">
+        <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 5.4 5.4a7.5 7.5 0 0 0 11.25 11.25z"/></svg>
+        <input id="searchInput" type="text" placeholder="Titles, categories..."
+          class="bg-transparent outline-none text-sm text-white placeholder-gray-400 ml-2 w-20 sm:w-40 md:w-56"/>
+      </div>
+
+      <div class="relative">
+        <button id="profileBtn" class="flex items-center gap-1 cursor-pointer">
+          <img src="https://api.dicebear.com/7.x/shapes/svg?seed=profile&backgroundColor=e50914" class="w-8 h-8 rounded-md" alt="profile"/>
+          <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="profileMenu" class="hidden absolute right-0 mt-3 w-48 bg-black/95 border border-white/10 rounded shadow-xl text-sm overflow-hidden">
+          <a href="#" class="flex items-center gap-2 px-4 py-3 hover:bg-white/10">
+            <img src="https://api.dicebear.com/7.x/shapes/svg?seed=profile&backgroundColor=e50914" class="w-5 h-5 rounded"/> Manage Profiles
+          </a>
+          <a href="#" class="block px-4 py-3 hover:bg-white/10">Account</a>
+          <a href="#" class="block px-4 py-3 hover:bg-white/10">Help Center</a>
+          <div class="border-t border-white/10"></div>
+          <a href="#" class="block px-4 py-3 hover:bg-white/10">Sign out of Netflix</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= HERO ============================= -->
+<section id="hero" class="relative w-full h-[62vh] md:h-[85vh] text-white">
+  <div class="absolute inset-0">
+    <img id="heroImage" src="" alt="" class="w-full h-full object-cover"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#141414] to-transparent"></div>
+  </div>
+
+  <div class="relative z-10 flex flex-col justify-end md:justify-center h-full px-4 md:px-12 pb-16 md:pb-0 max-w-2xl">
+    <h1 id="heroTitle" class="text-3xl md:text-6xl font-black mb-4 drop-shadow-lg"></h1>
+    <p id="heroDesc" class="text-sm md:text-lg text-gray-200 mb-6 line-clamp-3 md:line-clamp-4 drop-shadow"></p>
+    <div class="flex items-center gap-3">
+      <button id="heroPlayBtn" class="flex items-center gap-2 bg-white text-black font-bold px-5 md:px-7 py-2.5 md:py-3 rounded hover:bg-white/80 transition">
+        <svg class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        Play
+      </button>
+      <button id="heroInfoBtn" class="flex items-center gap-2 bg-gray-500/40 text-white font-bold px-5 md:px-7 py-2.5 md:py-3 rounded hover:bg-gray-500/25 transition backdrop-blur">
+        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        More Info
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= SEARCH RESULTS ============================= -->
+<section id="searchResults" class="hidden px-4 md:px-10 pt-28 pb-16 min-h-[60vh]">
+  <h2 class="text-xl md:text-2xl font-bold mb-4">Results for "<span id="searchQueryLabel"></span>"</h2>
+  <div id="searchGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4"></div>
+  <p id="searchEmpty" class="hidden text-gray-400 mt-6">No titles match your search.</p>
+</section>
+
+<!-- ============================= ROWS ============================= -->
+<main id="rowsContainer" class="relative z-10 -mt-8 md:-mt-24 pb-20 px-1 md:px-0" >
+  <div id="categories"></div>
+</main>
+
+<!-- ============================= VIDEO MODAL ============================= -->
+<div id="playerModal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-sm">
+  <div class="relative w-full h-full flex flex-col">
+
+    <!-- top bar -->
+    <div class="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-gradient-to-b from-black/80 to-transparent absolute top-0 left-0 right-0 z-20">
+      <div class="min-w-0 pr-4">
+        <h3 id="modalTitle" class="text-lg md:text-2xl font-bold truncate"></h3>
+        <p id="modalCategory" class="text-xs md:text-sm text-red-500 font-semibold"></p>
+      </div>
+      <button id="closeModalBtn" class="shrink-0 w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- player area -->
+    <div id="playerStage" class="flex-1 flex items-center justify-center relative bg-black">
+      <video id="videoPlayer" class="hidden w-full h-full object-contain" playsinline></video>
+      <iframe id="embedPlayer" class="hidden w-full h-full" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <!-- custom controls (only for <video>, hidden for embeds) -->
+    <div id="customControls" class="absolute bottom-0 left-0 right-0 z-20 px-4 md:px-8 pb-4 md:pb-6 pt-10 bg-gradient-to-t from-black/90 to-transparent">
+      <input id="progressRange" type="range" min="0" max="100" value="0" step="0.1" class="w-full mb-3 md:mb-4"/>
+
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 md:gap-4">
+          <button id="playPauseBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+            <svg id="playIcon" class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pauseIcon" class="hidden w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </button>
+
+          <div class="flex items-center gap-2 group">
+            <button id="muteBtn" class="w-8 h-8 flex items-center justify-center">
+              <svg id="volIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+              <svg id="mutedIcon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+            </button>
+            <input id="volumeRange" type="range" min="0" max="1" step="0.01" value="1" class="w-16 md:w-24"/>
+          </div>
+
+          <span id="timeLabel" class="text-xs md:text-sm text-gray-300 tabular-nums">0:00 / 0:00</span>
+        </div>
+
+        <div class="flex items-center gap-2 md:gap-3">
+          <label class="flex items-center gap-1.5 text-xs md:text-sm text-gray-200 bg-white/10 hover:bg-white/20 transition px-3 py-2 rounded cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0L8 8m4-4l4 4"/></svg>
+            <span class="hidden sm:inline">Upload local file</span>
+            <input id="localFileInput" type="file" accept="video/*" class="hidden"/>
+          </label>
+
+          <button id="fullscreenBtn" class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V5a1 1 0 011-1h3M4 16v3a1 1 0 001 1h3m8-16h3a1 1 0 011 1v3m-4 12h3a1 1 0 001-1v-3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================================================================
+   VIDEO DATA — edit this array to add / remove / change titles.
+   Each entry: id, title, category (string or array of strings), thumbnail,
+   videoUrl (.mp4/.webm or a YouTube/Vimeo embed URL), description.
+   ====================================================================== */
+const VIDEOS = [
+  {
+    id: 1,
+    title: "Sintel: The Last Stand",
+    category: ["Favorites", "Trending Now"],
+    thumbnail: "https://picsum.photos/seed/sintel/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+    description: "A lone warrior named Sintel roams a scorched world in search of a lost companion, uncovering ancient secrets along the way.",
+    featured: true
+  },
+  {
+    id: 2,
+    title: "Stranger Vibes",
+    category: ["Trending Now", "Recently Added"],
+    thumbnail: "https://picsum.photos/seed/bigbuck/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    description: "A gentle giant rabbit is pushed too far by a trio of bullying rodents, and decides enough is enough."
+  },
+  {
+    id: 3,
+    title: "Elemental Dreams",
+    category: ["Trending Now", "Favorites"],
+    thumbnail: "https://picsum.photos/seed/elephant/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    description: "Two characters wander through a surreal, ever-shifting machine world, chasing memories that may not be real."
+  },
+  {
+    id: 4,
+    title: "Blaze Runners",
+    category: ["Trending Now"],
+    thumbnail: "https://picsum.photos/seed/blazes/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    description: "High-octane stunts and roaring engines collide in this adrenaline-fueled showcase of speed."
+  },
+  {
+    id: 5,
+    title: "Escape Velocity",
+    category: ["Downloaded Files"],
+    thumbnail: "https://picsum.photos/seed/escapes/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    description: "Breathtaking getaways across impossible terrain — saved offline for whenever you need an escape."
+  },
+  {
+    id: 6,
+    title: "Fun House",
+    category: ["Favorites", "Recently Added"],
+    thumbnail: "https://picsum.photos/seed/funhouse/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    description: "A lighthearted romp through everyday joy, told through bursts of color and motion."
+  },
+  {
+    id: 7,
+    title: "Joyride Chronicles",
+    category: ["Trending Now"],
+    thumbnail: "https://picsum.photos/seed/joyrides/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+    description: "Open roads, open skies — a series of joyrides across landscapes most will never see."
+  },
+  {
+    id: 8,
+    title: "Meltdown City",
+    category: ["Downloaded Files"],
+    thumbnail: "https://picsum.photos/seed/meltdowns/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    description: "When the pressure hits its peak, a city on edge starts to unravel in spectacular fashion."
+  },
+  {
+    id: 9,
+    title: "Dirt & Steel",
+    category: ["Downloaded Files", "Recently Added"],
+    thumbnail: "https://picsum.photos/seed/subaru/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+    description: "A rugged tour through street and off-road terrain, testing machine and driver alike."
+  },
+  {
+    id: 10,
+    title: "Tears of Steel",
+    category: ["Recently Added", "Favorites"],
+    thumbnail: "https://picsum.photos/seed/tearsofsteel/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    description: "In a future war-torn Amsterdam, a small band of warriors and scientists prepare a plan to save mankind."
+  },
+  {
+    id: 11,
+    title: "GTI Review Nights",
+    category: ["Downloaded Files"],
+    thumbnail: "https://picsum.photos/seed/gti/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+    description: "A late-night deep dive into what makes a hot hatch tick, mile after mile."
+  },
+  {
+    id: 12,
+    title: "Bullrun Legends",
+    category: ["Trending Now", "Downloaded Files"],
+    thumbnail: "https://picsum.photos/seed/bullrun/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+    description: "Supercars, open highways, and a cross-country rally unlike any other."
+  },
+  {
+    id: 13,
+    title: "What Car Chronicles",
+    category: ["Recently Added"],
+    thumbnail: "https://picsum.photos/seed/whatcar/600/338",
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+    description: "Budget builds, big personalities — chasing the best car a thousand bucks can buy."
+  },
+  {
+    id: 14,
+    title: "Big Buck Bunny (Embed Demo)",
+    category: ["Trending Now"],
+    thumbnail: "https://picsum.photos/seed/embeddemo/600/338",
+    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1",
+    description: "Same short film, streamed here through a standard embed link to demonstrate embed-URL support."
+  }
+];
+
+const CATEGORY_ORDER = ["Trending Now", "Favorites", "Downloaded Files", "Recently Added"];
+
+/* ======================================================================
+   RENDERING
+   ====================================================================== */
+function categoriesOf(video) {
+  return Array.isArray(video.category) ? video.category : [video.category];
+}
+
+function videosIn(cat) {
+  return VIDEOS.filter(v => categoriesOf(v).includes(cat));
+}
+
+function allCategoriesInOrder() {
+  const found = new Set();
+  VIDEOS.forEach(v => categoriesOf(v).forEach(c => found.add(c)));
+  const ordered = CATEGORY_ORDER.filter(c => found.has(c));
+  const rest = [...found].filter(c => !CATEGORY_ORDER.includes(c));
+  return [...ordered, ...rest];
+}
+
+function cardHTML(video) {
+  return `
+    <div class="card-wrap relative shrink-0 w-[45vw] sm:w-56 md:w-64 cursor-pointer rounded overflow-hidden shadow-lg group"
+         data-id="${video.id}" onclick="openModal(${video.id})">
+      <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" loading="lazy"
+           class="w-full aspect-video object-cover"/>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent opacity-70 group-hover:opacity-100 transition-opacity"></div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-black/50 border-2 border-white/80 flex items-center justify-center">
+          <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 p-2 md:p-3">
+        <p class="text-xs md:text-sm font-semibold truncate drop-shadow">${escapeHtml(video.title)}</p>
+      </div>
+    </div>`;
+}
+
+function rowHTML(cat) {
+  const vids = videosIn(cat);
+  const rowId = `row-${slug(cat)}`;
+  return `
+    <div class="mb-8 md:mb-10">
+      <h2 class="text-base md:text-xl font-bold px-4 md:px-10 mb-2 md:mb-3">${escapeHtml(cat)}</h2>
+      <div class="relative group/row">
+        <button onclick="scrollRow('${rowId}',-1)" class="hidden md:flex absolute left-0 top-0 bottom-0 z-20 w-10 items-center justify-center bg-gradient-to-r from-black/70 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div id="${rowId}" class="flex gap-2 md:gap-3 overflow-x-auto no-scrollbar px-4 md:px-10 scroll-smooth">
+          ${vids.map(cardHTML).join("")}
+        </div>
+        <button onclick="scrollRow('${rowId}',1)" class="hidden md:flex absolute right-0 top-0 bottom-0 z-20 w-10 items-center justify-center bg-gradient-to-l from-black/70 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderRows() {
+  const container = document.getElementById("categories");
+  container.innerHTML = allCategoriesInOrder().map(rowHTML).join("");
+}
+
+function scrollRow(rowId, dir) {
+  const el = document.getElementById(rowId);
+  el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: "smooth" });
+}
+
+function slug(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+/* ======================================================================
+   HERO
+   ====================================================================== */
+let heroVideo = VIDEOS.find(v => v.featured) || VIDEOS[0];
+
+function renderHero() {
+  document.getElementById("heroImage").src = heroVideo.thumbnail.replace("600/338", "1600/900");
+  document.getElementById("heroTitle").textContent = heroVideo.title;
+  document.getElementById("heroDesc").textContent = heroVideo.description;
+}
+
+document.getElementById("heroPlayBtn").addEventListener("click", () => openModal(heroVideo.id));
+document.getElementById("heroInfoBtn").addEventListener("click", () => openModal(heroVideo.id));
+
+/* ======================================================================
+   SEARCH
+   ====================================================================== */
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+const heroSection = document.getElementById("hero");
+const rowsContainer = document.getElementById("rowsContainer");
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) {
+    searchResults.classList.add("hidden");
+    heroSection.classList.remove("hidden");
+    rowsContainer.classList.remove("hidden");
+    return;
+  }
+  heroSection.classList.add("hidden");
+  rowsContainer.classList.add("hidden");
+  searchResults.classList.remove("hidden");
+  document.getElementById("searchQueryLabel").textContent = searchInput.value;
+
+  const matches = VIDEOS.filter(v =>
+    v.title.toLowerCase().includes(q) ||
+    categoriesOf(v).some(c => c.toLowerCase().includes(q))
+  );
+  const grid = document.getElementById("searchGrid");
+  grid.innerHTML = matches.map(cardHTML).join("");
+  document.getElementById("searchEmpty").classList.toggle("hidden", matches.length > 0);
+});
+
+/* ======================================================================
+   PROFILE MENU
+   ====================================================================== */
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+profileBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  profileMenu.classList.toggle("hidden");
+});
+document.addEventListener("click", () => profileMenu.classList.add("hidden"));
+
+/* ======================================================================
+   NAVBAR SCROLL STYLE
+   ====================================================================== */
+window.addEventListener("scroll", () => {
+  document.getElementById("navbar").classList.toggle("nav-scrolled", window.scrollY > 40);
+});
+
+/* ======================================================================
+   VIDEO MODAL / PLAYER
+   ====================================================================== */
+const playerModal = document.getElementById("playerModal");
+const videoPlayer = document.getElementById("videoPlayer");
+const embedPlayer = document.getElementById("embedPlayer");
+const customControls = document.getElementById("customControls");
+const modalTitle = document.getElementById("modalTitle");
+const modalCategory = document.getElementById("modalCategory");
+const playPauseBtn = document.getElementById("playPauseBtn");
+const playIcon = document.getElementById("playIcon");
+const pauseIcon = document.getElementById("pauseIcon");
+const progressRange = document.getElementById("progressRange");
+const volumeRange = document.getElementById("volumeRange");
+const muteBtn = document.getElementById("muteBtn");
+const volIcon = document.getElementById("volIcon");
+const mutedIcon = document.getElementById("mutedIcon");
+const timeLabel = document.getElementById("timeLabel");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
+const localFileInput = document.getElementById("localFileInput");
+const playerStage = document.getElementById("playerStage");
+
+let activeObjectUrl = null;
+
+function isEmbedUrl(url) {
+  return /youtube\.com\/embed|youtu\.be|player\.vimeo\.com/i.test(url);
+}
+
+function openModal(id) {
+  const video = VIDEOS.find(v => v.id === id);
+  if (!video) return;
+  loadSource(video.videoUrl, video.title, categoriesOf(video).join(" · "));
+  playerModal.classList.remove("hidden");
+  playerModal.classList.add("fade-in");
+  document.body.style.overflow = "hidden";
+}
+
+function loadSource(url, title, categoryLabel) {
+  modalTitle.textContent = title || "";
+  modalCategory.textContent = categoryLabel || "";
+  releaseObjectUrl();
+
+  if (isEmbedUrl(url)) {
+    videoPlayer.pause();
+    videoPlayer.removeAttribute("src");
+    videoPlayer.classList.add("hidden");
+    customControls.classList.add("hidden");
+    embedPlayer.src = url;
+    embedPlayer.classList.remove("hidden");
+  } else {
+    embedPlayer.src = "";
+    embedPlayer.classList.add("hidden");
+    videoPlayer.classList.remove("hidden");
+    customControls.classList.remove("hidden");
+    videoPlayer.src = url;
+    videoPlayer.play().catch(() => {});
+  }
+}
+
+function releaseObjectUrl() {
+  if (activeObjectUrl) {
+    URL.revokeObjectURL(activeObjectUrl);
+    activeObjectUrl = null;
+  }
+}
+
+function closeModal() {
+  playerModal.classList.add("hidden");
+  document.body.style.overflow = "";
+  videoPlayer.pause();
+  videoPlayer.removeAttribute("src");
+  videoPlayer.load();
+  embedPlayer.src = "";
+  releaseObjectUrl();
+  resetControls();
+}
+
+function resetControls() {
+  progressRange.value = 0;
+  timeLabel.textContent = "0:00 / 0:00";
+  playIcon.classList.remove("hidden");
+  pauseIcon.classList.add("hidden");
+}
+
+document.getElementById("closeModalBtn").addEventListener("click", closeModal);
+playerModal.addEventListener("click", (e) => { if (e.target === playerModal) closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !playerModal.classList.contains("hidden")) closeModal();
+});
+
+/* play / pause */
+function togglePlay() {
+  if (videoPlayer.paused) videoPlayer.play(); else videoPlayer.pause();
+}
+playPauseBtn.addEventListener("click", togglePlay);
+videoPlayer.addEventListener("click", togglePlay);
+videoPlayer.addEventListener("play", () => { playIcon.classList.add("hidden"); pauseIcon.classList.remove("hidden"); });
+videoPlayer.addEventListener("pause", () => { playIcon.classList.remove("hidden"); pauseIcon.classList.add("hidden"); });
+
+/* progress */
+videoPlayer.addEventListener("timeupdate", () => {
+  if (!videoPlayer.duration) return;
+  progressRange.value = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+  timeLabel.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+});
+progressRange.addEventListener("input", () => {
+  if (!videoPlayer.duration) return;
+  videoPlayer.currentTime = (progressRange.value / 100) * videoPlayer.duration;
+});
+
+function formatTime(t) {
+  if (!isFinite(t)) return "0:00";
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+/* volume */
+volumeRange.addEventListener("input", () => {
+  videoPlayer.volume = volumeRange.value;
+  videoPlayer.muted = Number(volumeRange.value) === 0;
+  updateVolIcon();
+});
+muteBtn.addEventListener("click", () => {
+  videoPlayer.muted = !videoPlayer.muted;
+  updateVolIcon();
+});
+function updateVolIcon() {
+  const muted = videoPlayer.muted || videoPlayer.volume === 0;
+  volIcon.classList.toggle("hidden", muted);
+  mutedIcon.classList.toggle("hidden", !muted);
+}
+
+/* fullscreen (whole player stage, so custom controls stay visible) */
+fullscreenBtn.addEventListener("click", () => {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    playerStage.requestFullscreen?.() || videoPlayer.requestFullscreen?.();
+  }
+});
+
+/* local file upload -> blob URL playback */
+localFileInput.addEventListener("change", () => {
+  const file = localFileInput.files[0];
+  if (!file) return;
+  releaseObjectUrl();
+  activeObjectUrl = URL.createObjectURL(file);
+
+  embedPlayer.src = "";
+  embedPlayer.classList.add("hidden");
+  videoPlayer.classList.remove("hidden");
+  customControls.classList.remove("hidden");
+
+  modalTitle.textContent = file.name;
+  modalCategory.textContent = "Local file";
+  videoPlayer.src = activeObjectUrl;
+  videoPlayer.play().catch(() => {});
+});
+
+/* ======================================================================
+   INIT
+   ====================================================================== */
+renderHero();
+renderRows();
+</script>
+</body>
+</html>
