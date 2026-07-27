@@ -1,10 +1,11 @@
-name: Deploy web apps (Phantom + BRRRR Scout)
+name: Deploy web apps (Phantom + BRRRR Scout + Netflix Dashboard)
 
-# Builds both static web apps and publishes them together to GitHub Pages
+# Builds the static web apps and publishes them together to GitHub Pages
 # under one site, since a repo only gets a single live Pages deployment:
 #
-#   https://<owner>.github.io/mobile-station/              -> Phantom (dummy wallet)
-#   https://<owner>.github.io/mobile-station/brrrr-scout/  -> BRRRR Scout
+#   https://<owner>.github.io/mobile-station/                    -> Phantom (dummy wallet)
+#   https://<owner>.github.io/mobile-station/brrrr-scout/         -> BRRRR Scout
+#   https://<owner>.github.io/mobile-station/netflix-dashboard/   -> Netflix-style video dashboard
 #
 # One-time setup: repo Settings -> Pages -> Build and deployment ->
 # Source: "GitHub Actions". Then run this workflow (it also runs on push).
@@ -16,9 +17,11 @@ on:
       - claude/shortsforge-mobile-app-ofusva
       - claude/phantom-wallet-prank-tuwtj9
       - claude/brrrr-property-analyzer-2rrlsb
+      - claude/netflix-video-dashboard-3nwwq4
     paths:
       - 'Phantom-Dummy/**'
       - 'BRRRR-Analyzer/**'
+      - 'Netflix-Video-Dashboard/**'
       - '.github/workflows/deploy-web.yml'
   workflow_dispatch:
 
@@ -67,10 +70,11 @@ jobs:
 
       - name: Assemble combined site
         run: |
-          mkdir -p _site/brrrr-scout
+          mkdir -p _site/brrrr-scout _site/netflix-dashboard
           cp -r Phantom-Dummy/dist/. _site/
           cp Phantom-Dummy/dist/index.html _site/404.html
           cp -r BRRRR-Analyzer/dist/. _site/brrrr-scout/
+          cp Netflix-Video-Dashboard/index.html _site/netflix-dashboard/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
