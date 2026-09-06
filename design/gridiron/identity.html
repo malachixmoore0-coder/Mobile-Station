@@ -1,0 +1,994 @@
+<title>Marks &amp; Material</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Bevan&family=Big+Shoulders+Display:wght@600;700;800&family=Bodoni+Moda:opsz,wght@6..96,700;6..96,900&family=Cinzel:wght@500;700;900&family=Cutive+Mono&family=Familjen+Grotesk:wght@500;600;700&family=Fjalla+One&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Karla:wght@400;500;700&family=Lora:wght@400;600&family=Saira:wght@400;500;800&family=Spectral:wght@300;400;700;800&family=Zilla+Slab:wght@400;600;700&display=swap">
+
+<style>
+/* ============================================================
+   CHROME — an identity manual. No accent colour of its own, so
+   the ten marks are the only colour on the page.
+   ============================================================ */
+:root{
+  --paper:#E9E9E4; --surface:#F7F7F4; --ink:#17191A; --dim:#5C615F;
+  --faint:#8A908D; --rule:#D0D1CB; --rule-hard:#B4B6AF;
+  --fd:"Fraunces",Georgia,serif;
+  --fb:"Archivo",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#141614; --surface:#1C1F1D; --ink:#E9EAE5; --dim:#969A96;
+    --faint:#6C716E; --rule:#2A2D2A; --rule-hard:#3C403C;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141614; --surface:#1C1F1D; --ink:#E9EAE5; --dim:#969A96;
+  --faint:#6C716E; --rule:#2A2D2A; --rule-hard:#3C403C;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;line-height:1.05;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.eyebrow{font-family:var(--fb);font-size:10.5px;font-weight:600;letter-spacing:.19em;text-transform:uppercase;color:var(--dim)}
+
+/* masthead */
+.mast{padding:74px 0 0}
+.mast h1{font-family:var(--fd);font-size:clamp(42px,6.6vw,80px);font-weight:900;letter-spacing:-.025em;margin:16px 0 0}
+.mast .sub{font-size:clamp(16px,1.8vw,19px);line-height:1.62;color:var(--dim);max-width:62ch;margin-top:20px}
+.mast .sub b{color:var(--ink);font-weight:600}
+.note{
+  margin-top:26px;border-left:3px solid var(--rule-hard);padding:2px 0 2px 16px;
+  font-size:15px;line-height:1.6;color:var(--dim);max-width:62ch;
+}
+.note b{color:var(--ink);font-weight:600}
+.mast-meta{display:flex;flex-wrap:wrap;margin-top:34px;border-top:1px solid var(--rule-hard);border-bottom:1px solid var(--rule)}
+.mast-meta div{flex:1 1 148px;padding:13px 18px 13px 0;border-right:1px solid var(--rule)}
+.mast-meta div:last-child{border-right:0}
+.mast-meta dt{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.mast-meta dd{margin:5px 0 0;font-family:var(--fd);font-weight:600;font-size:15px}
+
+/* mark index */
+.index{padding:40px 0 66px}
+.index-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.ix{display:block;text-decoration:none;transition:transform .18s ease}
+.ix:hover,.ix:focus-visible{transform:translateY(-4px)}
+.ix .box{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.22);border-radius:22%}
+.ix .box svg{width:66%;height:66%}
+.ix .n{display:block;font-size:9.5px;font-weight:600;color:var(--faint);margin-top:7px;letter-spacing:.08em}
+.ix .nm{display:block;font-family:var(--fd);font-size:12px;font-weight:600;color:var(--ink);line-height:1.25;margin-top:1px}
+@media(max-width:900px){.index-grid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:520px){.index-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ============================================================
+   IDENTITY BANDS
+   ============================================================ */
+.id{background:var(--bg);color:var(--ink-c);padding:60px 0 68px;border-top:1px solid var(--line)}
+.id-head{display:grid;grid-template-columns:auto 1fr;gap:0 22px}
+.id-num{font-family:var(--f-body);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--accent);padding-top:12px}
+.id-title{
+  font-family:var(--f-display);font-size:clamp(28px,4.4vw,50px);
+  font-weight:var(--w-d,700);letter-spacing:var(--tr-d,-.02em);
+  text-transform:var(--case-d,none);color:var(--ink-c);
+}
+.id-pos{grid-column:2;font-family:var(--f-body);font-size:16.5px;line-height:1.58;color:var(--dim-c);max-width:58ch;margin-top:13px}
+.id-names{grid-column:2;list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:18px 0 0}
+.id-names li{
+  font-family:var(--f-body);font-size:10.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;padding:6px 12px;border:1px solid var(--accent);
+  color:var(--accent);border-radius:var(--r-pill,2px);
+}
+.id-names li.alt{border-color:var(--line);color:var(--dim-c)}
+
+/* the three identity panels */
+.id-strip{display:grid;grid-template-columns:1fr 1.45fr .72fr;gap:16px;margin-top:40px}
+@media(max-width:900px){.id-strip{grid-template-columns:1fr;gap:14px}}
+.pan{border:1px solid var(--line);background:var(--surf);display:flex;flex-direction:column}
+.pan-lab{
+  font-family:var(--f-body);font-size:9px;font-weight:700;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--dim-c);padding:11px 14px;border-bottom:1px solid var(--line);
+}
+.pan-in{flex:1;display:flex;align-items:center;justify-content:center;padding:26px 20px;min-height:172px}
+.mark-lg{width:132px;height:132px;display:block}
+.icon-lg{
+  width:98px;height:98px;border-radius:23%;display:flex;align-items:center;justify-content:center;
+  background:var(--icon-bg,var(--bg));border:1px solid var(--line);
+}
+.icon-lg svg{width:64%;height:64%}
+
+/* wordmark lockups */
+.lock{display:flex;align-items:center;gap:16px;justify-content:center;width:100%}
+.lock svg{width:54px;height:54px;flex:none}
+.lock-txt{min-width:0}
+.lock-name{
+  font-family:var(--f-display);font-size:var(--lock-size,30px);font-weight:var(--w-d,700);
+  letter-spacing:var(--tr-lock,-.02em);text-transform:var(--case-d,none);color:var(--ink-c);
+  line-height:1;display:block;
+}
+.lock-sub{
+  font-family:var(--f-body);font-size:9px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--dim-c);display:block;margin-top:7px;
+}
+
+/* lower grid */
+.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:900px){.id-grid{grid-template-columns:1fr}}
+.pan-body{padding:18px 18px 20px}
+
+/* pattern */
+.pat{display:block;width:100%;height:118px;border-bottom:1px solid var(--line)}
+.pat-cap{font-family:var(--f-body);font-size:13.5px;line-height:1.55;color:var(--dim-c);padding:14px 18px 16px}
+.pat-cap b{color:var(--ink-c);font-weight:600}
+
+/* palette */
+.pal{display:flex;flex-wrap:wrap}
+.pal-sw{flex:1 1 90px;min-width:90px;border-right:1px solid var(--line)}
+.pal-sw:last-child{border-right:0}
+.pal-sw .fill{display:block;height:54px}
+.pal-sw .meta{display:block;padding:9px 10px 12px}
+.pal-sw .role{display:block;font-family:var(--f-body);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim-c);font-weight:600}
+.pal-sw .hex{display:block;font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--ink-c);margin-top:3px;letter-spacing:.01em}
+
+/* type */
+.ty-line{
+  font-family:var(--f-display);font-weight:var(--w-d,700);font-size:clamp(28px,3.6vw,38px);
+  letter-spacing:var(--tr-d,-.02em);text-transform:var(--case-d,none);color:var(--ink-c);line-height:1.05;
+}
+.ty-sub{font-family:var(--f-body);font-size:14.5px;line-height:1.6;color:var(--dim-c);margin-top:12px;max-width:48ch}
+.ty-names{font-family:var(--f-body);font-size:11px;font-weight:600;color:var(--accent);margin-top:13px;letter-spacing:.05em}
+
+/* application */
+.app-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.app-list li{display:grid;grid-template-columns:82px 1fr;gap:14px;align-items:baseline;font-family:var(--f-body);font-size:14.5px;line-height:1.55;color:var(--dim-c)}
+.app-list b{font-family:var(--f-body);font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-c)}
+
+/* ============================================================
+   PER-CONCEPT TOKENS
+   ============================================================ */
+.k11{--bg:#0A2A20;--surf:#0E3B2E;--line:#1E5241;--ink-c:#F0EAD8;--dim-c:#9DB5A8;--accent:#C9A227;
+  --f-display:"Cinzel",Georgia,serif;--f-body:"Spectral",Georgia,serif;
+  --w-d:700;--tr-d:.03em;--lock-size:26px;--tr-lock:.1em;--r-pill:2px;--icon-bg:#062018}
+.k12{--bg:#191B19;--surf:#232623;--line:#3A3E3A;--ink-c:#F5F4F0;--dim-c:#9B9E98;--accent:#E8B10C;
+  --f-display:"Saira",system-ui,sans-serif;--f-body:"Barlow",system-ui,sans-serif;
+  --w-d:800;--tr-d:-.03em;--case-d:uppercase;--lock-size:30px;--tr-lock:-.02em;--r-pill:2px;--icon-bg:#E8B10C}
+.k13{--bg:#150F0C;--surf:#1F1713;--line:#3A2A20;--ink-c:#EDE3D0;--dim-c:#A38F76;--accent:#C8891F;
+  --f-display:"Bodoni Moda",Didot,Georgia,serif;--f-body:"Archivo",system-ui,sans-serif;
+  --w-d:900;--tr-d:-.02em;--lock-size:30px;--r-pill:2px;--icon-bg:#150F0C}
+.k14{--bg:#EFEDE6;--surf:#FFFFFF;--line:#D3D0C7;--ink-c:#14161A;--dim-c:#5E6167;--accent:#C8342B;
+  --f-display:"Fjalla One",system-ui,sans-serif;--f-body:"Barlow",system-ui,sans-serif;
+  --w-d:400;--tr-d:-.01em;--case-d:uppercase;--lock-size:31px;--r-pill:2px;--icon-bg:#1D3E6E}
+.k15{--bg:#241811;--surf:#33241A;--line:#4E382555;--ink-c:#F2EADB;--dim-c:#B99A7C;--accent:#D08B3F;
+  --f-display:"Zilla Slab",Georgia,serif;--f-body:"Karla",system-ui,sans-serif;
+  --w-d:700;--tr-d:-.02em;--lock-size:31px;--r-pill:4px;--icon-bg:#B5793C}
+.k16{--bg:#3E1220;--surf:#511A2A;--line:#733043;--ink-c:#F3ECDD;--dim-c:#C5A0A9;--accent:#E5B857;
+  --f-display:"Bevan",Georgia,serif;--f-body:"Barlow Semi Condensed",system-ui,sans-serif;
+  --w-d:400;--tr-d:-.01em;--lock-size:28px;--r-pill:2px;--icon-bg:#2A0C15}
+.k17{--bg:#E0D4B6;--surf:#F5F0E2;--line:#C3B694;--ink-c:#232B3E;--dim-c:#6E6852;--accent:#B23A2E;
+  --f-display:"Big Shoulders Display","Barlow Condensed",sans-serif;--f-body:"Lora",Georgia,serif;
+  --w-d:800;--tr-d:-.01em;--case-d:uppercase;--lock-size:34px;--r-pill:0;--icon-bg:#232B3E}
+.k18{--bg:#E5E2D7;--surf:#F2F0E8;--line:#C9C4B2;--ink-c:#1E1F1A;--dim-c:#6A6656;--accent:#C4541F;
+  --f-display:"Familjen Grotesk",system-ui,sans-serif;--f-body:"Archivo",system-ui,sans-serif;
+  --w-d:700;--tr-d:-.03em;--lock-size:31px;--r-pill:999px;--icon-bg:#22372C}
+.k19{--bg:#0C0C0D;--surf:#17171A;--line:#2C2D31;--ink-c:#F2F1EE;--dim-c:#8A9199;--accent:#D01B2B;
+  --f-display:"Anton",system-ui,sans-serif;--f-body:"Archivo",system-ui,sans-serif;
+  --w-d:400;--tr-d:-.02em;--case-d:uppercase;--lock-size:33px;--r-pill:0;--icon-bg:#D01B2B}
+.k20{--bg:#D6D2C7;--surf:#EDEBE2;--line:#B9B4A5;--ink-c:#1A1A18;--dim-c:#5E5C51;--accent:#A8281E;
+  --f-display:"Spectral",Georgia,serif;--f-body:"Cutive Mono",monospace;
+  --w-d:800;--tr-d:-.025em;--lock-size:31px;--r-pill:0;--icon-bg:#2A4C6D}
+
+/* close */
+.close{padding:74px 0 92px}
+.tbl-scroll{overflow-x:auto;margin-top:26px;border:1px solid var(--rule-hard)}
+table{border-collapse:collapse;width:100%;min-width:760px;background:var(--surface)}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:600;background:var(--paper);border-bottom:1px solid var(--rule-hard)}
+td{font-size:14.5px;color:var(--dim);line-height:1.5}
+tbody tr:last-child td{border-bottom:0}
+td.nm{font-family:var(--fd);font-weight:600;color:var(--ink);white-space:nowrap}
+td.nm i{font-style:normal;font-family:var(--fb);font-size:9.5px;color:var(--faint);display:block;letter-spacing:.12em;margin-bottom:2px}
+td.mk{width:54px}
+td.mk svg{width:34px;height:34px;display:block}
+h2.sec{font-family:var(--fd);font-size:clamp(25px,3.2vw,36px);font-weight:900;letter-spacing:-.025em;margin-top:11px}
+.sec-lede{font-size:16.5px;color:var(--dim);max-width:62ch;margin-top:13px;line-height:1.6}
+.foot{border-top:1px solid var(--rule);margin-top:58px;padding-top:20px;font-size:12px;color:var(--faint);line-height:1.85}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<!-- ============ MARK LIBRARY ============ -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="clipHelmet"><path d="M20 56C20 26 33 10 50 10s30 16 30 46v12c0 7-6 12-14 12H34c-8 0-14-5-14-12Z"/></clipPath>
+  </defs>
+
+  <!-- 11 THE CREST -->
+  <symbol id="m11" viewBox="0 0 100 100">
+    <path d="M50 5 89 17v33c0 23-18 39-39 46C29 89 11 73 11 50V17Z" fill="#0E3B2E" stroke="#C9A227" stroke-width="3.4"/>
+    <path d="M13.5 53h73" stroke="#C9A227" stroke-width="3"/>
+    <path d="M31 34q19-15 38 0-19 14-38 0Z" fill="#F0EAD8"/>
+    <path d="M50 27v14M43 31h14M43 35h14" stroke="#0E3B2E" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M33 68l17-8 17 8M33 79l17-8 17 8" fill="none" stroke="#F0EAD8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- 12 CHAIN GANG -->
+  <symbol id="m12" viewBox="0 0 100 100">
+    <rect x="9" y="16" width="8" height="68" rx="4" fill="#F5F4F0"/>
+    <rect x="83" y="16" width="8" height="68" rx="4" fill="#F5F4F0"/>
+    <rect x="4" y="80" width="18" height="7" rx="3.5" fill="#F5F4F0"/>
+    <rect x="78" y="80" width="18" height="7" rx="3.5" fill="#F5F4F0"/>
+    <g fill="none" stroke="#E8B10C" stroke-width="5">
+      <ellipse cx="30" cy="50" rx="12" ry="8"/>
+      <ellipse cx="50" cy="50" rx="12" ry="8"/>
+      <ellipse cx="70" cy="50" rx="12" ry="8"/>
+    </g>
+  </symbol>
+
+  <!-- 13 AUTUMN REEL -->
+  <symbol id="m13" viewBox="0 0 100 100">
+    <path d="M6 50q44-38 88 0-44 38-88 0Z" fill="none" stroke="#EDE3D0" stroke-width="4"/>
+    <g fill="#C8891F">
+      <rect x="17" y="45" width="10" height="10" rx="1.6"/>
+      <rect x="33" y="45" width="10" height="10" rx="1.6"/>
+      <rect x="49" y="45" width="10" height="10" rx="1.6"/>
+      <rect x="65" y="45" width="10" height="10" rx="1.6"/>
+    </g>
+    <path d="M14 36h72M14 64h72" stroke="#8C6220" stroke-width="1.6"/>
+  </symbol>
+
+  <!-- 14 SERIES ONE -->
+  <symbol id="m14" viewBox="0 0 100 100">
+    <rect x="21" y="7" width="58" height="86" rx="4" fill="#FFFFFF" stroke="#14161A" stroke-width="3.2"/>
+    <rect x="28" y="14" width="44" height="72" fill="none" stroke="#D3D0C7" stroke-width="1.6"/>
+    <path d="M62 14h10v10Z" fill="#B08D3F"/>
+    <path d="M34 41q16-12 32 0-16 12-32 0Z" fill="#1D3E6E"/>
+    <path d="M28 68l44-12v15L28 83Z" fill="#C8342B"/>
+  </symbol>
+
+  <!-- 15 PIGSKIN -->
+  <symbol id="m15" viewBox="0 0 100 100">
+    <path d="M8 50q42-36 84 0-42 36-84 0Z" fill="#8A5628" stroke="#2A1B10" stroke-width="3"/>
+    <rect x="30" y="48.2" width="40" height="3.6" rx="1.8" fill="#F2EADB"/>
+    <g fill="#F2EADB">
+      <rect x="34.5" y="40" width="4.6" height="20" rx="2.3"/>
+      <rect x="45" y="38.5" width="4.6" height="23" rx="2.3"/>
+      <rect x="55.5" y="38.5" width="4.6" height="23" rx="2.3"/>
+      <rect x="66" y="40" width="4.6" height="20" rx="2.3"/>
+    </g>
+  </symbol>
+
+  <!-- 16 DRUMLINE -->
+  <symbol id="m16" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="38" fill="#5E1A28" stroke="#E5B857" stroke-width="3.4"/>
+    <g fill="#E5B857">
+      <rect x="47" y="4" width="6" height="10" rx="2"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(45 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(90 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(135 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(180 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(225 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(270 50 50)"/>
+      <rect x="47" y="4" width="6" height="10" rx="2" transform="rotate(315 50 50)"/>
+    </g>
+    <path d="M31 58l19-17 19 17M31 71l19-17 19 17" fill="none" stroke="#F3ECDD" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- 17 ADMIT ONE -->
+  <symbol id="m17" viewBox="0 0 100 100">
+    <rect x="8" y="27" width="84" height="46" rx="3" fill="#F5F0E2" stroke="#232B3E" stroke-width="3.2"/>
+    <path d="M63 29v42" stroke="#232B3E" stroke-width="2.2" stroke-dasharray="4 4"/>
+    <circle cx="77.5" cy="50" r="6" fill="none" stroke="#232B3E" stroke-width="2.4"/>
+    <path d="M20 41q11-8 22 0-11 8-22 0Z" fill="#B23A2E"/>
+    <rect x="19" y="55" width="24" height="3.4" rx="1.7" fill="#232B3E"/>
+    <rect x="19" y="62" width="15" height="2.8" rx="1.4" fill="#6E6852"/>
+  </symbol>
+
+  <!-- 18 CONTOUR -->
+  <symbol id="m18" viewBox="0 0 100 100">
+    <g fill="none" stroke="#8A7A5E" stroke-width="2.8">
+      <ellipse cx="50" cy="49" rx="45" ry="33"/>
+      <ellipse cx="50" cy="50" rx="36" ry="25.5"/>
+      <ellipse cx="50" cy="51.5" rx="18" ry="11.5"/>
+    </g>
+    <ellipse cx="50" cy="50.7" rx="27" ry="18.5" fill="none" stroke="#C4541F" stroke-width="4"/>
+    <path d="M39 51q11-8 22 0-11 8-22 0Z" fill="#22372C"/>
+  </symbol>
+
+  <!-- 19 THE STRIPE -->
+  <symbol id="m19" viewBox="0 0 100 100">
+    <path d="M20 56C20 26 33 10 50 10s30 16 30 46v12c0 7-6 12-14 12H34c-8 0-14-5-14-12Z" fill="#F2F1EE"/>
+    <g clip-path="url(#clipHelmet)"><rect x="43" y="8" width="14" height="76" fill="#D01B2B"/></g>
+    <rect x="25" y="59" width="50" height="5" rx="2.5" fill="#0C0C0D"/>
+    <rect x="30" y="70" width="40" height="5" rx="2.5" fill="#0C0C0D"/>
+  </symbol>
+
+  <!-- 20 THE WIRE -->
+  <symbol id="m20" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="42" fill="none" stroke="#1A1A18" stroke-width="3.2"/>
+    <circle cx="50" cy="50" r="32" fill="none" stroke="#1A1A18" stroke-width="1.4"/>
+    <circle cx="50" cy="50" r="37" fill="none" stroke="#1A1A18" stroke-width="7" stroke-dasharray="1.9 7.8"/>
+    <path d="M37 41q13-9 26 0-13 9-26 0Z" fill="#2A4C6D"/>
+    <rect x="27" y="54" width="46" height="4.4" rx="2.2" fill="#A8281E"/>
+    <rect x="34" y="63" width="32" height="2.4" rx="1.2" fill="#1A1A18"/>
+  </symbol>
+
+  <!-- ============ PATTERN TILES ============ -->
+  <defs>
+    <pattern id="p11" width="26" height="26" patternUnits="userSpaceOnUse">
+      <rect width="26" height="26" fill="#0E3B2E"/>
+      <path d="M0 13 13 0l13 13-13 13Z" fill="none" stroke="#295F4A" stroke-width="1.2"/>
+      <circle cx="13" cy="13" r="2" fill="#C9A227"/>
+      <circle cx="0" cy="0" r="1.4" fill="#C9A227"/><circle cx="26" cy="0" r="1.4" fill="#C9A227"/>
+      <circle cx="0" cy="26" r="1.4" fill="#C9A227"/><circle cx="26" cy="26" r="1.4" fill="#C9A227"/>
+    </pattern>
+
+    <pattern id="p12" width="36" height="30" patternUnits="userSpaceOnUse">
+      <rect width="36" height="30" fill="#191B19"/>
+      <g fill="none" stroke="#E8B10C" stroke-width="2.6">
+        <ellipse cx="18" cy="17" rx="11" ry="7"/><ellipse cx="0" cy="17" rx="11" ry="7"/><ellipse cx="36" cy="17" rx="11" ry="7"/>
+      </g>
+      <g fill="#6D6A5A"><rect x="8" y="0" width="1.6" height="5"/><rect x="26" y="0" width="1.6" height="5"/><rect x="17" y="0" width="1.6" height="8"/></g>
+    </pattern>
+
+    <pattern id="p13" width="22" height="42" patternUnits="userSpaceOnUse">
+      <rect width="22" height="42" fill="#150F0C"/>
+      <rect x="6" y="4" width="10" height="10" rx="1.6" fill="#C8891F"/>
+      <rect x="6" y="28" width="10" height="10" rx="1.6" fill="#C8891F"/>
+      <circle cx="5" cy="21" r="2.4" fill="#5E4318"/><circle cx="16" cy="21" r="1.5" fill="#8C6220"/>
+    </pattern>
+
+    <pattern id="p14" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect width="30" height="30" fill="#FFFFFF"/>
+      <path d="M0 30 30 0" stroke="#B08D3F" stroke-width="1.6"/>
+      <path d="M0 0h30M0 0v30" stroke="#D3D0C7" stroke-width="1.2"/>
+      <circle cx="15" cy="15" r="2.2" fill="#C8342B"/>
+      <circle cx="0" cy="0" r="2.6" fill="#1D3E6E"/><circle cx="30" cy="30" r="2.6" fill="#1D3E6E"/>
+    </pattern>
+
+    <pattern id="p15" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect width="20" height="20" fill="#8A5628"/>
+      <circle cx="4" cy="4" r="2.6" fill="#6E421D"/><circle cx="14" cy="9" r="2.6" fill="#6E421D"/>
+      <circle cx="6" cy="15" r="2.2" fill="#A46A33"/><circle cx="17" cy="18" r="2" fill="#6E421D"/>
+      <circle cx="11" cy="1" r="1.8" fill="#A46A33"/>
+    </pattern>
+
+    <pattern id="p16" width="30" height="21" patternUnits="userSpaceOnUse">
+      <rect width="30" height="21" fill="#5E1A28"/>
+      <path d="M0 17 15 4l15 13" fill="none" stroke="#E5B857" stroke-width="3.2"/>
+      <path d="M0 21 15 8l15 13" fill="none" stroke="#8E3245" stroke-width="2"/>
+    </pattern>
+
+    <pattern id="p17" width="40" height="26" patternUnits="userSpaceOnUse">
+      <rect width="40" height="26" fill="#F5F0E2"/>
+      <path d="M0 9q10-9 20 0t20 0" fill="none" stroke="#B23A2E" stroke-width="1.2"/>
+      <path d="M0 13q10-9 20 0t20 0" fill="none" stroke="#232B3E" stroke-width="1"/>
+      <path d="M0 17q10-9 20 0t20 0" fill="none" stroke="#9A917C" stroke-width="1"/>
+      <circle cx="0" cy="24" r="1.5" fill="#C3B694"/><circle cx="10" cy="24" r="1.5" fill="#C3B694"/>
+      <circle cx="20" cy="24" r="1.5" fill="#C3B694"/><circle cx="30" cy="24" r="1.5" fill="#C3B694"/>
+    </pattern>
+
+    <pattern id="p18" width="64" height="62" patternUnits="userSpaceOnUse">
+      <rect width="64" height="62" fill="#F2F0E8"/>
+      <g fill="none" stroke="#A99C7E" stroke-width="1.3">
+        <path d="M0 8q16-7 32 0t32 0"/><path d="M0 20q16-7 32 0t32 0"/>
+        <path d="M0 44q16-7 32 0t32 0"/><path d="M0 56q16-7 32 0t32 0"/>
+      </g>
+      <path d="M0 32q16-7 32 0t32 0" fill="none" stroke="#C4541F" stroke-width="2"/>
+    </pattern>
+
+    <pattern id="p19" width="76" height="20" patternUnits="userSpaceOnUse">
+      <rect width="76" height="20" fill="#F2F1EE"/>
+      <rect x="0" width="24" height="20" fill="#0C0C0D"/>
+      <rect x="29" width="8" height="20" fill="#D01B2B"/>
+      <rect x="41" width="3" height="20" fill="#0C0C0D"/>
+      <rect x="50" width="14" height="20" fill="#8A9199"/>
+    </pattern>
+
+    <pattern id="p20" width="46" height="34" patternUnits="userSpaceOnUse">
+      <rect width="46" height="34" fill="#EDEBE2"/>
+      <rect x="0" y="0" width="46" height="1.6" fill="#1A1A18"/>
+      <rect x="0" y="16" width="46" height="0.9" fill="#2A4C6D"/>
+      <rect x="22" y="2" width="0.9" height="13" fill="#B9B4A5"/>
+      <rect x="0" y="22" width="12" height="2.6" fill="#A8281E"/>
+      <rect x="16" y="22" width="26" height="2.6" fill="#B9B4A5"/>
+      <rect x="0" y="28" width="20" height="2" fill="#B9B4A5"/>
+    </pattern>
+  </defs>
+</svg>
+
+
+<main>
+
+<header class="mast">
+  <div class="wrap">
+    <p class="eyebrow">Round two &middot; Identity, marks &amp; pattern</p>
+    <h1>Marks &amp; Material</h1>
+    <p class="sub">Ten identities, each with <b>a drawn logo, an app icon, a repeating
+      pattern, a palette and a type pairing</b>. Where round one proposed screen treatments,
+      this set proposes brands: something you could stamp on a hat, a splash screen and a
+      favicon and have it still be the same thing.</p>
+
+    <p class="note"><b>On the last set:</b> half of it was borrowed from software rather than
+      from football &mdash; terminal monospace, neon on black, a node graph, the glow.
+      That reads as a dev tool wearing a jersey. Every direction here is drawn from
+      football&rsquo;s own material culture instead: heraldry, chains, film stock, card stock,
+      leather, brass, ticket paper, survey maps, helmet stripes and wire copy. Real objects
+      with real graphic traditions behind them.</p>
+
+    <dl class="mast-meta">
+      <div><dt>Identities</dt><dd>10</dd></div>
+      <div><dt>Per identity</dt><dd>Logo, icon, pattern</dd></div>
+      <div><dt>Marks drawn</dt><dd>Vector, single colour capable</dd></div>
+      <div><dt>Numbering</dt><dd>11&ndash;20, after round one</dd></div>
+      <div><dt>Stage</dt><dd>Concept, not artwork</dd></div>
+    </dl>
+  </div>
+</header>
+
+<section class="index">
+  <div class="wrap">
+    <div class="index-grid">
+      <a class="ix" href="#k11"><span class="box" style="background:#0E3B2E"><svg viewBox="0 0 100 100"><use href="#m11"/></svg></span><span class="n">11</span><span class="nm">The Crest</span></a>
+      <a class="ix" href="#k12"><span class="box" style="background:#191B19"><svg viewBox="0 0 100 100"><use href="#m12"/></svg></span><span class="n">12</span><span class="nm">Chain Gang</span></a>
+      <a class="ix" href="#k13"><span class="box" style="background:#150F0C"><svg viewBox="0 0 100 100"><use href="#m13"/></svg></span><span class="n">13</span><span class="nm">Autumn Reel</span></a>
+      <a class="ix" href="#k14"><span class="box" style="background:#1D3E6E"><svg viewBox="0 0 100 100"><use href="#m14"/></svg></span><span class="n">14</span><span class="nm">Series One</span></a>
+      <a class="ix" href="#k15"><span class="box" style="background:#B5793C"><svg viewBox="0 0 100 100"><use href="#m15"/></svg></span><span class="n">15</span><span class="nm">Pigskin</span></a>
+      <a class="ix" href="#k16"><span class="box" style="background:#3E1220"><svg viewBox="0 0 100 100"><use href="#m16"/></svg></span><span class="n">16</span><span class="nm">Drumline</span></a>
+      <a class="ix" href="#k17"><span class="box" style="background:#E0D4B6"><svg viewBox="0 0 100 100"><use href="#m17"/></svg></span><span class="n">17</span><span class="nm">Admit One</span></a>
+      <a class="ix" href="#k18"><span class="box" style="background:#E5E2D7"><svg viewBox="0 0 100 100"><use href="#m18"/></svg></span><span class="n">18</span><span class="nm">Contour</span></a>
+      <a class="ix" href="#k19"><span class="box" style="background:#0C0C0D"><svg viewBox="0 0 100 100"><use href="#m19"/></svg></span><span class="n">19</span><span class="nm">The Stripe</span></a>
+      <a class="ix" href="#k20"><span class="box" style="background:#D6D2C7"><svg viewBox="0 0 100 100"><use href="#m20"/></svg></span><span class="n">20</span><span class="nm">The Wire</span></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ========== 11 ========== -->
+<section class="id k11" id="k11">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">11</span><div>
+    <h2 class="id-title">The Crest</h2>
+    <p class="id-pos">Football is the last place in American life that still takes heraldry
+      seriously. Every programme already owns a crest, a motto and a set of colours. This
+      identity behaves like an athletic association rather than a product: inscriptional
+      caps, a real shield, and gold used the way an institution uses gold.</p>
+    <ul class="id-names"><li>Meridian</li><li>The Association</li><li class="alt">Gridiron Athletic</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A shield with a football above a gold band and two chevrons below"><use href="#m11"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m11"/></svg><span class="lock-txt"><span class="lock-name">MERIDIAN</span><span class="lock-sub">Football Analytics</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m11"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; heraldic diaper</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Diagonal lattice with gold points"><rect width="100%" height="100%" fill="url(#p11)"/></svg>
+      <p class="pat-cap"><b>A diagonal lattice with a gold point at every crossing.</b> Sits
+        behind team pages and splash screens at low contrast, and prints on anything.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#0A2A20"></span><span class="meta"><span class="role">Bottle</span><span class="hex">#0A2A20</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#0E3B2E"></span><span class="meta"><span class="role">Field</span><span class="hex">#0E3B2E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#C9A227"></span><span class="meta"><span class="role">Gold</span><span class="hex">#C9A227</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F0EAD8"></span><span class="meta"><span class="role">Parchment</span><span class="hex">#F0EAD8</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#7B2D26"></span><span class="meta"><span class="role">Oxblood</span><span class="hex">#7B2D26</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">GEORGIA &middot; ALABAMA</p>
+      <p class="ty-sub">Cinzel is cut from Roman inscriptional letterforms, so it carries
+        institutional weight without costume. Spectral runs the body text warm underneath.
+        Caps get generous letterspacing; nothing is condensed.</p>
+      <p class="ty-names">Cinzel 500/700/900 &middot; Spectral 300/400/700</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>The shield alone, cropped tight. Reads at 40px because the silhouette is doing the work.</span></li>
+        <li><b>Tabs</b><span>Gold rule above the active tab, no fill. Labels in small caps.</span></li>
+        <li><b>Signature</b><span>Each of the 130 programmes gets a generated crest in its own colours, built on this shield.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 12 ========== -->
+<section class="id k12" id="k12">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">12</span><div>
+    <h2 class="id-title">Chain Gang</h2>
+    <p class="id-pos">The chain crew is the only instrument on the field, and it is
+      deliberately, almost absurdly analog: two sticks, ten yards of steel, and a
+      measurement nobody argues with. That is what a prediction engine wants to be.
+      Industrial yellow, machined edges, and nothing that glows.</p>
+    <ul class="id-names"><li>The Sticks</li><li>Chain</li><li class="alt">Measure</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="Two down markers joined by three chain links"><use href="#m12"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m12"/></svg><span class="lock-txt"><span class="lock-name">THE STICKS</span><span class="lock-sub">Ten Yards, Measured</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m12"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; chain &amp; rule</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Repeating chain links over ruler ticks"><rect width="100%" height="100%" fill="url(#p12)"/></svg>
+      <p class="pat-cap"><b>A continuous chain running over a ruler edge.</b> Used as a
+        divider between sections rather than a background, so the app is literally measured
+        out in ten-yard increments.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#191B19"></span><span class="meta"><span class="role">Iron</span><span class="hex">#191B19</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#E8B10C"></span><span class="meta"><span class="role">Safety</span><span class="hex">#E8B10C</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#D4560F"></span><span class="meta"><span class="role">Signal</span><span class="hex">#D4560F</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#B8B5AC"></span><span class="meta"><span class="role">Concrete</span><span class="hex">#B8B5AC</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F5F4F0"></span><span class="meta"><span class="role">Chalk</span><span class="hex">#F5F4F0</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">SPOT THE BALL</p>
+      <p class="ty-sub">Saira has squared-off terminals and a wide weight range, so it reads
+        as equipment rather than software. Set at 800 for numbers, 400 for everything else,
+        and never lighter.</p>
+      <p class="ty-names">Saira 400/500/800 &middot; Barlow 400/500</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Yellow ground, black chain. The only icon in this set that is loud on a home screen.</span></li>
+        <li><b>Tabs</b><span>The active tab sits inside a yellow bracket, like a marked spot.</span></li>
+        <li><b>Signature</b><span>Confidence intervals drawn as a chain: the span between the sticks is the model&rsquo;s range.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 13 ========== -->
+<section class="id k13" id="k13">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">13</span><div>
+    <h2 class="id-title">Autumn Reel</h2>
+    <p class="id-pos">NFL Films shot on 16mm and slowed the world down, and it remains the
+      most emotionally serious visual language the sport has produced. Deep brown, autumn
+      gold, high-contrast serif titling, and the grain left in. Gravitas, not nostalgia.</p>
+    <ul class="id-names"><li>Autumn</li><li>Reel</li><li class="alt">Sixteen</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A football outline with film sprocket holes running through it"><use href="#m13"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m13"/></svg><span class="lock-txt"><span class="lock-name">Autumn</span><span class="lock-sub">A Season, Simulated</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m13"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; sprocket strip</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Film sprocket holes in vertical strips with halftone dots between"><rect width="100%" height="100%" fill="url(#p13)"/></svg>
+      <p class="pat-cap"><b>Sprocket holes down both edges with halftone between.</b> Runs
+        vertically as a margin rail on long screens, so scrolling feels like film moving
+        through a gate.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#150F0C"></span><span class="meta"><span class="role">Emulsion</span><span class="hex">#150F0C</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#C8891F"></span><span class="meta"><span class="role">Autumn</span><span class="hex">#C8891F</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#9A6B1E"></span><span class="meta"><span class="role">Ochre</span><span class="hex">#9A6B1E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#EDE3D0"></span><span class="meta"><span class="role">Bone</span><span class="hex">#EDE3D0</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#6E2019"></span><span class="meta"><span class="role">Clay</span><span class="hex">#6E2019</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">The Frozen Tundra</p>
+      <p class="ty-sub">Bodoni Moda at 900 gives you the hairline-to-stem contrast of real
+        title cards. It is a display face only &mdash; Archivo handles every label and figure,
+        which keeps the drama in one place.</p>
+      <p class="ty-names">Bodoni Moda 700/900 &middot; Archivo 400/600</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Gold sprockets on emulsion brown. Distinctive at any size because of the notch rhythm.</span></li>
+        <li><b>Tabs</b><span>Labels in bone, active state in autumn gold, separated by a hairline.</span></li>
+        <li><b>Signature</b><span>The three-act game script is presented as title cards, one per act, in full-bleed serif.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 14 ========== -->
+<section class="id k14" id="k14">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">14</span><div>
+    <h2 class="id-title">Series One</h2>
+    <p class="id-pos">A trading card is already the exact object this app produces: a
+      portrait, a team colour bar, and a dense block of numbers on the back. Card stock
+      white, foil gold, a hard border, and a diagonal band that carries the team&rsquo;s
+      colours. It makes players collectible without pretending to be a game.</p>
+    <ul class="id-names"><li>Series One</li><li>Rookie</li><li class="alt">The Set</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A trading card with a foil corner, a football and a diagonal colour band"><use href="#m14"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m14"/></svg><span class="lock-txt"><span class="lock-name">SERIES ONE</span><span class="lock-sub">Every Player, Graded</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m14"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; foil &amp; register</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Diagonal gold foil lines over a register grid with red and blue dots"><rect width="100%" height="100%" fill="url(#p14)"/></svg>
+      <p class="pat-cap"><b>A register grid with a gold foil diagonal.</b> Lifted from the
+        back of a card, where the print marks live. Used on empty states and behind player
+        portraits.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#FFFFFF"></span><span class="meta"><span class="role">Stock</span><span class="hex">#FFFFFF</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#14161A"></span><span class="meta"><span class="role">Border</span><span class="hex">#14161A</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#B08D3F"></span><span class="meta"><span class="role">Foil</span><span class="hex">#B08D3F</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#C8342B"></span><span class="meta"><span class="role">Band A</span><span class="hex">#C8342B</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#1D3E6E"></span><span class="meta"><span class="role">Band B</span><span class="hex">#1D3E6E</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">ROOKIE &middot; QB &middot; 6&#8242;2&#8243;</p>
+      <p class="ty-sub">Fjalla One is a poster gothic with the slightly compressed, printed
+        feel of card lettering. Barlow keeps the stat blocks readable at the small sizes a
+        card back demands.</p>
+      <p class="ty-names">Fjalla One &middot; Barlow 400/500/600</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Navy ground with the card centred. The border does the recognition work.</span></li>
+        <li><b>Tabs</b><span>Active tab gets the foil diagonal underneath it.</span></li>
+        <li><b>Signature</b><span>Player profiles are cards you flip. Portrait and grade on the front, full stat block on the back.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 15 ========== -->
+<section class="id k15" id="k15">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">15</span><div>
+    <h2 class="id-title">Pigskin</h2>
+    <p class="id-pos">The ball itself, treated as a material rather than an icon. Tanned
+      hide, a pebbled grain, oxblood stitching and bone-white laces. The most tactile
+      direction here, and the only one whose logo is a detail of the object rather than
+      the whole of it.</p>
+    <ul class="id-names"><li>Pigskin</li><li>Laces</li><li class="alt">The Hide</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A football with bone-white laces as the dominant element"><use href="#m15"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m15"/></svg><span class="lock-txt"><span class="lock-name">Pigskin</span><span class="lock-sub">Grain &amp; Grade</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m15"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; pebbled hide</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Pebbled leather grain texture in tan and brown"><rect width="100%" height="100%" fill="url(#p15)"/></svg>
+      <p class="pat-cap"><b>The pebble grain, drawn rather than photographed.</b> Sits under
+        headers at a small scale where it reads as texture, never as dots.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#241811"></span><span class="meta"><span class="role">Shadow</span><span class="hex">#241811</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#B5793C"></span><span class="meta"><span class="role">Tan</span><span class="hex">#B5793C</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#5C3A1E"></span><span class="meta"><span class="role">Hide</span><span class="hex">#5C3A1E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#7A2E24"></span><span class="meta"><span class="role">Stitch</span><span class="hex">#7A2E24</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F2EADB"></span><span class="meta"><span class="role">Lace</span><span class="hex">#F2EADB</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">Fourth and inches</p>
+      <p class="ty-sub">Zilla Slab has soft slab terminals that feel stamped into leather
+        rather than printed on paper. Karla underneath is warm and slightly irregular, which
+        keeps the whole thing from going corporate.</p>
+      <p class="ty-names">Zilla Slab 600/700 &middot; Karla 400/500/700</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Tan ground, laces centred. Instantly football at 40px without drawing a whole ball.</span></li>
+        <li><b>Tabs</b><span>Active tab marked by a single lace stitch above the label.</span></li>
+        <li><b>Signature</b><span>The advantage matrix uses lace stitches instead of bars &mdash; four stitches, filled left or right.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 16 ========== -->
+<section class="id k16" id="k16">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">16</span><div>
+    <h2 class="id-title">Drumline</h2>
+    <p class="id-pos">College football&rsquo;s actual soundtrack is a hundred and eighty people
+      in wool playing brass. Drumheads, lugs, chevron ranks, maroon and brass. It is
+      ceremonial and rhythmic in a way no analytics product has tried, and it belongs to
+      the college game outright.</p>
+    <ul class="id-names"><li>Drumline</li><li>Cadence</li><li class="alt">The Ranks</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A drumhead with eight lugs around the rim and two chevrons at the centre"><use href="#m16"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m16"/></svg><span class="lock-txt"><span class="lock-name">Drumline</span><span class="lock-sub">Keep the Cadence</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m16"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; chevron ranks</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Rows of brass chevrons on maroon"><rect width="100%" height="100%" fill="url(#p16)"/></svg>
+      <p class="pat-cap"><b>Chevrons stacked in ranks, each with a shadow rank behind it.</b>
+        Used across headers and the onboarding sequence, marching down the screen.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#3E1220"></span><span class="meta"><span class="role">Wool</span><span class="hex">#3E1220</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#5E1A28"></span><span class="meta"><span class="role">Maroon</span><span class="hex">#5E1A28</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#E5B857"></span><span class="meta"><span class="role">Brass</span><span class="hex">#E5B857</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#C79A3A"></span><span class="meta"><span class="role">Bell</span><span class="hex">#C79A3A</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F3ECDD"></span><span class="meta"><span class="role">Plume</span><span class="hex">#F3ECDD</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">Sanford Stadium</p>
+      <p class="ty-sub">Bevan is a fat slab in the lineage of bass-drum lettering &mdash; heavy,
+        friendly and unmistakably American. Barlow Semi Condensed does the labels, tight
+        enough to hold long school names.</p>
+      <p class="ty-names">Bevan &middot; Barlow Semi Condensed 500/600/700</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Maroon drumhead with brass lugs. The radial rhythm makes it legible small.</span></li>
+        <li><b>Tabs</b><span>Chevrons instead of icons. The active tab&rsquo;s chevron fills brass.</span></li>
+        <li><b>Signature</b><span>Section headers arrive as ranks &mdash; chevrons stepping in from the left as you scroll.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 17 ========== -->
+<section class="id k17" id="k17">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">17</span><div>
+    <h2 class="id-title">Admit One</h2>
+    <p class="id-pos">A ticket is the one piece of football graphic design people keep.
+      Manila stock, a perforation, a punch hole, and the guilloche security waves borrowed
+      from currency. It gives the app something almost no software has: the feeling of
+      holding a document that entitles you to something.</p>
+    <ul class="id-names"><li>Admit One</li><li>Gate A</li><li class="alt">Stub</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A ticket with a perforated stub, punch hole and a small football"><use href="#m17"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m17"/></svg><span class="lock-txt"><span class="lock-name">ADMIT ONE</span><span class="lock-sub">Section 101 &middot; Row A</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m17"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; guilloche &amp; perf</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Interlaced wave lines above a row of perforation dots"><rect width="100%" height="100%" fill="url(#p17)"/></svg>
+      <p class="pat-cap"><b>Three interlaced waves over a perforation row.</b> The security
+        pattern from real tickets, at a scale where it reads as a texture band under
+        headers and above the tab bar.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#E4D9BE"></span><span class="meta"><span class="role">Manila</span><span class="hex">#E4D9BE</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F5F0E2"></span><span class="meta"><span class="role">Stock</span><span class="hex">#F5F0E2</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#232B3E"></span><span class="meta"><span class="role">Ink</span><span class="hex">#232B3E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#B23A2E"></span><span class="meta"><span class="role">Stamp</span><span class="hex">#B23A2E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#9A917C"></span><span class="meta"><span class="role">Perf</span><span class="hex">#9A917C</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">GATE 4 &middot; KICKOFF 3:30</p>
+      <p class="ty-sub">Big Shoulders is a condensed American gothic built for signage, which
+        is exactly what a ticket is. Lora carries the reading text with enough warmth to
+        keep the manila from feeling clinical.</p>
+      <p class="ty-names">Big Shoulders Display 600/800 &middot; Lora 400/600</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Navy ground, manila ticket. The perforation makes the silhouette unusual in a dock.</span></li>
+        <li><b>Tabs</b><span>Tabs sit below a perforated edge, so the bar looks torn from the screen.</span></li>
+        <li><b>Signature</b><span>Every completed matchup becomes a stub in your Record tab, punched and dated.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 18 ========== -->
+<section class="id k18" id="k18">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">18</span><div>
+    <h2 class="id-title">Contour</h2>
+    <p class="id-pos">A stadium is a bowl, and a bowl is terrain. Survey paper, contour
+      lines and one elevation orange give the app a way to draw probability as landscape
+      without ever looking like a dashboard. The freshest visual language in the set and
+      the only one nobody in this category is using.</p>
+    <ul class="id-names"><li>Contour</li><li>Bowl</li><li class="alt">Elevation</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="Nested contour rings forming a stadium bowl with a football at the centre"><use href="#m18"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m18"/></svg><span class="lock-txt"><span class="lock-name">Contour</span><span class="lock-sub">Read the Terrain</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m18"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; contour lines</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Topographic contour lines with one highlighted index line"><rect width="100%" height="100%" fill="url(#p18)"/></svg>
+      <p class="pat-cap"><b>Survey contours with one index line in orange.</b> The same
+        drawing logic renders real data: margin distributions become terrain, and the
+        pattern and the chart are the same object.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#E5E2D7"></span><span class="meta"><span class="role">Survey</span><span class="hex">#E5E2D7</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#8A7A5E"></span><span class="meta"><span class="role">Contour</span><span class="hex">#8A7A5E</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#22372C"></span><span class="meta"><span class="role">Forest</span><span class="hex">#22372C</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#C4541F"></span><span class="meta"><span class="role">Index</span><span class="hex">#C4541F</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#1E1F1A"></span><span class="meta"><span class="role">Ink</span><span class="hex">#1E1F1A</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">Elevation 61.4</p>
+      <p class="ty-sub">Familjen Grotesk is precise without being cold, with just enough
+        character in the g and a to avoid the neutral-sans default. Archivo handles labels
+        and figures at map-legend sizes.</p>
+      <p class="ty-names">Familjen Grotesk 500/600/700 &middot; Archivo 400/600</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Forest ground, contour rings. The nested ovals read as a bowl even at 40px.</span></li>
+        <li><b>Tabs</b><span>Active tab underlined with an index-line stroke, thicker than the rest.</span></li>
+        <li><b>Signature</b><span>Margin distribution drawn as a contour map instead of a histogram &mdash; peaks are likely finals.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 19 ========== -->
+<section class="id k19" id="k19">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">19</span><div>
+    <h2 class="id-title">The Stripe</h2>
+    <p class="id-pos">The single strongest graphic device the sport owns. One stripe over
+      the crown of a helmet identifies a programme from the back row of a stadium, and it
+      scales from a decal to a stadium banner without changing. Black, white, one red, and
+      no third idea.</p>
+    <ul class="id-names"><li>Stripe</li><li>Wing</li><li class="alt">Sticker</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A helmet seen head-on with a red centre stripe and two facemask bars"><use href="#m19"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m19"/></svg><span class="lock-txt"><span class="lock-name">STRIPE</span><span class="lock-sub">Know Them On Sight</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m19"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; variable stripe</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Vertical stripes of varying width in black, red, steel and white"><rect width="100%" height="100%" fill="url(#p19)"/></svg>
+      <p class="pat-cap"><b>Stripes at four different widths, never evenly spaced.</b> The
+        irregular rhythm is what keeps it from reading as a barcode, and the widths encode
+        the four matrix categories.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#0C0C0D"></span><span class="meta"><span class="role">Jet</span><span class="hex">#0C0C0D</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#F2F1EE"></span><span class="meta"><span class="role">Shell</span><span class="hex">#F2F1EE</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#D01B2B"></span><span class="meta"><span class="role">Stripe</span><span class="hex">#D01B2B</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#8A9199"></span><span class="meta"><span class="role">Cage</span><span class="hex">#8A9199</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">SEVENTEEN</p>
+      <p class="ty-sub">Anton is the closest thing on the web to a helmet numeral: heavy,
+        condensed, and built to be read at distance. It only ever sets short strings.
+        Archivo does all the running text.</p>
+      <p class="ty-names">Anton &middot; Archivo 400/500/700</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Red ground, white helmet. The highest-contrast icon in the set.</span></li>
+        <li><b>Tabs</b><span>The active tab carries a full-height stripe behind the label, not an underline.</span></li>
+        <li><b>Signature</b><span>Each team gets a generated helmet in its real shell and stripe colours, used everywhere a logo would be.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ========== 20 ========== -->
+<section class="id k20" id="k20">
+ <div class="wrap">
+  <div class="id-head"><span class="id-num">20</span><div>
+    <h2 class="id-title">The Wire</h2>
+    <p class="id-pos">Mid-century sports desk: newsprint grey, a press-blue rule, a red
+      slug, and copy that came off a wire machine at eleven at night. The typewriter here
+      is inked and slightly uneven, which is the opposite of a terminal &mdash; warm,
+      editorial, and answerable to an editor.</p>
+    <ul class="id-names"><li>The Wire</li><li>Press Box</li><li class="alt">Filed</li></ul>
+  </div></div>
+
+  <div class="id-strip">
+    <div class="pan"><div class="pan-lab">Primary mark</div><div class="pan-in"><svg class="mark-lg" viewBox="0 0 100 100" role="img" aria-label="A circular wire-service bug with a tick ring, a football and a red rule"><use href="#m20"/></svg></div></div>
+    <div class="pan"><div class="pan-lab">Wordmark lockup</div><div class="pan-in"><div class="lock"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m20"/></svg><span class="lock-txt"><span class="lock-name">The Wire</span><span class="lock-sub">Filed From The Press Box</span></span></div></div></div>
+    <div class="pan"><div class="pan-lab">Icon</div><div class="pan-in"><div class="icon-lg"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m20"/></svg></div></div></div>
+  </div>
+
+  <div class="id-grid">
+    <div class="pan">
+      <div class="pan-lab">Pattern &mdash; column rules</div>
+      <svg class="pat" preserveAspectRatio="none" role="img" aria-label="Newspaper column rules with a red slug bar"><rect width="100%" height="100%" fill="url(#p20)"/></svg>
+      <p class="pat-cap"><b>Column rules, a dateline and a red slug.</b> Not a background
+        texture but a layout grid you can see &mdash; the same rules that separate the
+        content are the pattern.</p>
+      <div class="pal">
+        <div class="pal-sw"><span class="fill" style="background:#D6D2C7"></span><span class="meta"><span class="role">Newsprint</span><span class="hex">#D6D2C7</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#EDEBE2"></span><span class="meta"><span class="role">Copy</span><span class="hex">#EDEBE2</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#1A1A18"></span><span class="meta"><span class="role">Ink</span><span class="hex">#1A1A18</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#2A4C6D"></span><span class="meta"><span class="role">Press</span><span class="hex">#2A4C6D</span></span></div>
+        <div class="pal-sw"><span class="fill" style="background:#A8281E"></span><span class="meta"><span class="role">Slug</span><span class="hex">#A8281E</span></span></div>
+      </div>
+    </div>
+
+    <div class="pan"><div class="pan-lab">Type &amp; application</div><div class="pan-body">
+      <p class="ty-line">Bulldogs favoured by three</p>
+      <p class="ty-sub">Spectral is a serif drawn for screens that still holds a headline.
+        Cutive Mono provides the typewriter voice for datelines, slugs and figures &mdash;
+        inked and irregular, nothing like a code editor.</p>
+      <p class="ty-names">Spectral 400/700/800 &middot; Cutive Mono</p>
+      <ul class="app-list" style="margin-top:22px">
+        <li><b>Icon</b><span>Press blue ground with the wire bug centred. Reads as a stamp, not an app.</span></li>
+        <li><b>Tabs</b><span>Section names set as newspaper standing heads, separated by column rules.</span></li>
+        <li><b>Signature</b><span>Every result opens with a dateline and a slug, so the model files a report rather than returning output.</span></li>
+      </ul>
+    </div></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- ============ CLOSE ============ -->
+<section class="close">
+ <div class="wrap">
+  <p class="eyebrow">Reading the set</p>
+  <h2 class="sec">Which mark survives at 40 pixels.</h2>
+  <p class="sec-lede">A logo concept is only real if it works as a favicon, a tab-bar glyph
+    and a single-colour stamp. This is the honest assessment of each, including the ones
+    that need work.</p>
+
+  <div class="tbl-scroll">
+   <table>
+    <thead><tr><th></th><th>Identity</th><th>Rooted in</th><th>Best for</th><th>Mark at small size</th></tr></thead>
+    <tbody>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m11"/></svg></td><td class="nm"><i>11</i>The Crest</td><td>Athletic heraldry</td><td>Both</td><td>Strong. Shield silhouettes are the most legible shape in the set.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m12"/></svg></td><td class="nm"><i>12</i>Chain Gang</td><td>The chain crew</td><td>Both</td><td>Good. The three links read even when the stakes blur out.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m13"/></svg></td><td class="nm"><i>13</i>Autumn Reel</td><td>16mm film</td><td>Pro</td><td>Fair. The sprocket rhythm holds; the lens outline thins out fast.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m14"/></svg></td><td class="nm"><i>14</i>Series One</td><td>Trading cards</td><td>Both</td><td>Fair. The card border survives; the interior needs simplifying below 32px.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m15"/></svg></td><td class="nm"><i>15</i>Pigskin</td><td>The ball</td><td>Both</td><td>Excellent. Laces alone are unmistakable at any size.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m16"/></svg></td><td class="nm"><i>16</i>Drumline</td><td>Marching band</td><td>College</td><td>Strong. Radial lugs give it a distinctive outer edge.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m17"/></svg></td><td class="nm"><i>17</i>Admit One</td><td>Ticket stock</td><td>College</td><td>Good. Unusual silhouette, but the perforation needs to coarsen when small.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m18"/></svg></td><td class="nm"><i>18</i>Contour</td><td>Survey maps</td><td>Both</td><td>Good. Drop to three rings below 32px and it stays clean.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m19"/></svg></td><td class="nm"><i>19</i>The Stripe</td><td>Helmet decals</td><td>Both</td><td>Excellent. Highest contrast and the simplest silhouette here.</td></tr>
+      <tr><td class="mk"><svg viewBox="0 0 100 100"><use href="#m20"/></svg></td><td class="nm"><i>20</i>The Wire</td><td>Wire service</td><td>Pro</td><td>Good. The tick ring is the tell; it can drop to twelve ticks when small.</td></tr>
+    </tbody>
+   </table>
+  </div>
+
+  <p class="eyebrow" style="margin-top:62px">If it were my call</p>
+  <h2 class="sec">Pigskin, Contour, and The Stripe.</h2>
+  <p class="sec-lede"><b>Pigskin</b> has the best mark of the ten and the warmest palette,
+    and the laces solve the icon problem outright. <b>Contour</b> is the only direction whose
+    pattern and whose charts are the same drawing, which means the identity does real work
+    instead of decorating. <b>The Stripe</b> is the one that would still look right in five
+    years, and its per-team helmets give you 130 identities for the price of one.
+    If the two apps split: Drumline or Admit One for college, The Wire or Autumn Reel for pro.</p>
+
+  <p class="foot">
+    Marks are concepts drawn to communicate a direction, not final artwork &mdash; a chosen
+    one should be redrawn on a proper grid with optical corrections and a full size ramp.<br>
+    Round two of design directions for Gridiron AI and CFB Gridiron AI &middot; identity, logo, pattern, palette and type.
+  </p>
+ </div>
+</section>
+
+</main>
