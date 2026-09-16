@@ -12,13 +12,13 @@ export interface GroceryLine {
 }
 
 export const GROCERIES: GroceryLine[] = [
-  { item: '93/7 lean ground beef', weekly: '~3.5 lb', aisle: 'Protein', batchNote: '2 lb per 4-bowl batch' },
+  { item: '93/7 lean ground beef', weekly: '~4.5 lb raw', aisle: 'Protein', batchNote: '2.5 lb raw per 4-bowl batch' },
   { item: 'Boneless skinless chicken breast', weekly: '~3.5 lb', aisle: 'Protein', batchNote: '2 lb per 4-meal batch' },
   { item: 'Salmon fillets', weekly: '7 x 8 oz (~3.5 lb)', aisle: 'Protein' },
   { item: 'Eggs (salmon swap)', weekly: '1 dozen backup', aisle: 'Protein' },
   { item: 'Plain 0% Greek yogurt', weekly: '7 x 340 g (~5.3 lb)', aisle: 'Protein' },
 
-  { item: 'White jasmine rice (dry)', weekly: '~6 cups dry', aisle: 'Carbs', batchNote: '3.5 cups dry per 4-bowl batch' },
+  { item: 'White jasmine rice (dry)', weekly: '~5 cups dry', aisle: 'Carbs', batchNote: '3.5 cups dry per 4-bowl batch' },
   { item: 'Large sweet potatoes (~10-11 oz)', weekly: '7', aisle: 'Carbs', batchNote: '4 per batch, or 3.5 cups dry rice' },
   { item: 'Rolled oats or cream of rice', weekly: '420 g dry (7 x 60 g)', aisle: 'Carbs' },
   { item: 'Pure honey', weekly: '~300 g (7 x 42 g)', aisle: 'Carbs' },

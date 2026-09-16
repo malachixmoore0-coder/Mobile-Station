@@ -10,15 +10,16 @@ export interface Macros {
 
 /**
  * Target macros per meal, as written into the protocol. The five whole-food
- * meals come to ~3,110 kcal / 220 g protein / 330 g carbs / 99 g fat; the
+ * meals come to ~3,230 kcal / 230 g protein / 354 g carbs / 99 g fat; the
  * post-workout shake adds ~370 kcal on training days.
  */
 const MEAL_MACROS: Record<string, Macros> = {
   // Smoothie: 1 scoop isolate, 60 g dry oats, large banana, 1/2 tbsp almond butter.
   'meal-1': { kcal: 480, protein: 31, carbs: 68, fat: 9 },
   shake: { kcal: 370, protein: 40, carbs: 52, fat: 1 },
-  // Bowl: 300 g cooked rice, 170 g cooked 93/7 beef, 1 cup greens.
-  'meal-2': { kcal: 770, protein: 48, carbs: 100, fat: 19 },
+  // Bowl: 370 g cooked rice, 215 g cooked 93/7 beef, 1 cup greens. This meal
+  // absorbs the extra 10 g protein and 24 g carbs that hit the daily target.
+  'meal-2': { kcal: 890, protein: 58, carbs: 124, fat: 19 },
   // Shift meal: 300 g sweet potato, 170 g cooked chicken, 1/4 avocado.
   'meal-3': { kcal: 730, protein: 55, carbs: 92, fat: 15 },
   // Yogurt + 42 g honey + blueberries + 28 g almonds.

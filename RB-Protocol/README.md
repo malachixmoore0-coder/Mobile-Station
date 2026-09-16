@@ -33,7 +33,7 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
   done. Each exercise shows what you lifted the last time that session came
   around. A "Split" toggle shows the whole week.
 - **Fuel — Today** — the day's five meals with their target calories and macros,
-  banked as each meal is fully checked off (~3,110 kcal / 220 P / 330 C / 99 F
+  banked as each meal is fully checked off (~3,230 kcal / 230 P / 354 C / 99 F
   across the five meals, plus ~370 kcal from the post-workout shake on training
   days), and water tracking in 8 oz units against an 88 oz target.
 - **Fuel — Meals & prep** — the full build for every meal: ingredient list with

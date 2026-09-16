@@ -59,6 +59,7 @@ export function RecipeCard({ recipe, defaultOpen = false }: { recipe: Recipe; de
               <View style={styles.ingText}>
                 <Text style={styles.ingItem}>{ing.item}</Text>
                 {!!ing.alt && <Text style={styles.ingAlt}>or {ing.alt}</Text>}
+                {!!ing.note && <Text style={styles.ingNote}>{ing.note}</Text>}
               </View>
               <Text style={styles.ingAmount}>{ing.amount}</Text>
             </View>
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
   ingText: { flex: 1 },
   ingItem: { fontSize: 13.5, color: colors.ink, fontWeight: '600' },
   ingAlt: { fontSize: 11, color: colors.inkFaint, fontStyle: 'italic', marginTop: 1 },
+  ingNote: { fontSize: 11, color: colors.inkFaint, lineHeight: 16, marginTop: 2 },
   ingAmount: { fontSize: 12.5, color: colors.inkDim, fontWeight: '800' },
   stepBlock: { gap: 6, marginTop: spacing.xs },
   stepTitle: { fontSize: 10.5, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.8 },

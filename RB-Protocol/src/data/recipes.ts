@@ -8,6 +8,8 @@ export interface Ingredient {
   amount: string;
   /** Acceptable swap, shown inline. */
   alt?: string;
+  /** Practical aside — raw-to-cooked yield, handling, timing. */
+  note?: string;
 }
 
 export interface Steps {
@@ -62,7 +64,11 @@ export const RECIPES: Recipe[] = [
     where: 'Home / mini-fridge',
     batchOf: 4,
     ingredients: [
-      { item: '93/7 lean ground beef', amount: '2 lbs (32 oz) per batch' },
+      {
+        item: '93/7 lean ground beef',
+        amount: '2.5 lbs (40 oz) raw per batch',
+        note: 'Raw beef loses ~25% browning and draining — 2 lbs only yields about three 215 g portions.',
+      },
       { item: 'White jasmine rice', amount: '3.5 cups dry per batch' },
       { item: 'Frozen greens (broccoli or spinach)', amount: '4 cups per batch' },
       { item: 'Garlic powder, salt, black pepper', amount: 'to taste' },
@@ -79,8 +85,8 @@ export const RECIPES: Recipe[] = [
       title: 'Food scale assembly — per container',
       steps: [
         'Place the container on the scale and tare to zero.',
-        'Weigh 10.5 oz (300 g) cooked jasmine rice.',
-        'Tare, then weigh 6 oz (170 g) cooked ground beef.',
+        'Weigh 13 oz (370 g) cooked jasmine rice.',
+        'Tare, then weigh 7.5 oz (215 g) cooked ground beef.',
         'Add 1 cup cooked greens, cover, and store in the mini-fridge.',
       ],
     },
@@ -180,9 +186,9 @@ export const PREP_SESSION: Steps[] = [
     title: 'Batch A — bowls (meal 2 x4)',
     steps: [
       '3.5 cups dry jasmine rice + 3.5 cups water in the rice cooker.',
-      '2 lbs 93/7 ground beef browned with garlic powder, salt and pepper; drain.',
+      '2.5 lbs 93/7 ground beef browned with garlic powder, salt and pepper; drain.',
       '4 cups frozen greens, microwaved 3 minutes.',
-      'Portion into 4 containers: 300 g rice, 170 g beef, 1 cup greens.',
+      'Portion into 4 containers: 370 g rice, 215 g beef, 1 cup greens.',
     ],
   },
   {

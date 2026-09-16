@@ -140,11 +140,11 @@ const MASTER: Block[] = [
     title: 'Meal 2 — Post-workout whole food bowl',
     kind: 'meal',
     items: [
-      { id: 'm2-rice', label: 'Cooked jasmine rice', detail: '10.5 oz / 300 g' },
-      { id: 'm2-protein', label: 'Cooked 93/7 ground beef', detail: '6 oz / 170 g' },
+      { id: 'm2-rice', label: 'Cooked jasmine rice', detail: '13 oz / 370 g' },
+      { id: 'm2-protein', label: 'Cooked 93/7 ground beef', detail: '7.5 oz / 215 g' },
       { id: 'm2-greens', label: 'Steamed greens (broccoli or spinach)', detail: '1 cup' },
     ],
-    pairing: 'Restores glycogen; beef iron and zinc plus spinach nitrates enhance vascularity. Built off the 4-meal batch in the mini-fridge.',
+    pairing: 'The biggest meal of the day on purpose — it carries the extra 10 g protein and 24 g carbs that bring the daily total to target, landing inside the post-workout and IGF-1 LR3 window. Beef iron and zinc plus spinach nitrates enhance vascularity.',
   },
   {
     id: 'commute-in',
