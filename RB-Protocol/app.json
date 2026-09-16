@@ -29,7 +29,7 @@
     },
     "scheme": "rbprotocol",
     "experiments": {
-      "baseUrl": "/mobile-station/rb-protocol"
+      "baseUrl": "/Mobile-Station/rb-protocol"
     }
   }
 }
