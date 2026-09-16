@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "RB Protocol",
+    "slug": "rb-protocol",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0D0C"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rbprotocol.app"
+    },
+    "android": {
+      "package": "com.rbprotocol.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0B0D0C"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/icon.png"
+    },
+    "scheme": "rbprotocol",
+    "experiments": {
+      "baseUrl": "/mobile-station/rb-protocol"
+    }
+  }
+}
