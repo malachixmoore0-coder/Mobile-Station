@@ -18,7 +18,7 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
 - **Training days vs. recovery days are different days.** Mon/Tue/Thu/Fri run
   the split; Wed/Sat/Sun drop the gym block, the post-workout shake and
   **IGF-1 LR3 entirely**, swap in the active-recovery block, and cut the
-  pre-workout stack back to creatine only. 37 checks on a training day, 32 on
+  pre-workout stack back to creatine only. 42 checks on a training day, 37 on
   a recovery day — the adherence ring counts what that day actually calls for.
 - **Injection site rotation** — each syringe logs where it was pinned, and the
   card tells you where the last one went ("Last pinned Abdomen L · yesterday"),
@@ -46,7 +46,11 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
   showing both the per-week total and the batch quantity it's cooked in.
 - **Stack** — every injectable and oral in one place: route, timing, the role it
   plays in the protocol, whether it's on or off today, and an editable dose
-  field per compound (doses are yours to enter — the app doesn't prescribe).
+  field per compound (injectable doses are yours to enter — the app doesn't
+  prescribe). Orals are grouped the way the day runs them: **morning fasted**
+  (vitamin C, B12, biotin, green tea extract), **pre-workout** (creatine,
+  citrulline, beta-alanine), and **night with meal 5** (omega-3, zinc,
+  magnesium glycinate).
   Also carries the handling rules: syringe 1 and syringe 2 stay separate for pH
   stability, IGF-1 LR3 is training-days-only with carbs immediately after, zinc
   holds ~10:1 against GHK-Cu.

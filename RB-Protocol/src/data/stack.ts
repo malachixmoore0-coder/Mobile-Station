@@ -9,6 +9,8 @@ export interface StackEntry {
   id: string;
   name: string;
   route: 'Sub-Q' | 'Sub-Q / IM' | 'Oral';
+  /** Which part of the day an oral belongs to; drives the Stack grouping. */
+  slot?: 'morning' | 'pre-workout' | 'night';
   syringe?: 1 | 2 | 3;
   timing: string;
   /** Fixed amount when the protocol specifies one; otherwise user-entered. */
@@ -70,13 +72,28 @@ export const PEPTIDES: StackEntry[] = [
 ];
 
 export const SUPPLEMENTS: StackEntry[] = [
-  { id: 'wake-vitc', name: 'Vitamin C', route: 'Oral', timing: '7:30 AM', fixedDose: '1,000 mg', role: 'Cofactor for collagen synthesis — the oral half of what GHK-Cu is doing.' },
-  { id: 'pre-creatine', name: 'Creatine monohydrate', route: 'Oral', timing: '9:00 AM', fixedDose: '5 g', role: 'Daily saturation. Worth keeping on recovery days too.' },
-  { id: 'pre-citrulline', name: 'L-Citrulline', route: 'Oral', timing: '9:00 AM', fixedDose: '6 g', trainingOnly: true, role: 'Nitric oxide for pump and peptide delivery.' },
-  { id: 'pre-beta', name: 'Beta-alanine', route: 'Oral', timing: '9:00 AM', fixedDose: '3.2 g', trainingOnly: true, role: 'Buffers the lactic burn on 8-15 rep work and repeat sprints.' },
-  { id: 'n-mag', name: 'Magnesium glycinate', route: 'Oral', timing: '10:45 PM', fixedDose: '400 mg', role: 'Sleep depth and muscle relaxation going into a 7.5-8 hour window.' },
-  { id: 'n-zinc', name: 'Zinc picolinate', route: 'Oral', timing: '10:45 PM', fixedDose: '30 mg', role: 'Holds the 10:1 zinc-to-copper ratio against GHK-Cu.' },
-  { id: 'n-omega', name: 'Omega-3s', route: 'Oral', timing: '10:45 PM', fixedDose: '2 g', role: 'Overnight inflammation control alongside KPV.' },
+  // Morning — all fasted, before meal 1.
+  { id: 'wake-vitc', name: 'Vitamin C', route: 'Oral', slot: 'morning', timing: '7:30 AM, fasted', fixedDose: '1,000 mg', role: 'Cofactor for collagen synthesis — the oral half of what GHK-Cu is doing.' },
+  { id: 'wake-b12', name: 'Vitamin B12', route: 'Oral', slot: 'morning', timing: '7:30 AM, empty stomach', fixedDose: '1,000 mcg', role: 'Sublingual or oral. Energy and nervous system function, taken on an empty stomach where absorption is best.' },
+  { id: 'wake-biotin', name: 'Biotin', route: 'Oral', slot: 'morning', timing: '7:30 AM, fasted', fixedDose: '5,000-10,000 mcg', role: 'Skin, hair and cell growth. Taken early for optimal absorption, and it works the same tissue-quality angle as GHK-Cu.' },
+  { id: 'wake-gte', name: 'Green tea extract', route: 'Oral', slot: 'morning', timing: '7:30 AM, fasted', fixedDose: '400-500 mg', role: 'Metabolic rate, fat oxidation and antioxidant load — stacks with glutathione on the oxidative side.' },
+
+  // Pre-workout — the pump ingredients drop off on recovery days.
+  { id: 'pre-creatine', name: 'Creatine monohydrate', route: 'Oral', slot: 'pre-workout', timing: '9:00 AM', fixedDose: '5 g', role: 'Daily saturation. Worth keeping on recovery days too.' },
+  { id: 'pre-citrulline', name: 'L-Citrulline', route: 'Oral', slot: 'pre-workout', timing: '9:00 AM', fixedDose: '6 g', trainingOnly: true, role: 'Nitric oxide for pump and peptide delivery.' },
+  { id: 'pre-beta', name: 'Beta-alanine', route: 'Oral', slot: 'pre-workout', timing: '9:00 AM', fixedDose: '3.2 g', trainingOnly: true, role: 'Buffers the lactic burn on 8-15 rep work and repeat sprints.' },
+
+  // Night — taken with meal 5, not after it.
+  { id: 'n-omega', name: 'Omega-3 fish oil', route: 'Oral', slot: 'night', timing: '10:45 PM, with meal 5', fixedDose: '2,000 mg EPA/DHA', role: 'Goes in with the salmon and olive oil — fat is what carries it. Lowers systemic inflammation alongside KPV.' },
+  { id: 'n-zinc', name: 'Zinc picolinate', route: 'Oral', slot: 'night', timing: '10:45 PM, with meal 5', fixedDose: '30 mg', role: 'Holds the 10:1 zinc-to-copper ratio against GHK-Cu, and backs immune recovery.' },
+  { id: 'n-mag', name: 'Magnesium glycinate', route: 'Oral', slot: 'night', timing: '10:45 PM, with meal 5', fixedDose: '400 mg', role: 'Deep sleep, nervous system relaxation and muscle recovery going into the 7.5-8 hour window.' },
+];
+
+/** Section headers for the oral stack, in the order the day runs them. */
+export const SUPPLEMENT_SLOTS: { slot: NonNullable<StackEntry['slot']>; label: string }[] = [
+  { slot: 'morning', label: 'Morning — fasted, 7:30 AM' },
+  { slot: 'pre-workout', label: 'Pre-workout — 9:00 AM' },
+  { slot: 'night', label: 'Night — with meal 5, 10:45 PM' },
 ];
 
 /** Sub-Q sites to rotate through, logged per syringe per day. */

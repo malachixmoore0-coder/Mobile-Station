@@ -31,14 +31,17 @@ const MASTER: Block[] = [
   {
     id: 'wake',
     time: 450,
-    title: 'Wake up & hydration',
+    title: 'Morning supplements & hydration',
     kind: 'hydration',
     items: [
       { id: 'wake-water', label: 'Water', detail: '24 oz' },
       { id: 'wake-salt', label: 'Sea salt', detail: '1/2 tsp' },
       { id: 'wake-vitc', label: 'Vitamin C', detail: '1,000 mg' },
+      { id: 'wake-b12', label: 'Vitamin B12', detail: '1,000 mcg', note: 'Sublingual or oral, empty stomach' },
+      { id: 'wake-biotin', label: 'Biotin', detail: '5,000-10,000 mcg', note: 'Taken early for optimal absorption' },
+      { id: 'wake-gte', label: 'Green tea extract', detail: '400-500 mg' },
     ],
-    pairing: 'Sodium pulls the first 24 oz into the cell instead of straight through you. Vitamin C is the cofactor for the collagen synthesis the morning stack is aimed at.',
+    pairing: 'Sodium pulls the first 24 oz into the cell instead of straight through you. Vitamin C is the cofactor for the collagen synthesis the morning stack is aimed at, and B12, biotin and green tea extract all land fasted — before meal 1 gets in the way of absorption.',
   },
   {
     id: 'syringe-1',
@@ -195,15 +198,15 @@ const MASTER: Block[] = [
   },
   {
     id: 'night-supps',
-    time: 1370,
-    title: 'Nighttime supplements',
+    time: 1365,
+    title: 'Nighttime supplements — with meal 5',
     kind: 'supplement',
     items: [
-      { id: 'n-mag', label: 'Magnesium glycinate', detail: '400 mg' },
+      { id: 'n-omega', label: 'Omega-3 fish oil', detail: '2,000 mg EPA/DHA' },
       { id: 'n-zinc', label: 'Zinc picolinate', detail: '30 mg' },
-      { id: 'n-omega', label: 'Omega-3s', detail: '2 g' },
+      { id: 'n-mag', label: 'Magnesium glycinate', detail: '400 mg' },
     ],
-    pairing: 'Zinc maintains the 10:1 ratio needed alongside GHK-Cu.',
+    pairing: 'These go down with meal 5, not after it: the omega-3s need the fat from the salmon and olive oil to absorb properly. Zinc maintains the 10:1 ratio alongside GHK-Cu, and magnesium glycinate opens the door on the 7.5-8 hour sleep window.',
   },
   {
     id: 'sleep',

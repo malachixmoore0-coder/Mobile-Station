@@ -6,7 +6,7 @@
 export interface GroceryLine {
   item: string;
   weekly: string;
-  aisle: 'Protein' | 'Carbs' | 'Produce' | 'Fats & extras' | 'Powders';
+  aisle: 'Protein' | 'Carbs' | 'Produce' | 'Fats & extras' | 'Powders' | 'Daily supplements';
   /** Called out when the amount comes from a batch cook rather than per-meal. */
   batchNote?: string;
 }
@@ -40,6 +40,21 @@ export const GROCERIES: GroceryLine[] = [
   { item: 'Creatine monohydrate', weekly: '35 g (7 x 5 g)', aisle: 'Powders' },
   { item: 'L-Citrulline', weekly: '24 g (4 x 6 g)', aisle: 'Powders' },
   { item: 'Beta-alanine', weekly: '12.8 g (4 x 3.2 g)', aisle: 'Powders' },
+
+  { item: 'Vitamin C (1,000 mg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '7:30 AM, fasted' },
+  { item: 'Vitamin B12 (1,000 mcg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '7:30 AM, empty stomach' },
+  { item: 'Biotin (5,000-10,000 mcg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '7:30 AM, fasted' },
+  { item: 'Green tea extract (400-500 mg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '7:30 AM, fasted' },
+  { item: 'Omega-3 fish oil (2,000 mg EPA/DHA)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '10:45 PM, with meal 5' },
+  { item: 'Zinc picolinate (30 mg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '10:45 PM, with meal 5' },
+  { item: 'Magnesium glycinate (400 mg)', weekly: '7 doses', aisle: 'Daily supplements', batchNote: '10:45 PM, with meal 5' },
 ];
 
-export const AISLES: GroceryLine['aisle'][] = ['Protein', 'Carbs', 'Produce', 'Fats & extras', 'Powders'];
+export const AISLES: GroceryLine['aisle'][] = [
+  'Protein',
+  'Carbs',
+  'Produce',
+  'Fats & extras',
+  'Powders',
+  'Daily supplements',
+];

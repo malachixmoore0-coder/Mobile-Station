@@ -5,7 +5,7 @@ import { colors, radius, spacing } from '@/theme';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Tag } from '@/components/Tag';
 import { useLog } from '@/context/LogContext';
-import { DISCLAIMER, PEPTIDES, SUPPLEMENTS, StackEntry } from '@/data/stack';
+import { DISCLAIMER, PEPTIDES, SUPPLEMENTS, SUPPLEMENT_SLOTS, StackEntry } from '@/data/stack';
 import { isTrainingDay } from '@/data/schedule';
 import { dayIndex, prettyDate } from '@/utils/date';
 
@@ -79,28 +79,32 @@ export function StackScreen() {
           );
         })}
 
-        <Text style={styles.sectionLabel}>Oral support</Text>
-        {SUPPLEMENTS.map((entry) => {
-          const skipped = entry.trainingOnly && !training;
-          const taken = isDone(entry.id);
-          return (
-            <View key={entry.id} style={[styles.card, styles.cardTight, skipped && styles.cardSkipped]}>
-              <View style={styles.cardHead}>
-                <Ionicons
-                  name={taken ? 'checkmark-circle' : 'ellipse-outline'}
-                  size={20}
-                  color={taken ? colors.supplement : colors.border}
-                />
-                <View style={styles.headText}>
-                  <Text style={styles.name}>{entry.name}</Text>
-                  <Text style={styles.timing}>{entry.timing}</Text>
+        {SUPPLEMENT_SLOTS.map(({ slot, label }) => (
+          <View key={slot}>
+            <Text style={styles.sectionLabel}>{label}</Text>
+            {SUPPLEMENTS.filter((e) => e.slot === slot).map((entry) => {
+              const skipped = entry.trainingOnly && !training;
+              const taken = isDone(entry.id);
+              return (
+                <View key={entry.id} style={[styles.card, styles.cardTight, skipped && styles.cardSkipped]}>
+                  <View style={styles.cardHead}>
+                    <Ionicons
+                      name={taken ? 'checkmark-circle' : 'ellipse-outline'}
+                      size={20}
+                      color={taken ? colors.supplement : colors.border}
+                    />
+                    <View style={styles.headText}>
+                      <Text style={styles.name}>{entry.name}</Text>
+                      <Text style={styles.timing}>{entry.timing}</Text>
+                    </View>
+                    <Text style={styles.fixedDose}>{entry.fixedDose}</Text>
+                  </View>
+                  <Text style={styles.role}>{entry.role}</Text>
                 </View>
-                <Text style={styles.fixedDose}>{entry.fixedDose}</Text>
-              </View>
-              <Text style={styles.role}>{entry.role}</Text>
-            </View>
-          );
-        })}
+              );
+            })}
+          </View>
+        ))}
 
         <View style={styles.rulesCard}>
           <Text style={styles.rulesTitle}>Handling rules built into the schedule</Text>
@@ -109,6 +113,7 @@ export function StackScreen() {
             'IGF-1 LR3 only on training days, post-workout, with 50 g fast carbs going in immediately.',
             'Rotate sub-Q sites daily; the Today screen flags the site you used last.',
             'Zinc at 30 mg nightly holds the ~10:1 ratio against GHK-Cu.',
+            'B12, biotin and green tea extract go in fasted at 7:30 AM; omega-3s wait for the fat in meal 5.',
           ].map((rule) => (
             <View key={rule} style={styles.ruleRow}>
               <Ionicons name="ellipse" size={5} color={colors.volt} style={styles.bullet} />
