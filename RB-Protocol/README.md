@@ -18,7 +18,7 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
 - **Training days vs. recovery days are different days.** Mon/Tue/Thu/Fri run
   the split; Wed/Sat/Sun drop the gym block, the post-workout shake and
   **IGF-1 LR3 entirely**, swap in the active-recovery block, and cut the
-  pre-workout stack back to creatine only. 42 checks on a training day, 37 on
+  pre-workout stack back to creatine only. 43 checks on a training day, 38 on
   a recovery day — the adherence ring counts what that day actually calls for.
 - **Injection site rotation** — each syringe logs where it was pinned, and the
   card tells you where the last one went ("Last pinned Abdomen L · yesterday"),
@@ -32,9 +32,10 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
   on trap bar, 1:15 on the curl superset) that counts up past zero once rest is
   done. Each exercise shows what you lifted the last time that session came
   around. A "Split" toggle shows the whole week.
-- **Fuel — Today** — the day's five meals with estimated calories and macros,
-  filled in as meals are checked off, plus water tracking in 8 oz units against
-  an 88 oz target.
+- **Fuel — Today** — the day's five meals with their target calories and macros,
+  banked as each meal is fully checked off (~3,110 kcal / 220 P / 330 C / 99 F
+  across the five meals, plus ~370 kcal from the post-workout shake on training
+  days), and water tracking in 8 oz units against an 88 oz target.
 - **Fuel — Meals & prep** — the full build for every meal: ingredient list with
   exact amounts, batch cooking steps for the cook-once-eat-four meals (2 lbs
   beef + 2 cups dry rice for the bowls; 2 lbs chicken + 4 sweet potatoes for the

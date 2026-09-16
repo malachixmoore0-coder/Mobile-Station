@@ -18,11 +18,12 @@ export const GROCERIES: GroceryLine[] = [
   { item: 'Eggs (salmon swap)', weekly: '1 dozen backup', aisle: 'Protein' },
   { item: 'Plain 0% Greek yogurt', weekly: '7 x 340 g (~5.3 lb)', aisle: 'Protein' },
 
-  { item: 'White jasmine rice (dry)', weekly: '~3.5 cups dry', aisle: 'Carbs', batchNote: '2 cups dry per batch' },
-  { item: 'Medium sweet potatoes', weekly: '7', aisle: 'Carbs', batchNote: '4 per batch' },
-  { item: 'Rolled oats or cream of rice', weekly: '280 g dry (7 x 40 g)', aisle: 'Carbs' },
+  { item: 'White jasmine rice (dry)', weekly: '~6 cups dry', aisle: 'Carbs', batchNote: '3.5 cups dry per 4-bowl batch' },
+  { item: 'Large sweet potatoes (~10-11 oz)', weekly: '7', aisle: 'Carbs', batchNote: '4 per batch, or 3.5 cups dry rice' },
+  { item: 'Rolled oats or cream of rice', weekly: '420 g dry (7 x 60 g)', aisle: 'Carbs' },
+  { item: 'Pure honey', weekly: '~300 g (7 x 42 g)', aisle: 'Carbs' },
 
-  { item: 'Bananas', weekly: '7 medium', aisle: 'Produce' },
+  { item: 'Bananas', weekly: '7 large', aisle: 'Produce' },
   { item: 'Frozen greens (broccoli or spinach)', weekly: '7 cups', aisle: 'Produce', batchNote: '4 cups per batch' },
   { item: 'Mixed greens / baby spinach', weekly: '14 cups (~2 clamshells)', aisle: 'Produce' },
   { item: 'Avocado', weekly: '2 (1/4 per day)', aisle: 'Produce' },
@@ -31,7 +32,7 @@ export const GROCERIES: GroceryLine[] = [
 
   { item: 'Almond butter', weekly: '3.5 tbsp (1 jar lasts weeks)', aisle: 'Fats & extras' },
   { item: 'Raw almonds', weekly: '7 oz (7 x 28 g)', aisle: 'Fats & extras' },
-  { item: 'Extra virgin olive oil', weekly: '7 tbsp + cooking oil', aisle: 'Fats & extras' },
+  { item: 'Extra virgin olive oil', weekly: '~5.5 tbsp + cooking oil', aisle: 'Fats & extras' },
   { item: 'Unsweetened almond milk', weekly: '~2.5 qt', aisle: 'Fats & extras' },
   { item: 'Sea salt, black pepper, garlic powder, paprika', weekly: 'restock as needed', aisle: 'Fats & extras' },
 

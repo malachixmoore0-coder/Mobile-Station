@@ -30,7 +30,8 @@ export function FuelScreen() {
   const meals = blocks.filter((b) => b.kind === 'meal');
   const target = totalMacros(meals);
 
-  // Macros actually banked: a meal counts once every item in it is checked.
+  // Macros actually banked against the day's target: a meal counts once every
+  // item in it is checked.
   const eaten = meals.reduce(
     (acc, b) => {
       const m = macrosFor(b.id);
@@ -73,7 +74,7 @@ export function FuelScreen() {
                 {eaten.kcal.toLocaleString()}
                 <Text style={styles.kcalDim}> / {target.kcal.toLocaleString()} kcal</Text>
               </Text>
-              <Text style={styles.macroNote}>estimates</Text>
+              <Text style={styles.macroNote}>target</Text>
             </View>
             <View style={styles.macroRow}>
               <MacroBar label="Protein" value={eaten.protein} total={target.protein} color={colors.meal} />

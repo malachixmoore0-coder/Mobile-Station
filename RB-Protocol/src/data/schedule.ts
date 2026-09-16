@@ -71,8 +71,8 @@ const MASTER: Block[] = [
     kind: 'meal',
     items: [
       { id: 'm1-whey', label: 'Whey isolate', detail: '1 scoop' },
-      { id: 'm1-oats', label: 'Rolled oats or cream of rice', detail: '40 g dry' },
-      { id: 'm1-banana', label: 'Banana', detail: '1 medium' },
+      { id: 'm1-oats', label: 'Rolled oats or cream of rice', detail: '60 g dry' },
+      { id: 'm1-banana', label: 'Banana', detail: '1 large' },
       { id: 'm1-ab', label: 'Almond butter', detail: '1/2 tbsp' },
       { id: 'm1-liquid', label: 'Water or unsweetened almond milk', detail: '10-12 oz' },
     ],
@@ -140,7 +140,7 @@ const MASTER: Block[] = [
     title: 'Meal 2 — Post-workout whole food bowl',
     kind: 'meal',
     items: [
-      { id: 'm2-rice', label: 'Cooked jasmine rice', detail: '7 oz / 200 g' },
+      { id: 'm2-rice', label: 'Cooked jasmine rice', detail: '10.5 oz / 300 g' },
       { id: 'm2-protein', label: 'Cooked 93/7 ground beef', detail: '6 oz / 170 g' },
       { id: 'm2-greens', label: 'Steamed greens (broccoli or spinach)', detail: '1 cup' },
     ],
@@ -159,7 +159,7 @@ const MASTER: Block[] = [
     title: 'Meal 3 — Mid-shift meal',
     kind: 'meal',
     items: [
-      { id: 'm3-sweet', label: 'Baked sweet potato', detail: '~7-8 oz', note: 'Or 7 oz cooked jasmine rice' },
+      { id: 'm3-sweet', label: 'Baked sweet potato (large)', detail: '~10-11 oz / 300 g', note: 'Or 10.5 oz cooked jasmine rice' },
       { id: 'm3-protein', label: 'Cooked chicken breast', detail: '6 oz / 170 g' },
       { id: 'm3-avo', label: 'Avocado, sliced fresh', detail: '1/4' },
     ],
@@ -172,6 +172,7 @@ const MASTER: Block[] = [
     kind: 'meal',
     items: [
       { id: 'm4-yogurt', label: 'Plain 0% Greek yogurt', detail: '1.5 cups / 340 g' },
+      { id: 'm4-honey', label: 'Pure honey', detail: '2 tbsp / 42 g' },
       { id: 'm4-almonds', label: 'Raw almonds', detail: '1 oz / 28 g' },
       { id: 'm4-berries', label: 'Fresh blueberries', detail: '1/2 cup' },
     ],
@@ -192,7 +193,7 @@ const MASTER: Block[] = [
     items: [
       { id: 'm5-protein', label: 'Pan-seared salmon', detail: '8 oz / 225 g raw', note: 'Or 4 whole eggs + 4 egg whites' },
       { id: 'm5-greens', label: 'Mixed greens or baby spinach', detail: '2 cups' },
-      { id: 'm5-evoo', label: 'Extra virgin olive oil', detail: '1 tbsp', note: 'With salt, pepper, lemon juice' },
+      { id: 'm5-evoo', label: 'Extra virgin olive oil', detail: '3/4 tbsp / 10 g', note: 'With salt, pepper, lemon juice' },
     ],
     pairing: 'Slow-digesting protein and healthy lipids overnight; omega-3s and salmon lipids work with KPV to lower systemic inflammation, and zinc preserves the copper/zinc balance alongside GHK-Cu.',
   },
