@@ -49,6 +49,8 @@ export interface Exercise {
 
 export interface Workout {
   dayType: DayType;
+  /** The weekday this session belongs to in the split. */
+  weekday: string;
   title: string;
   /** Short subtitle: "High power & hypertrophy" etc. */
   focus: string;

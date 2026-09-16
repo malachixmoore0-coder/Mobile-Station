@@ -14,12 +14,16 @@ export interface Macros {
  * if you weigh and log precisely.
  */
 const MEAL_MACROS: Record<string, Macros> = {
-  'meal-1': { kcal: 790, protein: 44, carbs: 96, fat: 26 },
-  shake: { kcal: 370, protein: 36, carbs: 52, fat: 1 },
-  'meal-2': { kcal: 860, protein: 66, carbs: 88, fat: 24 },
-  'meal-3': { kcal: 700, protein: 60, carbs: 48, fat: 24 },
-  'meal-4': { kcal: 450, protein: 40, carbs: 28, fat: 18 },
-  'meal-5': { kcal: 680, protein: 52, carbs: 14, fat: 46 },
+  // Smoothie: 1 scoop isolate, 40 g dry oats, banana, 1/2 tbsp almond butter.
+  'meal-1': { kcal: 450, protein: 33, carbs: 58, fat: 9 },
+  shake: { kcal: 370, protein: 40, carbs: 52, fat: 1 },
+  // Bowl: 200 g cooked rice, 170 g cooked 93/7 beef, 1 cup greens.
+  'meal-2': { kcal: 600, protein: 52, carbs: 64, fat: 14 },
+  // Shift meal: 200 g sweet potato, 170 g cooked chicken, 1/4 avocado.
+  'meal-3': { kcal: 560, protein: 56, carbs: 47, fat: 16 },
+  'meal-4': { kcal: 405, protein: 40, carbs: 29, fat: 15 },
+  // 225 g raw salmon, 2 cups greens, 1 tbsp EVOO.
+  'meal-5': { kcal: 600, protein: 46, carbs: 5, fat: 43 },
 };
 
 export function macrosFor(blockId: string): Macros | undefined {

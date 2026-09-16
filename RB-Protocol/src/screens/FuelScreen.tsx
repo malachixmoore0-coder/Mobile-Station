@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing } from '@/theme';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { BlockCard } from '@/components/BlockCard';
@@ -9,8 +10,16 @@ import { scheduleFor, isTrainingDay } from '@/data/schedule';
 import { dayIndex, prettyDate } from '@/utils/date';
 import { macrosFor, totalMacros } from '@/utils/nutrition';
 import { AISLES, GROCERIES } from '@/data/groceries';
+import { PREP_SESSION, RECIPES } from '@/data/recipes';
+import { RecipeCard, StepList } from '@/components/RecipeCard';
 
-type Mode = 'meals' | 'list';
+type Mode = 'meals' | 'recipes' | 'list';
+
+const MODE_LABEL: Record<Mode, string> = {
+  meals: 'Today',
+  recipes: 'Meals & prep',
+  list: 'Shopping',
+};
 
 export function FuelScreen() {
   const { activeDate, isDone } = useLog();
@@ -44,16 +53,14 @@ export function FuelScreen() {
       />
 
       <View style={styles.tabs}>
-        {(['meals', 'list'] as Mode[]).map((m) => (
+        {(['meals', 'recipes', 'list'] as Mode[]).map((m) => (
           <TouchableOpacity
             key={m}
             style={[styles.tab, mode === m && styles.tabActive]}
             activeOpacity={0.8}
             onPress={() => setMode(m)}
           >
-            <Text style={[styles.tabText, mode === m && styles.tabTextActive]}>
-              {m === 'meals' ? "Today's meals" : 'Weekly list'}
-            </Text>
+            <Text style={[styles.tabText, mode === m && styles.tabTextActive]}>{MODE_LABEL[m]}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -81,6 +88,31 @@ export function FuelScreen() {
             <BlockCard key={b.id} block={b} nowMinutes={null} />
           ))}
         </ScrollView>
+      ) : mode === 'recipes' ? (
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          <Text style={styles.listIntro}>
+            Every meal, start to finish: what goes in it, what gets cooked ahead, and the exact
+            tare-and-weigh order at the scale.
+          </Text>
+
+          {RECIPES.map((r) => (
+            <RecipeCard key={r.blockId} recipe={r} />
+          ))}
+
+          <View style={styles.prepCard}>
+            <View style={styles.prepHead}>
+              <Ionicons name="flame" size={16} color={colors.volt} />
+              <Text style={styles.prepTitle}>Prep session — cook once, eat four</Text>
+            </View>
+            <Text style={styles.prepIntro}>
+              Both batches run at the same time: rice cooker and skillet for the bowls, one oven
+              rack for the chicken and sweet potatoes. Worth doing on a recovery day.
+            </Text>
+            {PREP_SESSION.map((batch) => (
+              <StepList key={batch.title} steps={batch} accent={colors.volt} />
+            ))}
+          </View>
+        </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <Text style={styles.listIntro}>
@@ -92,7 +124,10 @@ export function FuelScreen() {
               <Text style={styles.aisleTitle}>{aisle}</Text>
               {GROCERIES.filter((g) => g.aisle === aisle).map((g) => (
                 <View key={g.item} style={styles.groceryRow}>
-                  <Text style={styles.groceryItem}>{g.item}</Text>
+                  <View style={styles.groceryText}>
+                    <Text style={styles.groceryItem}>{g.item}</Text>
+                    {!!g.batchNote && <Text style={styles.groceryBatch}>{g.batchNote}</Text>}
+                  </View>
                   <Text style={styles.groceryQty}>{g.weekly}</Text>
                 </View>
               ))}
@@ -185,6 +220,17 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.divider,
   },
-  groceryItem: { flex: 1, fontSize: 13, color: colors.ink, fontWeight: '600' },
+  groceryText: { flex: 1 },
+  groceryItem: { fontSize: 13, color: colors.ink, fontWeight: '600' },
+  groceryBatch: { fontSize: 10.5, color: colors.inkFaint, fontWeight: '700', marginTop: 1 },
+  prepCard: {
+    backgroundColor: colors.bgAlt,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  prepHead: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  prepTitle: { fontSize: 14, fontWeight: '900', color: colors.ink },
+  prepIntro: { fontSize: 12, color: colors.inkDim, lineHeight: 18 },
   groceryQty: { fontSize: 12, color: colors.inkDim, fontWeight: '800' },
 });

@@ -8,6 +8,8 @@ import { useLog } from '@/context/LogContext';
 import { CheckRow } from '@/components/CheckRow';
 import { SitePicker } from '@/components/SitePicker';
 import { macrosFor } from '@/utils/nutrition';
+import { recipeFor } from '@/data/recipes';
+import { StepList } from '@/components/RecipeCard';
 
 interface Props {
   block: Block;
@@ -20,7 +22,9 @@ interface Props {
 export function BlockCard({ block, nowMinutes, isNext, onOpenWorkout }: Props) {
   const { isDone, toggle, setMany } = useLog();
   const [showWhy, setShowWhy] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
   const style = kindStyle(block.kind);
+  const recipe = recipeFor(block.id);
 
   const ids = block.items.map((i) => i.id);
   const doneCount = ids.filter(isDone).length;
@@ -110,6 +114,31 @@ export function BlockCard({ block, nowMinutes, isNext, onOpenWorkout }: Props) {
           </TouchableOpacity>
         )}
 
+        {!!recipe && (
+          <>
+            <TouchableOpacity
+              style={styles.whyToggle}
+              activeOpacity={0.7}
+              onPress={() => setShowSteps((v) => !v)}
+            >
+              <Text style={[styles.whyLabel, { color: style.color }]}>
+                {showSteps ? 'Hide build' : 'How to build it'}
+              </Text>
+              <Ionicons
+                name={showSteps ? 'chevron-up' : 'chevron-down'}
+                size={12}
+                color={style.color}
+              />
+            </TouchableOpacity>
+            {showSteps && (
+              <View style={styles.steps}>
+                {!!recipe.batchPrep && <StepList steps={recipe.batchPrep} accent={colors.volt} />}
+                <StepList steps={recipe.assembly} accent={style.color} />
+              </View>
+            )}
+          </>
+        )}
+
         {!!block.pairing && (
           <TouchableOpacity
             style={styles.whyToggle}
@@ -178,4 +207,5 @@ const styles = StyleSheet.create({
   whyToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.md },
   whyLabel: { fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   why: { fontSize: 12, lineHeight: 18, color: colors.inkDim, marginTop: 6 },
+  steps: { marginTop: spacing.sm, gap: spacing.md },
 });

@@ -88,7 +88,9 @@ export function TodayScreen({ onOpenWorkout }: { onOpenWorkout: () => void }) {
         {training && (
           <TouchableOpacity style={styles.sessionCard} activeOpacity={0.85} onPress={onOpenWorkout}>
             <View style={styles.sessionLeft}>
-              <Text style={styles.sessionLabel}>Today's session</Text>
+              <Text style={styles.sessionLabel}>
+                {WORKOUTS[dayType].weekday} · today's session
+              </Text>
               <Text style={styles.sessionTitle}>{WORKOUTS[dayType].title}</Text>
               <Text style={styles.sessionMeta}>
                 {WORKOUTS[dayType].exercises.length} lifts · 9:15 AM

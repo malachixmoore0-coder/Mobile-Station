@@ -127,6 +127,7 @@ export function TrainScreen() {
       ) : (
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.hero}>
+            <Text style={styles.heroWeekday}>{workout.weekday.toUpperCase()}</Text>
             <Text style={styles.heroTitle}>{workout.title}</Text>
             <Text style={styles.heroFocus}>{workout.focus}</Text>
             <View style={styles.heroTags}>
@@ -212,6 +213,13 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.lg,
     marginBottom: spacing.md,
+  },
+  heroWeekday: {
+    fontSize: 10.5,
+    fontWeight: '900',
+    color: colors.volt,
+    letterSpacing: 1,
+    marginBottom: 3,
   },
   heroTitle: { fontSize: 20, fontWeight: '900', color: colors.ink, letterSpacing: -0.6 },
   heroFocus: { fontSize: 12, color: colors.inkDim, marginTop: 3, fontWeight: '600' },

@@ -8,6 +8,7 @@ import { DayType, Workout } from '@/types';
 export const WORKOUTS: Record<DayType, Workout> = {
   'upper-power': {
     dayType: 'upper-power',
+    weekday: 'Monday',
     title: 'Upper Body Power & Armor',
     focus: 'Max effort, explosive push, contact armor',
     warmup: 'Dynamic mobility & explosive athletic warm-up',
@@ -21,6 +22,7 @@ export const WORKOUTS: Record<DayType, Workout> = {
   },
   'lower-speed': {
     dayType: 'lower-speed',
+    weekday: 'Tuesday',
     title: 'Lower Body Speed & Ground Drive',
     focus: 'Acceleration, bar speed, ground force',
     warmup: 'Dynamic mobility & explosive athletic warm-up',
@@ -34,6 +36,7 @@ export const WORKOUTS: Record<DayType, Workout> = {
   },
   'upper-hyper': {
     dayType: 'upper-hyper',
+    weekday: 'Thursday',
     title: 'Upper Body Hypertrophy & Pump',
     focus: 'Overhead power into volume',
     warmup: 'Dynamic mobility & explosive athletic warm-up',
@@ -46,6 +49,7 @@ export const WORKOUTS: Record<DayType, Workout> = {
   },
   'lower-hyper': {
     dayType: 'lower-hyper',
+    weekday: 'Friday',
     title: 'Lower Body Hypertrophy & Acceleration',
     focus: 'Jumps, squat volume, lateral cut prep',
     warmup: 'Dynamic mobility & explosive athletic warm-up',
@@ -58,6 +62,7 @@ export const WORKOUTS: Record<DayType, Workout> = {
   },
   recovery: {
     dayType: 'recovery',
+    weekday: 'Wed / Sat / Sun',
     title: 'Active Recovery & Rest',
     focus: 'Commute, walking, light mobility only',
     exercises: [],

@@ -23,16 +23,27 @@ Everything is logged on-device. No account, no server, nothing leaves the phone.
 - **Injection site rotation** — each syringe logs where it was pinned, and the
   card tells you where the last one went ("Last pinned Abdomen L · yesterday"),
   with previously-used sites dimmed in the picker.
-- **Train** — today's session with every lift, set count, rep prescription and
+- **Train** — the split is separated by weekday (Monday upper power, Tuesday
+  lower speed, Wednesday recovery, Thursday upper hypertrophy, Friday lower
+  hypertrophy, Sat/Sun recovery), and each day loads its own session — labeled
+  with the weekday it belongs to. Every lift with set count, rep prescription and
   intent cue, plus a **weight × reps grid for each prescribed set**. Logging a
   set starts a **rest timer** matched to that lift (4:00 on hill sprints, 3:00
   on trap bar, 1:15 on the curl superset) that counts up past zero once rest is
   done. Each exercise shows what you lifted the last time that session came
   around. A "Split" toggle shows the whole week.
-- **Fuel** — the day's five meals with estimated calories and macros, filled in
-  as meals are checked off, plus water tracking in 8 oz units against an 88 oz
-  target, and a **weekly shopping list** by aisle sized to 7 days of this
-  protocol (including 4 training days' worth of shake carbs and whey).
+- **Fuel — Today** — the day's five meals with estimated calories and macros,
+  filled in as meals are checked off, plus water tracking in 8 oz units against
+  an 88 oz target.
+- **Fuel — Meals & prep** — the full build for every meal: ingredient list with
+  exact amounts, batch cooking steps for the cook-once-eat-four meals (2 lbs
+  beef + 2 cups dry rice for the bowls; 2 lbs chicken + 4 sweet potatoes for the
+  shift meals), and the **tare-and-weigh order at the food scale**, step by step
+  — tare, 200 g rice, tare, 170 g beef, 1 cup greens. Plus a combined prep
+  session card for running both batches at once on a recovery day. The same
+  build steps expand inline on any meal block on the Today timeline.
+- **Fuel — Shopping** — a weekly list by aisle sized to the real portions,
+  showing both the per-week total and the batch quantity it's cooked in.
 - **Stack** — every injectable and oral in one place: route, timing, the role it
   plays in the protocol, whether it's on or off today, and an editable dose
   field per compound (doses are yours to enter — the app doesn't prescribe).
