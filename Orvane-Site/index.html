@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ORVANE Atelier</title>
+  <meta name="description" content="ORVANE — quiet luxury, cut in Florence. Autumn–Winter 26: double-faced cashmere, hand-finished tailoring and leather goods made to be kept." />
+  <meta name="theme-color" content="#f3efe8" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23161412'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' fill='%23f3efe8' text-anchor='middle'%3EO%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="is-loading">
+  <!-- Intro curtain -->
+  <div class="curtain" id="curtain" aria-hidden="true">
+    <div class="curtain-logo"><span>O</span><span>R</span><span>V</span><span>A</span><span>N</span><span>E</span></div>
+    <div class="curtain-line"></div>
+  </div>
+
+  <div class="cursor" aria-hidden="true"><span class="cursor-label">View</span></div>
+
+  <div class="announce">
+    <div class="announce-track">
+      <span>Complimentary shipping &amp; returns</span><span>Autumn–Winter 26 now available</span><span>Lifetime repairs on every piece</span><span>Complimentary alterations in-store</span>
+      <span>Complimentary shipping &amp; returns</span><span>Autumn–Winter 26 now available</span><span>Lifetime repairs on every piece</span><span>Complimentary alterations in-store</span>
+    </div>
+  </div>
+
+  <header class="header" id="header">
+    <nav class="header-nav" aria-label="Primary">
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+      <a href="#collection" class="u-link">Women</a>
+      <a href="#collection" class="u-link">Men</a>
+      <a href="#lookbook" class="u-link">Lookbook</a>
+      <a href="#atelier" class="u-link">Atelier</a>
+    </nav>
+    <a class="logo" href="#top" aria-label="ORVANE home">ORVANE</a>
+    <div class="header-actions">
+      <a href="#journal" class="u-link hide-sm">Stores</a>
+      <button class="u-link bag-btn" id="bag-btn" aria-label="Open bag">Bag <span class="bag-count" id="bag-count">0</span></button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a href="#collection">Women</a>
+    <a href="#collection">Men</a>
+    <a href="#lookbook">Lookbook</a>
+    <a href="#atelier">Atelier</a>
+    <a href="#journal">Stores</a>
+  </div>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-media">
+        <div class="frame" data-label="Campaign — AW26">
+          <img src="images/hero.jpg" alt="A model in a long camel cashmere coat walking through a sunlit stone courtyard" data-parallax="0.18" />
+        </div>
+      </div>
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <p class="kicker hero-kicker">Autumn — Winter 2026</p>
+        <h1 class="hero-title">
+          <span class="line"><span>The Quiet</span></span>
+          <span class="line"><span><em>Season</em></span></span>
+        </h1>
+        <div class="hero-foot">
+          <p>Double-faced cashmere, softened tailoring and leather made to be kept. Cut and finished by hand in our Florence atelier.</p>
+          <a class="btn btn-light" href="#collection" data-magnetic>Discover the collection</a>
+        </div>
+      </div>
+      <div class="hero-scroll" aria-hidden="true"><span></span></div>
+    </section>
+
+    <!-- STATEMENT -->
+    <section class="statement">
+      <p class="kicker reveal">Maison ORVANE · Firenze · Est. 2011</p>
+      <p class="statement-text" id="statement">We make fewer things, more slowly. Each coat passes through forty-two hands before it leaves the atelier — because the clothes we love most are the ones that grow old with us.</p>
+    </section>
+
+    <!-- COLLECTION -->
+    <section class="collection" id="collection">
+      <div class="section-head">
+        <div>
+          <p class="kicker reveal">The Essentials</p>
+          <h2 class="reveal">Pieces for the <em>long</em> view</h2>
+        </div>
+        <div class="filters reveal" role="tablist" aria-label="Filter products">
+          <button class="filter is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter" data-filter="outerwear" role="tab" aria-selected="false">Outerwear</button>
+          <button class="filter" data-filter="knitwear" role="tab" aria-selected="false">Knitwear</button>
+          <button class="filter" data-filter="tailoring" role="tab" aria-selected="false">Tailoring</button>
+          <button class="filter" data-filter="leather" role="tab" aria-selected="false">Leather</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <!-- EDITORIAL BAND -->
+    <section class="band">
+      <div class="band-track" aria-hidden="true">
+        <span>Cashmere</span><i>✦</i><span>Merino</span><i>✦</i><span>Vegetable-tanned leather</span><i>✦</i><span>Mulberry silk</span><i>✦</i><span>Biella wool</span><i>✦</i>
+        <span>Cashmere</span><i>✦</i><span>Merino</span><i>✦</i><span>Vegetable-tanned leather</span><i>✦</i><span>Mulberry silk</span><i>✦</i><span>Biella wool</span><i>✦</i>
+      </div>
+    </section>
+
+    <!-- LOOKBOOK (pinned horizontal scroll) -->
+    <section class="lookbook" id="lookbook">
+      <div class="lookbook-sticky">
+        <div class="lookbook-intro">
+          <p class="kicker">Lookbook</p>
+          <h2>Between <em>light</em><br />and stone</h2>
+          <p class="muted">Photographed in the courtyards of Oltrarno, early November.</p>
+          <div class="lookbook-progress"><span id="lb-progress"></span></div>
+        </div>
+        <div class="lookbook-track" id="lb-track">
+          <figure class="look">
+            <div class="frame" data-label="Look 01"><img src="images/look-1.jpg" alt="Model in the Ardesia blazer and Linea trousers leaning on a stone archway" loading="lazy" /></div>
+            <figcaption><span>01</span> Ardesia Blazer · Linea Trouser</figcaption>
+          </figure>
+          <figure class="look look-tall">
+            <div class="frame" data-label="Look 02"><img src="images/look-2.jpg" alt="Model wearing the ivory Sera knit and carrying the cognac Nove tote on a stairway" loading="lazy" /></div>
+            <figcaption><span>02</span> Sera Knit · Nove Tote</figcaption>
+          </figure>
+          <figure class="look">
+            <div class="frame" data-label="Look 03"><img src="images/look-3.jpg" alt="Model in the Aurelio overcoat over a champagne silk shirt by a window" loading="lazy" /></div>
+            <figcaption><span>03</span> Aurelio Overcoat · Vela Shirt</figcaption>
+          </figure>
+          <a class="look look-end" href="#collection">
+            <span>Shop the<br /><em>collection</em></span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATELIER -->
+    <section class="atelier" id="atelier">
+      <div class="atelier-media">
+        <div class="frame" data-label="The atelier">
+          <img src="images/atelier.jpg" alt="A tailor's hands hand-stitching the lapel of a wool jacket" loading="lazy" data-parallax="0.12" />
+        </div>
+      </div>
+      <div class="atelier-copy">
+        <p class="kicker reveal">The Atelier</p>
+        <h2 class="reveal">Made by hand,<br /><em>made to last</em></h2>
+        <p class="reveal">Our cloth is woven in Biella and our leather tanned with bark in Santa Croce. In the atelier on Via Maggio, twenty-six artisans cut, baste and finish every piece — a lapel alone is rolled with more than a thousand hand stitches.</p>
+        <dl class="facts">
+          <div class="reveal"><dt data-count="42">0</dt><dd>hours to finish one overcoat</dd></div>
+          <div class="reveal"><dt data-count="26">0</dt><dd>artisans in Florence</dd></div>
+          <div class="reveal"><dt data-count="100" data-suffix="%">0</dt><dd>traceable natural fibres</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="services">
+      <div class="service reveal">
+        <h3>Lifetime care</h3>
+        <p>Every piece can return to the atelier to be repaired, relined or re-pressed — for as long as you own it.</p>
+      </div>
+      <div class="service reveal">
+        <h3>Private appointments</h3>
+        <p>Book an hour with a stylist in Florence, Milan or Paris, or by video from wherever you are.</p>
+      </div>
+      <div class="service reveal">
+        <h3>Complimentary alterations</h3>
+        <p>Sleeves, hems and waists adjusted by our tailors at no charge within ninety days.</p>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="letter" id="journal">
+      <p class="kicker reveal">The Journal</p>
+      <h2 class="reveal">Letters from <em>Via Maggio</em></h2>
+      <p class="muted reveal">Four times a year: new collections, the people behind them and first access to private sales.</p>
+      <form class="letter-form reveal" id="letter-form" novalidate>
+        <label class="sr-only" for="email">Email address</label>
+        <input id="email" type="email" placeholder="Your email address" autocomplete="email" required />
+        <button class="btn btn-dark" type="submit">Subscribe</button>
+      </form>
+      <p class="letter-note" id="letter-note" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-logo">ORVANE</div>
+    <div class="footer-cols">
+      <div><h4>Client services</h4><a href="#">Contact</a><a href="#">Shipping</a><a href="#">Returns</a><a href="#">Care guide</a></div>
+      <div><h4>Maison</h4><a href="#atelier">Atelier</a><a href="#lookbook">Lookbook</a><a href="#journal">Journal</a><a href="#">Careers</a></div>
+      <div><h4>Boutiques</h4><span>Via Maggio 18, Firenze</span><span>Via della Spiga 9, Milano</span><span>Rue de Grenelle 44, Paris</span></div>
+    </div>
+    <div class="footer-base">
+      <span>© <span id="year"></span> ORVANE. A demonstration storefront — no real orders are taken.</span>
+      <span>Instagram · Pinterest</span>
+    </div>
+  </footer>
+
+  <!-- Quick view -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="qv-name" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <button class="icon-btn modal-close" data-close aria-label="Close">✕</button>
+      <div class="qv-media">
+        <div class="frame qv-frame"><img id="qv-img" alt="" /></div>
+        <div class="qv-thumbs" id="qv-thumbs"></div>
+      </div>
+      <div class="qv-info">
+        <p class="kicker" id="qv-cat"></p>
+        <h3 id="qv-name"></h3>
+        <p class="qv-price" id="qv-price"></p>
+        <p class="qv-desc" id="qv-desc"></p>
+        <div class="qv-group">
+          <span class="qv-label">Colour — <b id="qv-colour"></b></span>
+          <div class="qv-colours" id="qv-colours"></div>
+        </div>
+        <div class="qv-group">
+          <span class="qv-label">Size</span>
+          <div class="qv-sizes" id="qv-sizes"></div>
+        </div>
+        <button class="btn btn-dark btn-block" id="qv-add">Select a size</button>
+        <ul class="qv-notes">
+          <li>Complimentary shipping and returns</li>
+          <li id="qv-material"></li>
+          <li>Made in Florence, Italy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bag drawer -->
+  <aside class="drawer" id="drawer" aria-label="Shopping bag" aria-hidden="true">
+    <div class="drawer-backdrop" data-close-bag></div>
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h3>Your bag</h3>
+        <button class="icon-btn" data-close-bag aria-label="Close bag">✕</button>
+      </div>
+      <ul class="drawer-items" id="bag-items"></ul>
+      <div class="drawer-empty" id="bag-empty">
+        <p>Your bag is empty.</p>
+        <a href="#collection" class="u-link" data-close-bag>Continue shopping</a>
+      </div>
+      <div class="drawer-foot" id="bag-foot">
+        <div class="drawer-row"><span>Subtotal</span><b id="bag-subtotal">$0</b></div>
+        <p class="muted small">Shipping and duties calculated at checkout.</p>
+        <button class="btn btn-dark btn-block" id="checkout">Checkout</button>
+        <p class="small muted drawer-note" id="checkout-note" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
