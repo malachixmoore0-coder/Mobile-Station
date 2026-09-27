@@ -32,16 +32,19 @@ Plain HTML/CSS/JS with no build step.
 
 ## Drop 03 — Night Shift
 
-29 pieces with 65 colourways. The original 12 are listed here; 17 more were added
-across every category, including fall pieces: Dusk Hoodie (graphic), Chainstitch Crew
+29 pieces in 65 colourways. The core range is the Dusk Hoodie (graphic), Chainstitch Crew
 (embroidered), Open Late Tee, Varsity Arch Tee (puff print), Nightshift Puffer,
 Afterhours Varsity, Loose Carpenter Jean, Worker Denim Jacket, Run Club Track Set,
-Motion Set, Lounge Fleece Set and Phase Beanie.
+Motion Set, Lounge Fleece Set and Phase Beanie. The newer pieces add men's and women's
+styles in every category: Moonrise Zip Hoodie, Phase Jacquard Sweater, Phase Crop Hoodie,
+Open 24/7 Longsleeve, Ringer Baby Tee, Harvest Chore Coat, Midnight Satin Bomber,
+Bonfire Plaid Shacket, Barrel Leg Jean, Utility Denim Maxi Skirt, Night Court Mesh Short,
+Flare Legging, Waffle Thermal Henley, Rib Knit Lounge Set, Phase Six-Panel Cap,
+Night Sling Bag and Harvest Knit Scarf.
 
 Every piece has a studio product shot per colourway, plus on-model shots
 taken in real locations (Brooklyn, East LA, Queens, an outdoor court, Manchester,
-a Toronto rooftop, autumn parks, apartments)
-(front, back and/or a second angle) on a cast of six with visible tattoos,
+a Toronto rooftop, autumn parks, apartments): front, back and/or a second angle, on a cast of six with visible tattoos,
 freckles, vitiligo, scars and piercings. Campaign images are in the
 "After Dark" lookbook.
 
