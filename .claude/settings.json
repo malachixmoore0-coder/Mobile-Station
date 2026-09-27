@@ -55,5 +55,9 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "f=$(ls -d ~/.claude/plugins/cache/ponytail/ponytail/*/hooks/ponytail-statusline.sh 2>/dev/null | tail -1); [ -n \"$f\" ] && bash \"$f\""
   }
 }
