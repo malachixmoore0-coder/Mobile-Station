@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>HALFLIT Streetwear</title>
+  <meta name="description" content="HALFLIT — streetwear made for the hour between. Heavyweight hoodies, embroidered crews, graphic tees, outerwear, denim, active and lounge." />
+  <meta name="theme-color" content="#0e0e0f" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230e0e0f'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%23ff6a13' stroke-width='6'/%3E%3Cpath d='M50 20A30 30 0 0 0 50 80Z' fill='%23ff6a13'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;500;700&family=Yellowtail&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span></span></div>
+
+  <div class="ticker" aria-label="Announcements">
+    <div class="ticker-track">
+      <span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
+      <span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
+    </div>
+  </div>
+
+  <header class="header" id="header">
+    <a class="header-logo" href="#top" aria-label="HALFLIT home" id="header-logo"></a>
+    <nav class="header-nav" aria-label="Primary">
+      <a href="#shop">Shop</a>
+      <a href="#lookbook">After Dark</a>
+      <a href="#cast">Cast</a>
+      <a href="#lab">Logo Lab</a>
+      <a href="#identity">Identity</a>
+    </nav>
+    <button class="bag-btn" id="bag-btn" aria-label="Open bag">
+      Bag <span id="bag-count">0</span>
+    </button>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-img" id="hero-img"><img alt="Four friends in HALFLIT streetwear hanging out under a sodium streetlight at night" data-img="campaign.hero" /></div>
+      <div class="hero-shade"></div>
+      <div class="hero-top">
+        <p class="mono">Drop 03 / Night Shift</p>
+        <p class="mono hide-sm">Phase <span id="hero-phase">50</span>% lit</p>
+      </div>
+      <div class="hero-bottom">
+        <div class="hero-copy">
+          <h1 class="hero-line">Made for the<br />hour <em>between.</em></h1>
+          <p>Heavyweight fleece, chain-stitch, puff print and denim built for late nights, early mornings and everything you're still figuring out.</p>
+          <div class="hero-cta">
+            <a class="btn btn-sodium" href="#shop">Shop the drop</a>
+            <a class="btn btn-ghost" href="#lab">Make the logo yours</a>
+          </div>
+        </div>
+        <div class="hero-word" id="hero-word" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- CATEGORY STRIP -->
+    <div class="tape" aria-hidden="true">
+      <div class="tape-track">
+        <span>Screen print</span><i>◐</i><span>Chain stitch</span><i>◐</i><span>Puff print</span><i>◐</i><span>Chenille</span><i>◐</i><span>Reflective</span><i>◐</i><span>480gsm fleece</span><i>◐</i><span>14oz denim</span><i>◐</i>
+        <span>Screen print</span><i>◐</i><span>Chain stitch</span><i>◐</i><span>Puff print</span><i>◐</i><span>Chenille</span><i>◐</i><span>Reflective</span><i>◐</i><span>480gsm fleece</span><i>◐</i><span>14oz denim</span><i>◐</i>
+      </div>
+    </div>
+
+    <!-- SHOP -->
+    <section class="shop" id="shop">
+      <div class="shop-head">
+        <div>
+          <p class="mono label">Drop 03 — 12 pieces, 30 colourways</p>
+          <h2 class="display">The Night Shift</h2>
+        </div>
+        <div class="chips" id="chips" role="tablist" aria-label="Filter by category"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <!-- LOOKBOOK -->
+    <section class="lookbook" id="lookbook">
+      <div class="lookbook-head">
+        <p class="mono label">Lookbook</p>
+        <h2 class="display">After <em>Dark</em></h2>
+        <p class="muted">Shot between 7pm and 4am across parking garages, rooftops, a 24-hour laundromat and one very patient corner deli.</p>
+      </div>
+      <div class="rail" id="rail" tabindex="0" aria-label="Lookbook images, scroll horizontally"></div>
+    </section>
+
+    <!-- CAST -->
+    <section class="cast" id="cast">
+      <div class="section-head">
+        <p class="mono label">The Cast</p>
+        <h2 class="display">No retouching.<br /><em>No filters.</em></h2>
+        <p class="muted">Freckles, scars, vitiligo, stick-and-pokes. The people who wear HALFLIT, as they are.</p>
+      </div>
+      <div class="cast-grid" id="cast-grid"></div>
+    </section>
+
+    <!-- LOGO LAB -->
+    <section class="lab" id="lab">
+      <div class="section-head">
+        <p class="mono label">Logo Lab</p>
+        <h2 class="display">One mark.<br /><em>Every phase.</em></h2>
+        <p class="muted">The HALFLIT mark is a moon caught mid-phase. Change the phase, the lockup, the finish and the colour, then see it on a garment.</p>
+      </div>
+      <div class="lab-body">
+        <div class="lab-stage">
+          <div class="lab-garment" id="lab-garment"></div>
+          <div class="lab-flat" id="lab-flat"></div>
+        </div>
+        <form class="lab-controls" id="lab-controls" onsubmit="return false">
+          <fieldset>
+            <legend>Lockup</legend>
+            <div class="seg" id="c-lockup"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Phase <output id="o-phase">50%</output></legend>
+            <input type="range" id="c-phase" min="0" max="100" value="50" aria-label="Moon phase" />
+            <div class="phase-marks" aria-hidden="true"><span>New</span><span>Half</span><span>Full</span></div>
+          </fieldset>
+          <fieldset>
+            <legend>Finish</legend>
+            <div class="seg" id="c-finish"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Ink / thread</legend>
+            <div class="swatches" id="c-ink"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Garment</legend>
+            <div class="seg" id="c-garment"></div>
+            <div class="swatches small" id="c-fabric"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Placement</legend>
+            <div class="seg" id="c-place"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Custom text</legend>
+            <input type="text" id="c-text" maxlength="12" placeholder="HALFLIT" autocomplete="off" spellcheck="false" />
+          </fieldset>
+          <div class="lab-actions">
+            <button type="button" class="btn btn-sodium" id="c-random">Shuffle</button>
+            <button type="button" class="btn btn-ghost" id="c-download">Download SVG</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- IDENTITY -->
+    <section class="identity" id="identity">
+      <div class="section-head">
+        <p class="mono label">Brand identity</p>
+        <h2 class="display">The hour<br /><em>between.</em></h2>
+      </div>
+      <div class="id-story">
+        <p class="big">HALFLIT is named after the streetlight hour — when the day's done but the night hasn't decided what it is yet. It's the same place most of us are at twenty: not a kid, not quite grown, working it out in real time.</p>
+        <p class="muted">We make heavyweight basics and loud-but-considered graphics for that in-between. Every drop is named for a phase of the moon and carries its own version of the mark, so a piece from Drop 01 never looks quite like a piece from Drop 03.</p>
+      </div>
+
+      <h3 class="mono label id-sub">Lockups</h3>
+      <div class="id-lockups" id="id-lockups"></div>
+
+      <h3 class="mono label id-sub">Palette</h3>
+      <div class="palette">
+        <div class="pal" style="--c:#0e0e0f;--t:#eeebe3"><b>Asphalt</b><span>#0E0E0F</span></div>
+        <div class="pal" style="--c:#eeebe3;--t:#0e0e0f"><b>Chalk</b><span>#EEEBE3</span></div>
+        <div class="pal" style="--c:#ff6a13;--t:#0e0e0f"><b>Sodium</b><span>#FF6A13</span></div>
+        <div class="pal" style="--c:#1c2440;--t:#eeebe3"><b>Night Blue</b><span>#1C2440</span></div>
+        <div class="pal" style="--c:#8b8a85;--t:#0e0e0f"><b>Concrete</b><span>#8B8A85</span></div>
+        <div class="pal" style="--c:#c8ff3d;--t:#0e0e0f"><b>Signal</b><span>#C8FF3D</span></div>
+      </div>
+
+      <h3 class="mono label id-sub">Type</h3>
+      <div class="type-specimen">
+        <div><span class="mono muted">Display — Archivo Expanded Black</span><p class="spec-display">HALFLIT 03</p></div>
+        <div><span class="mono muted">Labels — JetBrains Mono</span><p class="spec-mono">DROP 03 / NIGHT SHIFT / 02:14 AM</p></div>
+        <div><span class="mono muted">Stitch — Yellowtail</span><p class="spec-script">Halflit</p></div>
+      </div>
+
+      <h3 class="mono label id-sub">Drop calendar</h3>
+      <div class="phases" id="phases"></div>
+    </section>
+
+    <!-- SIGNUP -->
+    <section class="signup">
+      <div class="signup-mark" id="signup-mark" aria-hidden="true"></div>
+      <h2 class="display">Get the drop<br />before it drops.</h2>
+      <p class="muted">Early access, restocks and the occasional 2am playlist. No spam.</p>
+      <form class="signup-form" id="signup-form" novalidate>
+        <label class="sr-only" for="email">Email</label>
+        <input id="email" type="email" placeholder="you@email.com" autocomplete="email" required />
+        <button class="btn btn-sodium" type="submit">Sign up</button>
+      </form>
+      <p class="signup-note mono" id="signup-note" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-word" id="footer-word" aria-hidden="true"></div>
+    <div class="footer-row">
+      <div><h4 class="mono">Shop</h4><a href="#shop">New in</a><a href="#shop">Hoodies &amp; crews</a><a href="#shop">Outerwear</a><a href="#shop">Denim</a></div>
+      <div><h4 class="mono">Help</h4><a href="#">Shipping</a><a href="#">Returns</a><a href="#">Size guide</a><a href="#">Contact</a></div>
+      <div><h4 class="mono">HALFLIT</h4><a href="#identity">About</a><a href="#cast">Cast</a><a href="#lab">Logo Lab</a><a href="#">Stockists</a></div>
+    </div>
+    <div class="footer-base mono">
+      <span>© <span id="year"></span> HALFLIT. Concept storefront — images are AI-generated, no real orders are taken.</span>
+      <span>IG · TikTok · YouTube</span>
+    </div>
+  </footer>
+
+  <!-- Product modal -->
+  <div class="pdp" id="pdp" role="dialog" aria-modal="true" aria-labelledby="pdp-name" hidden>
+    <div class="pdp-backdrop" data-close></div>
+    <div class="pdp-panel">
+      <button class="pdp-close" data-close aria-label="Close">✕</button>
+      <div class="pdp-gallery">
+        <div class="pdp-main"><img id="pdp-img" alt="" /><span class="pdp-view mono" id="pdp-view"></span></div>
+        <div class="pdp-thumbs" id="pdp-thumbs"></div>
+      </div>
+      <div class="pdp-info">
+        <p class="mono label" id="pdp-cat"></p>
+        <h3 id="pdp-name"></h3>
+        <p class="pdp-price" id="pdp-price"></p>
+        <p class="pdp-desc" id="pdp-desc"></p>
+        <div class="pdp-block">
+          <p class="mono label">Colour — <b id="pdp-colour"></b></p>
+          <div class="pdp-colours" id="pdp-colours"></div>
+        </div>
+        <div class="pdp-block">
+          <p class="mono label">Size</p>
+          <div class="pdp-sizes" id="pdp-sizes"></div>
+        </div>
+        <button class="btn btn-sodium btn-block" id="pdp-add" disabled>Select a size</button>
+        <dl class="pdp-specs" id="pdp-specs"></dl>
+        <p class="pdp-model mono" id="pdp-model"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bag -->
+  <aside class="bag" id="bag" aria-label="Bag" aria-hidden="true">
+    <div class="bag-backdrop" data-close-bag></div>
+    <div class="bag-panel">
+      <div class="bag-head"><h3>Bag</h3><button data-close-bag aria-label="Close bag">✕</button></div>
+      <ul class="bag-items" id="bag-items"></ul>
+      <div class="bag-empty mono">Nothing here yet.</div>
+      <div class="bag-foot">
+        <div class="bag-row"><span>Subtotal</span><b id="bag-subtotal">$0</b></div>
+        <div class="bag-bar"><span id="bag-bar"></span></div>
+        <p class="mono small" id="bag-ship"></p>
+        <button class="btn btn-sodium btn-block" id="checkout">Checkout</button>
+        <p class="mono small muted" id="checkout-note" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="logo.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
