@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mobile Station</title>
+  <meta name="description" content="Mobile Station — one studio, every app you ship. An interactive 3D showcase of Phantom, BRRRR Scout and ShortsForge." />
+  <meta name="theme-color" content="#06060b" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c5cff'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='22' fill='url(%23g)'/%3E%3Cellipse cx='32' cy='32' rx='30' ry='9' fill='none' stroke='%23fff' stroke-width='3' transform='rotate(-20 32 32)'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
+
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-core"></div>
+    <div class="loader-count"><span id="loader-num">0</span>%</div>
+  </div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" data-magnetic>
+      <span class="brand-mark"></span>
+      <span>Mobile&nbsp;Station</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#apps">Apps</a>
+      <a href="#flow">Flow</a>
+      <a href="#lab">Lab</a>
+    </nav>
+    <a class="btn btn-ghost btn-sm" href="#apps" data-magnetic>Explore</a>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" data-scene="hero">
+      <p class="eyebrow reveal">Mobile studio · iOS · Android · Web</p>
+      <h1 class="hero-title" aria-label="One station. Every app you ship.">
+        <span class="line"><span class="split">One station.</span></span>
+        <span class="line"><span class="split grad">Every app</span></span>
+        <span class="line"><span class="split">you ship.</span></span>
+      </h1>
+      <p class="hero-sub reveal">A single home for the apps we build — real-estate analytics, render pipelines and a wallet that’s pure theatre. Drag, scroll and play with the core.</p>
+      <div class="hero-cta reveal">
+        <a class="btn btn-primary" href="#apps" data-magnetic><span>See the apps</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#lab" data-magnetic><span>Tune the core</span></a>
+      </div>
+      <div class="scroll-hint" aria-hidden="true"><span></span>Scroll</div>
+      <div class="hero-meta" aria-hidden="true">
+        <div><b id="fps">60</b><small>fps</small></div>
+        <div><b>3</b><small>apps</small></div>
+        <div><b>1</b><small>codebase</small></div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Expo</span><i></i><span>React Native</span><i></i><span>Firebase</span><i></i><span>Real‑time sync</span><i></i><span>WebGL</span><i></i><span>GitHub Pages</span><i></i><span>TypeScript</span><i></i>
+        <span>Expo</span><i></i><span>React Native</span><i></i><span>Firebase</span><i></i><span>Real‑time sync</span><i></i><span>WebGL</span><i></i><span>GitHub Pages</span><i></i><span>TypeScript</span><i></i>
+      </div>
+    </div>
+
+    <!-- APPS -->
+    <section class="section apps" id="apps" data-scene="apps">
+      <header class="section-head">
+        <p class="eyebrow reveal">01 — The lineup</p>
+        <h2 class="reveal">Three apps. <span class="muted">One orbit.</span></h2>
+      </header>
+
+      <div class="cards">
+        <article class="card reveal" data-tilt data-accent="#8b5cf6" data-sat="0">
+          <div class="card-glare"></div>
+          <div class="card-inner">
+            <div class="card-icon" style="--c1:#a78bfa;--c2:#6d28d9">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18V11a7 7 0 0 1 14 0v7l-2.3-1.6L14.4 18 12 16.4 9.6 18l-2.3-1.6z"/><circle cx="9.5" cy="11" r="1"/><circle cx="14.5" cy="11" r="1"/></svg>
+            </div>
+            <p class="card-kicker">Wallet · Dummy mode</p>
+            <h3>Phantom</h3>
+            <p>A faithful wallet UI with live-ticking simulated markets. No keys, no chain, no funds — just the show.</p>
+            <ul class="chips"><li>Simulated prices</li><li>Multi-chain</li><li>Offline</li></ul>
+            <a class="card-link" href="../" data-magnetic>Open web build <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="card reveal" data-tilt data-accent="#10b981" data-sat="1">
+          <div class="card-glare"></div>
+          <div class="card-inner">
+            <div class="card-icon" style="--c1:#34d399;--c2:#047857">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5"/></svg>
+            </div>
+            <p class="card-kicker">Real estate · Analytics</p>
+            <h3>BRRRR Scout</h3>
+            <p>Find multi-family deals, score them 0–100 for the BRRRR method, and match contractors to the rehab scope.</p>
+            <ul class="chips"><li>Cash-flow model</li><li>ARV</li><li>Contractor match</li></ul>
+            <a class="card-link" href="../brrrr-scout/" data-magnetic>Open web build <span>→</span></a>
+          </div>
+        </article>
+
+        <article class="card reveal" data-tilt data-accent="#fb923c" data-sat="2">
+          <div class="card-glare"></div>
+          <div class="card-inner">
+            <div class="card-icon" style="--c1:#fdba74;--c2:#ea580c">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 9.5v5l4-2.5z"/></svg>
+            </div>
+            <p class="card-kicker">Video · Render pipeline</p>
+            <h3>ShortsForge</h3>
+            <p>Your desktop renders shorts; your phone watches every job progress in real time through a Firebase bridge.</p>
+            <ul class="chips"><li>Live progress</li><li>Push-ready</li><li>iOS</li></ul>
+            <a class="card-link" href="#flow" data-magnetic>See the pipeline <span>→</span></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="section flow" id="flow" data-scene="flow">
+      <header class="section-head">
+        <p class="eyebrow reveal">02 — How it moves</p>
+        <h2 class="reveal">Desktop to pocket, <span class="muted">in real time.</span></h2>
+      </header>
+
+      <ol class="flow-steps">
+        <li class="step reveal">
+          <span class="step-num">A</span>
+          <h3>Desktop renders</h3>
+          <p>ShortsForge starts a job and the bridge module emits every state change.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step-num">B</span>
+          <h3>Firebase syncs</h3>
+          <p>Realtime Database fans the update out instantly — auth scoped to you.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step-num">C</span>
+          <h3>Phone reacts</h3>
+          <p>The mobile app streams progress, previews and finished renders.</p>
+        </li>
+      </ol>
+      <div class="flow-line" aria-hidden="true"><span id="flow-progress"></span></div>
+
+      <div class="stats">
+        <div class="stat reveal"><b data-count="3">0</b><span>apps in orbit</span></div>
+        <div class="stat reveal"><b data-count="3">0</b><span>platforms per app</span></div>
+        <div class="stat reveal"><b data-count="100" data-suffix="">0</b><span>point BRRRR score</span></div>
+        <div class="stat reveal"><b data-count="0" data-prefix="$">0</b><span>real funds in Phantom</span></div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section class="section lab" id="lab" data-scene="lab">
+      <div class="lab-panel reveal" data-tilt data-tilt-soft>
+        <div class="card-glare"></div>
+        <p class="eyebrow">03 — The lab</p>
+        <h2>Tune the core.</h2>
+        <p class="muted">Everything here drives the WebGL scene live. Click the core to send a shockwave.</p>
+
+        <label class="ctl">
+          <span>Distortion <output id="o-distort">0.35</output></span>
+          <input type="range" id="c-distort" min="0" max="1" step="0.01" value="0.35" />
+        </label>
+        <label class="ctl">
+          <span>Flow speed <output id="o-speed">0.40</output></span>
+          <input type="range" id="c-speed" min="0" max="1.5" step="0.01" value="0.4" />
+        </label>
+        <label class="ctl">
+          <span>Particles <output id="o-stars">1.00</output></span>
+          <input type="range" id="c-stars" min="0" max="2" step="0.01" value="1" />
+        </label>
+
+        <div class="ctl">
+          <span>Palette</span>
+          <div class="swatches" role="radiogroup" aria-label="Palette">
+            <button class="swatch is-active" role="radio" aria-checked="true" data-palette="aurora" style="--a:#7c5cff;--b:#22d3ee" aria-label="Aurora"></button>
+            <button class="swatch" role="radio" aria-checked="false" data-palette="ember" style="--a:#f43f5e;--b:#fb923c" aria-label="Ember"></button>
+            <button class="swatch" role="radio" aria-checked="false" data-palette="mint" style="--a:#10b981;--b:#a3e635" aria-label="Mint"></button>
+            <button class="swatch" role="radio" aria-checked="false" data-palette="mono" style="--a:#e5e7eb;--b:#64748b" aria-label="Mono"></button>
+          </div>
+        </div>
+
+        <div class="lab-actions">
+          <button class="btn btn-primary btn-sm" id="c-pulse" data-magnetic>Shockwave</button>
+          <button class="btn btn-ghost btn-sm" id="c-wire" aria-pressed="false" data-magnetic>Wireframe</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section outro" data-scene="outro">
+      <h2 class="outro-title reveal">Built to move.<br /><span class="grad">Shipped to Pages.</span></h2>
+      <a class="btn btn-primary btn-lg reveal" href="#top" data-magnetic><span>Back to orbit</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Mobile Station</span>
+    <span class="muted">WebGL · Three.js · no build step</span>
+  </footer>
+
+  <script type="module" src="scene.js"></script>
+  <script type="module" src="ui.js"></script>
+</body>
+</html>
