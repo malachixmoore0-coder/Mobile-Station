@@ -1,0 +1,23 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    },
+    "ponytail": {
+      "source": { "source": "github", "repo": "dietrichgebert/ponytail" }
+    },
+    "flick": {
+      "source": { "source": "github", "repo": "creatorberry/flick" }
+    },
+    "taste-skill": {
+      "source": { "source": "github", "repo": "leonxlnx/taste-skill" }
+    }
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "ponytail@ponytail": true,
+    "flick@flick": true,
+    "taste-skill@taste-skill": true
+  }
+}
