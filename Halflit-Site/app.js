@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const { img, CAST, CATEGORIES, PRODUCTS, CAMPAIGN, DROPS } = window.HALFLIT;
+  const { img, CAST, CATEGORIES, SUBS, PROMO, PRODUCTS, CAMPAIGN, DROPS } = window.HALFLIT;
   const Logo = window.HalflitLogo;
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -65,73 +65,262 @@
       const max = document.documentElement.scrollHeight - innerHeight;
       setPhase($("#header-logo"), 0.5 + 0.5 * Math.min(1, scrollY / Math.max(1, max)));
       $$(".header-nav a").forEach((a) => {
-        const s = $(a.getAttribute("href"));
+        const d = a.dataset.shop;
+        const s = d ? $("#shop") : $(a.getAttribute("href"));
+        if (!s) return;
         const r = s.getBoundingClientRect();
-        a.classList.toggle("is-active", r.top < innerHeight * 0.4 && r.bottom > innerHeight * 0.4);
+        const inView = r.top < innerHeight * 0.4 && r.bottom > innerHeight * 0.4;
+        a.classList.toggle("is-active", inView && (!d || (d === shop.dept && !shop.fall)));
       });
       ticking = false;
     });
   }, { passive: true });
 
+  /* ---------- Pricing + promo ---------- */
+  const promoLive = () => Date.now() < PROMO.ends.getTime();
+  const onSale = (p) => !!p.fall && promoLive();
+  const priceOf = (p) => (onSale(p) ? Math.round(p.price * (1 - PROMO.off)) : p.price);
+  const priceHTML = (p) => onSale(p)
+    ? `<s>${money(p.price)}</s> <b class="sale">${money(priceOf(p))}</b>`
+    : money(p.price);
+
+  /* ---------- Wishlist ---------- */
+  const WKEY = "halflit-saved";
+  let saved = new Set();
+  try { saved = new Set(JSON.parse(localStorage.getItem(WKEY)) || []); } catch { /* ignore */ }
+  const saveWish = () => { try { localStorage.setItem(WKEY, JSON.stringify([...saved])); } catch { /* ignore */ } };
+
   /* ---------- Shop ---------- */
-  const firstShot = (p) => p.shots.front || p.colours[0].flat;
-  const hoverShot = (p) => p.shots.back || p.shots.detail || p.colours[0].back || p.colours[0].flat;
+  const has = (id) => id && !String(id).startsWith("@");
+  const firstShot = (p) => [p.shots.front, p.colours[0].flat].find(has);
+  const hoverShot = (p) => [p.shots.back, p.shots.detail, p.shots.close, p.colours[0].back, p.colours[0].flat].find(has);
 
   const colourways = PRODUCTS.reduce((n, p) => n + p.colours.length, 0);
   $("#shop .label").textContent = `Drop 03 — ${PRODUCTS.length} pieces, ${colourways} colourways`;
 
+  const shop = { dept: "all", cat: "all", fall: false, sort: "featured", q: "", saved: false };
+  const inDept = (p, d) => d === "all" || p.gender === d || p.gender === "unisex";
+
+  function visible() {
+    const q = shop.q.trim().toLowerCase();
+    let list = PRODUCTS.filter((p) => inDept(p, shop.dept)
+      && (shop.cat === "all" || p.cat === shop.cat)
+      && (!shop.fall || p.fall)
+      && (!shop.saved || saved.has(p.id))
+      && (!q || `${p.name} ${p.sub} ${p.colours.map((c) => c.name).join(" ")} ${p.technique}`.toLowerCase().includes(q)));
+    if (shop.sort === "featured" && shop.dept !== "all") list = [...list].sort((a, b) => (a.gender !== shop.dept) - (b.gender !== shop.dept));
+    if (shop.sort === "low") list = [...list].sort((a, b) => priceOf(a) - priceOf(b));
+    if (shop.sort === "high") list = [...list].sort((a, b) => priceOf(b) - priceOf(a));
+    if (shop.sort === "new") list = [...list].sort((a, b) => (b.badge === "New") - (a.badge === "New"));
+    return list;
+  }
+
+  const depts = $("#depts");
+  function renderDepts() {
+    $$("button", depts).forEach((b) => {
+      const on = b.dataset.dept === shop.dept && !shop.fall ? true : b.dataset.dept === "fall" && shop.fall;
+      b.setAttribute("aria-selected", String(on));
+      b.classList.toggle("is-active", on);
+    });
+    const ind = $(".dept-ind", depts);
+    const active = $("button.is-active", depts);
+    if (ind && active) { ind.style.width = `${active.offsetWidth}px`; ind.style.transform = `translateX(${active.offsetLeft}px)`; }
+  }
+
   const chips = $("#chips");
-  chips.innerHTML = CATEGORIES.map(([id, label], i) => {
-    const n = id === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.cat === id).length;
-    return `<button class="chip ${i === 0 ? "is-active" : ""}" role="tab" aria-selected="${i === 0}" data-cat="${id}">${label}<sup>${n}</sup></button>`;
-  }).join("");
+  function renderChips() {
+    const subs = SUBS[shop.dept] || SUBS.all;
+    const pool = PRODUCTS.filter((p) => inDept(p, shop.dept) && (!shop.fall || p.fall));
+    chips.innerHTML = subs.map(([id, label]) => {
+      const n = id === "all" ? pool.length : pool.filter((p) => p.cat === id).length;
+      if (!n) return "";
+      return `<button class="chip ${shop.cat === id ? "is-active" : ""}" role="tab" aria-selected="${shop.cat === id}" data-cat="${id}">${label}<sup>${n}</sup></button>`;
+    }).join("");
+  }
 
   const grid = $("#grid");
-  grid.innerHTML = PRODUCTS.map((p) => `
-    <article class="card reveal" data-cat="${p.cat}" data-id="${p.id}">
+  const cardHTML = (p) => `
+    <article class="card" data-cat="${p.cat}" data-id="${p.id}">
       <div class="card-media" data-open="${p.id}" role="button" tabindex="0" aria-label="View ${esc(p.name)}">
-        ${p.badge ? `<span class="card-badge ${p.badge === "New" ? "" : "b-chalk"}">${p.badge}</span>`: ""}
+        ${p.badge ? `<span class="card-badge ${p.fall ? "b-fall" : p.badge === "New" ? "" : "b-chalk"}">${onSale(p) ? `${p.badge} −${Math.round(PROMO.off * 100)}%` : p.badge}</span>` : ""}
+        <button class="card-heart ${saved.has(p.id) ? "is-on" : ""}" data-heart="${p.id}" aria-pressed="${saved.has(p.id)}" aria-label="Save ${esc(p.name)}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 5.3 3.1 1.7-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>
+        </button>
         ${ph(img(firstShot(p), "min"), `${p.name} on model`, "main")}
         ${ph(img(hoverShot(p), "min"), "", "alt")}
+        <span class="card-shine" aria-hidden="true"></span>
         <button class="card-add" data-open="${p.id}" aria-label="Quick add ${esc(p.name)}">+</button>
+        <span class="card-gender mono">${p.gender === "unisex" ? "Unisex" : p.gender === "men" ? "Men" : "Women"}</span>
       </div>
       <div class="card-info">
         <h3 class="card-name">${p.name}</h3>
-        <span class="card-price">${money(p.price)}</span>
+        <span class="card-price">${priceHTML(p)}</span>
         <p class="card-sub">${p.sub}</p>
         <div class="dots">
           ${p.colours.map((c, i) => `<button class="dot" data-colour="${i}" style="background:${c.hex}" aria-label="${esc(c.name)}" title="${esc(c.name)}"></button>`).join("")}
           <span class="count">${p.colours.length} colours</span>
         </div>
       </div>
-    </article>`).join("");
-  wire(grid);
+    </article>`;
 
+  function renderGrid(animate = true) {
+    const list = visible();
+    const apply = () => {
+      grid.innerHTML = list.length ? list.map(cardHTML).join("") : `<p class="grid-empty mono">Nothing matches that yet. <button type="button" id="clear-filters">Clear filters</button></p>`;
+      wire(grid);
+      $$(".card", grid).forEach((c, i) => { c.style.setProperty("--i", i); c.classList.add("is-entering"); });
+      requestAnimationFrame(() => requestAnimationFrame(() => $$(".card", grid).forEach((c) => c.classList.remove("is-entering"))));
+      $("#result-count").textContent = `${list.length} ${list.length === 1 ? "piece" : "pieces"}`;
+    };
+    if (!animate || reduce || !grid.children.length) return apply();
+    grid.classList.add("is-swapping");
+    setTimeout(() => { apply(); grid.classList.remove("is-swapping"); }, 220);
+  }
+
+  function setShop(patch, scroll) {
+    Object.assign(shop, patch);
+    const subs = SUBS[shop.dept] || SUBS.all;
+    if (!subs.some(([id]) => id === shop.cat)) shop.cat = "all";
+    renderDepts(); renderChips(); renderGrid();
+    $("#saved-toggle").setAttribute("aria-pressed", String(shop.saved));
+    if (scroll) $("#shop").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  }
+
+  depts.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-dept]");
+    if (!b) return;
+    if (b.dataset.dept === "fall") setShop({ fall: true, dept: "all", cat: "all" });
+    else setShop({ dept: b.dataset.dept, fall: false, cat: "all" });
+  });
   chips.addEventListener("click", (e) => {
     const b = e.target.closest(".chip");
-    if (!b) return;
-    $$(".chip", chips).forEach((c) => {
-      c.classList.toggle("is-active", c === b);
-      c.setAttribute("aria-selected", String(c === b));
-    });
-    $$(".card", grid).forEach((card) => {
-      card.classList.toggle("is-hidden", b.dataset.cat !== "all" && card.dataset.cat !== b.dataset.cat);
-    });
+    if (b) setShop({ cat: b.dataset.cat });
+  });
+  $("#sort").addEventListener("change", (e) => setShop({ sort: e.target.value }));
+  $("#search").addEventListener("input", (e) => setShop({ q: e.target.value }));
+  $("#saved-toggle").addEventListener("click", () => setShop({ saved: !shop.saved }));
+  grid.addEventListener("click", (e) => {
+    if (e.target.id === "clear-filters") {
+      $("#search").value = "";
+      setShop({ dept: "all", cat: "all", fall: false, q: "", saved: false });
+    }
   });
 
-  // Colour dots swap the card to that colourway's product shot.
+  // Deep links and nav: #men, #women, #fall filter the shop.
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-shop]");
+    if (!a) return;
+    e.preventDefault();
+    const v = a.dataset.shop;
+    const [dept, cat] = v.split(":");
+    if (dept === "fall") setShop({ fall: true, dept: cat || "all", cat: "all" }, true);
+    else setShop({ dept, fall: false, cat: cat || "all" }, true);
+    history.replaceState(null, "", `#${dept}`);
+  });
+  const hash = location.hash.slice(1);
+  if (hash === "men" || hash === "women") Object.assign(shop, { dept: hash });
+  if (hash === "fall") Object.assign(shop, { fall: true });
+  renderDepts(); renderChips(); renderGrid(false);
+  addEventListener("resize", renderDepts);
+  if (["men", "women", "fall"].includes(hash)) setTimeout(() => $("#shop").scrollIntoView(), 50);
+
+  // Colour dots: hover previews, click locks the colourway.
+  function showColour(card, i) {
+    const p = byId[card.dataset.id];
+    const main = $(".main img", card);
+    const src = img(i === 0 && has(p.shots.front) ? p.shots.front : p.colours[i].flat, "min");
+    if (main.src !== src) { main.classList.remove("is-loaded"); main.src = src; }
+  }
+  grid.addEventListener("pointerover", (e) => {
+    const dot = e.target.closest(".dot");
+    if (dot) showColour(dot.closest(".card"), Number(dot.dataset.colour));
+  });
+  grid.addEventListener("pointerout", (e) => {
+    const dot = e.target.closest(".dot");
+    if (!dot || dot.contains(e.relatedTarget)) return;
+    const card = dot.closest(".card");
+    showColour(card, Number(card.dataset.colour || 0));
+  });
   grid.addEventListener("click", (e) => {
+    const heart = e.target.closest("[data-heart]");
+    if (heart) {
+      e.stopPropagation();
+      const id = heart.dataset.heart;
+      saved.has(id) ? saved.delete(id) : saved.add(id);
+      saveWish();
+      heart.classList.toggle("is-on", saved.has(id));
+      heart.setAttribute("aria-pressed", String(saved.has(id)));
+      heart.classList.remove("pop"); void heart.offsetWidth; heart.classList.add("pop");
+      $("#saved-count").textContent = saved.size;
+      toast(saved.has(id) ? `Saved ${byId[id].name}` : `Removed ${byId[id].name}`);
+      if (shop.saved) renderGrid();
+      return;
+    }
     const dot = e.target.closest(".dot");
     if (!dot) return;
     const card = dot.closest(".card");
-    const p = byId[card.dataset.id];
     const i = Number(dot.dataset.colour);
     $$(".dot", card).forEach((d) => d.classList.toggle("is-active", d === dot));
-    const main = $(".main img", card);
-    main.classList.remove("is-loaded");
-    main.src = img(i === 0 && p.shots.front ? p.shots.front : p.colours[i].flat, "min");
     card.dataset.colour = i;
+    showColour(card, i);
   });
+  $("#saved-count").textContent = saved.size;
+
+  // 3D tilt + light sheen that follows the pointer.
+  if (fine && !reduce) {
+    grid.addEventListener("pointermove", (e) => {
+      const m = e.target.closest(".card-media");
+      if (!m) return;
+      const r = m.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      m.style.setProperty("--rx", `${(0.5 - y) * 8}deg`);
+      m.style.setProperty("--ry", `${(x - 0.5) * 10}deg`);
+      m.style.setProperty("--mx", `${x * 100}%`);
+      m.style.setProperty("--my", `${y * 100}%`);
+      m.classList.add("is-tilt");
+    });
+    grid.addEventListener("pointerout", (e) => {
+      const m = e.target.closest(".card-media");
+      if (!m || m.contains(e.relatedTarget)) return;
+      m.classList.remove("is-tilt");
+      m.style.setProperty("--rx", "0deg"); m.style.setProperty("--ry", "0deg");
+    });
+  }
+
+  /* ---------- Fall Hour promo ---------- */
+  function initPromo() {
+    const sec = $("#fall");
+    if (!promoLive()) { sec.hidden = true; $$(".promo-only").forEach((el) => { el.hidden = true; }); return; }
+    const fallItems = PRODUCTS.filter((p) => p.fall);
+    const byG = (g) => fallItems.filter((p) => p.gender === g || p.gender === "unisex");
+    const tile = (g, label) => {
+      const list = byG(g);
+      return `<a class="fall-tile" href="#${g}" data-shop="fall:${g}">
+        <div class="fall-stack">${list.slice(0, 4).map((p, i) => `<span style="--k:${i}">${ph(img(firstShot(p), "min"), p.name)}</span>`).join("")}</div>
+        <div class="fall-tile-copy"><span class="mono">${list.length} limited pieces</span><h3>${label}</h3><span class="fall-go">Shop ${label.toLowerCase()} →</span></div>
+      </a>`;
+    };
+    $("#fall-tiles").innerHTML = tile("men", "For Him") + tile("women", "For Her");
+    wire($("#fall-tiles"));
+    const cells = { d: $("#cd-d"), h: $("#cd-h"), m: $("#cd-m"), s: $("#cd-s") };
+    const pad = (n) => String(n).padStart(2, "0");
+    let last = {};
+    (function tick() {
+      const ms = Math.max(0, PROMO.ends - Date.now());
+      const v = { d: Math.floor(ms / 864e5), h: Math.floor(ms / 36e5) % 24, m: Math.floor(ms / 6e4) % 60, s: Math.floor(ms / 1e3) % 60 };
+      for (const k in v) {
+        if (last[k] !== v[k]) {
+          cells[k].textContent = pad(v[k]);
+          cells[k].classList.remove("flip"); void cells[k].offsetWidth; cells[k].classList.add("flip");
+        }
+      }
+      last = v;
+      $$(".promo-left").forEach((el) => { el.textContent = `${v.d}d ${pad(v.h)}h ${pad(v.m)}m`; });
+      if (ms > 0) setTimeout(tick, 1000 - (Date.now() % 1000));
+      else location.reload();
+    })();
+  }
+  initPromo();
 
   /* ---------- Product detail ---------- */
   const pdp = $("#pdp");
@@ -139,24 +328,20 @@
 
   function galleryFor(p, ci) {
     const c = p.colours[ci];
-    const list = [];
     const main = p.colours[0].name;
+    const views = [];
+    const add = (id, label) => { if (has(id)) views.push([id, label]); };
+    const onModel = [[p.shots.front, "On model"], [p.shots.back, "Back"], [p.shots.detail, "Angle"], [p.shots.close, "Close-up"]];
     if (ci === 0) {
-      if (p.shots.front) list.push([p.shots.front, `On model — ${main}`]);
-      if (p.shots.back) list.push([p.shots.back, "On model — back"]);
-      if (p.shots.detail) list.push([p.shots.detail, "On model — angle"]);
-      if (p.shots.close) list.push([p.shots.close, "Close-up"]);
-      list.push([c.flat, `Product — ${c.name}`]);
-      if (c.back) list.push([c.back, "Product — back"]);
+      onModel.forEach(([id, l]) => add(id, `${l} — ${main}`));
+      add(c.flat, `Product — ${c.name}`);
+      add(c.back, "Product — back");
     } else {
-      list.push([c.flat, `Product — ${c.name}`]);
-      if (p.shots.front) list.push([p.shots.front, `On model — shown in ${main}`]);
-      if (p.shots.back) list.push([p.shots.back, `Back — shown in ${main}`]);
-      if (p.shots.detail) list.push([p.shots.detail, `Angle — shown in ${main}`]);
-      if (p.shots.close) list.push([p.shots.close, `Close-up — shown in ${main}`]);
-      if (p.colours[0].back) list.push([p.colours[0].back, `Product back — ${main}`]);
+      add(c.flat, `Product — ${c.name}`);
+      onModel.forEach(([id, l]) => add(id, `${l} — shown in ${main}`));
+      add(p.colours[0].back, `Product back — ${main}`);
     }
-    return list;
+    return views;
   }
 
   function showView(src, label) {
@@ -187,9 +372,9 @@
     size = cur.sizes.length === 1 ? cur.sizes[0] : null;
     lastFocus = document.activeElement;
     const m = CAST[cur.model];
-    $("#pdp-cat").textContent = `${CATEGORIES.find((c) => c[0] === cur.cat)[1]} · Drop 03`;
+    $("#pdp-cat").textContent = `${cur.gender === "unisex" ? "Unisex" : cur.gender === "men" ? "Men" : "Women"} · ${((SUBS[cur.gender] || SUBS.all).find((c) => c[0] === cur.cat) || CATEGORIES.find((c) => c[0] === cur.cat))[1]}${cur.fall ? " · Fall Hour" : ""}`;
     $("#pdp-name").textContent = cur.name;
-    $("#pdp-price").textContent = money(cur.price);
+    $("#pdp-price").innerHTML = priceHTML(cur) + (onSale(cur) ? ` <span class="mono pdp-promo">${PROMO.name} — ends in <span class="promo-left"></span></span>` : "");
     $("#pdp-desc").textContent = cur.desc;
     $("#pdp-colours").innerHTML = cur.colours.map((c, i) =>
       `<button type="button" data-colour="${i}" style="background:${c.hex}" aria-label="${esc(c.name)}"></button>`).join("");
@@ -214,7 +399,7 @@
   function updateAdd() {
     const b = $("#pdp-add");
     b.disabled = !size;
-    b.textContent = size ? `Add to bag — ${money(cur.price)}` : "Select a size";
+    b.textContent = size ? `Add to bag — ${money(priceOf(cur))}` : "Select a size";
   }
 
   document.addEventListener("click", (e) => {
@@ -252,24 +437,71 @@
     $$("#pdp-sizes button").forEach((x) => x.classList.toggle("is-active", x === b));
     updateAdd();
   });
+  // PDP: drag (or swipe) across the photo to scrub between angles, click to zoom, arrow keys step.
   const pdpMain = $(".pdp-main");
+  const views = () => $$("#pdp-thumbs button");
+  function step(dir) {
+    const list = views();
+    if (!list.length) return;
+    const i = list.findIndex((b) => b.classList.contains("is-active"));
+    const next = list[(i + dir + list.length) % list.length];
+    list.forEach((b) => b.classList.toggle("is-active", b === next));
+    showView(next.dataset.src, next.dataset.label);
+  }
+  let scrub = null;
+  pdpMain.addEventListener("pointerdown", (e) => {
+    if (pdpMain.classList.contains("is-zoom")) return;
+    scrub = { x: e.clientX, moved: false };
+  });
+  pdpMain.addEventListener("pointermove", (e) => {
+    if (pdpMain.classList.contains("is-zoom")) {
+      const r = pdpMain.getBoundingClientRect();
+      $("#pdp-img").style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`;
+      return;
+    }
+    if (!scrub) return;
+    const dx = e.clientX - scrub.x;
+    if (Math.abs(dx) > 60) { step(dx < 0 ? 1 : -1); scrub.x = e.clientX; scrub.moved = true; pdpMain.classList.add("is-scrubbing"); }
+  });
+  const endScrub = () => { pdpMain.classList.remove("is-scrubbing"); setTimeout(() => { scrub = null; }, 0); };
+  pdpMain.addEventListener("pointerup", endScrub);
+  pdpMain.addEventListener("pointerleave", endScrub);
   pdpMain.addEventListener("click", (e) => {
+    if (scrub?.moved) return;
     const r = pdpMain.getBoundingClientRect();
     $("#pdp-img").style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`;
     pdpMain.classList.toggle("is-zoom");
   });
-  pdpMain.addEventListener("pointermove", (e) => {
-    if (!pdpMain.classList.contains("is-zoom")) return;
-    const r = pdpMain.getBoundingClientRect();
-    $("#pdp-img").style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`;
+  addEventListener("keydown", (e) => {
+    if (pdp.hidden || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    step(e.key === "ArrowRight" ? 1 : -1);
   });
+
   $("#pdp-add").addEventListener("click", () => {
     if (!size) return;
+    flyToBag($("#pdp-img"));
     addToBag(cur.id, colour, size);
     toast(`${cur.name} — ${cur.colours[colour].name}, ${size} added`);
     closePdp();
     setTimeout(openBag, reduce ? 0 : 350);
   });
+
+  // A thumbnail arcs from the product image into the bag button.
+  function flyToBag(fromImg) {
+    if (reduce || !fromImg?.src) return;
+    const a = fromImg.getBoundingClientRect(), b = $("#bag-btn").getBoundingClientRect();
+    const f = document.createElement("div");
+    f.className = "fly";
+    f.innerHTML = `<img src="${fromImg.src}" alt="" />`;
+    f.style.left = `${a.left + a.width / 2 - 35}px`;
+    f.style.top = `${a.top + a.height / 2 - 47}px`;
+    document.body.appendChild(f);
+    requestAnimationFrame(() => {
+      f.style.transform = `translate(${b.left + b.width / 2 - (a.left + a.width / 2)}px, ${b.top + b.height / 2 - (a.top + a.height / 2)}px) scale(.2) rotate(-18deg)`;
+      f.style.opacity = "0.3";
+    });
+    setTimeout(() => f.remove(), 850);
+  }
 
   /* ---------- Bag ---------- */
   const KEY = "halflit-bag";
@@ -291,7 +523,7 @@
   }
   function renderBag() {
     const count = bag.reduce((n, l) => n + l.qty, 0);
-    const total = bag.reduce((n, l) => n + byId[l.id].price * l.qty, 0);
+    const total = bag.reduce((n, l) => n + priceOf(byId[l.id]) * l.qty, 0);
     $("#bag-count").textContent = count;
     bagEl.classList.toggle("is-empty", !count);
     $("#bag-items").innerHTML = bag.map((l, i) => {
@@ -299,7 +531,7 @@
       return `<li class="bag-item"><img src="${img(c.flat, "min")}" alt="${esc(p.name)}" />
         <div><h4>${p.name}</h4><p>${c.name} · ${l.size}</p>
           <div class="bag-item-row"><span class="qty"><button data-q="-1" data-i="${i}" aria-label="Fewer">−</button><span>${l.qty}</span><button data-q="1" data-i="${i}" aria-label="More">+</button></span>
-          <b class="mono">${money(p.price * l.qty)}</b></div></div></li>`;
+          <b class="mono">${money(priceOf(p) * l.qty)}</b></div></div></li>`;
     }).join("");
     $("#bag-subtotal").textContent = money(total);
     $("#bag-bar").style.width = `${Math.min(100, (total / FREE) * 100)}%`;
@@ -336,7 +568,9 @@
   const rail = $("#rail");
   rail.innerHTML = CAMPAIGN.looks.map((l) => `
     <figure class="shot ${l.wide ? "wide" : ""}">
-      ${ph(img(l.id), `${l.title} — ${l.who}`)}
+      <div class="shot-wrap">${ph(img(l.id), `${l.title} — ${l.who}`)}
+        ${(l.shop || []).length ? `<div class="shot-shop">${l.shop.map((id) => `<button type="button" data-open="${id}">${esc(byId[id].name)}</button>`).join("")}</div>` : ""}
+      </div>
       <figcaption><b>${l.title}</b><span class="mono muted">${l.who}</span></figcaption>
     </figure>`).join("");
   wire(rail);
@@ -569,5 +803,17 @@
       cur.classList.toggle("is-view", !!media && !e.target.closest(".card-add"));
       dot.textContent = media && !e.target.closest(".card-add") ? (isRail ? "Drag" : "View") : "";
     });
+  }
+
+  /* ---------- Magnetic buttons ---------- */
+  if (fine && !reduce) {
+    document.addEventListener("pointermove", (e) => {
+      const el = e.target.closest("[data-magnetic]");
+      $$("[data-magnetic].is-mag").forEach((m) => { if (m !== el) { m.classList.remove("is-mag"); m.style.transform = ""; } });
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.classList.add("is-mag");
+      el.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.25}px, ${(e.clientY - r.top - r.height / 2) * 0.35}px)`;
+    }, { passive: true });
   }
 })();

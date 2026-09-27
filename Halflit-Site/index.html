@@ -18,15 +18,17 @@
 
   <div class="ticker" aria-label="Announcements">
     <div class="ticker-track">
-      <span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
-      <span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
+      <span class="promo-only">Fall Hour — 25% off the fall capsule — ends Oct 31</span><b>◐</b><span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
+      <span class="promo-only">Fall Hour — 25% off the fall capsule — ends Oct 31</span><b>◐</b><span>Drop 03 — Night Shift — out now</span><b>◐</b><span>Free shipping over $150</span><b>◐</b><span>Made for the hour between</span><b>◐</b><span>Student discount 15%</span><b>◐</b>
     </div>
   </div>
 
   <header class="header" id="header">
     <a class="header-logo" href="#top" aria-label="HALFLIT home" id="header-logo"></a>
     <nav class="header-nav" aria-label="Primary">
-      <a href="#shop">Shop</a>
+      <a href="#men" data-shop="men">Men</a>
+      <a href="#women" data-shop="women">Women</a>
+      <a href="#fall" class="nav-fall promo-only">Fall Hour</a>
       <a href="#lookbook">After Dark</a>
       <a href="#cast">Cast</a>
       <a href="#lab">Logo Lab</a>
@@ -51,8 +53,9 @@
           <h1 class="hero-line">Made for the<br />hour <em>between.</em></h1>
           <p>Heavyweight fleece, chain-stitch, puff print and denim built for late nights, early mornings and everything you're still figuring out.</p>
           <div class="hero-cta">
-            <a class="btn btn-sodium" href="#shop">Shop the drop</a>
-            <a class="btn btn-ghost" href="#lab">Make the logo yours</a>
+            <a class="btn btn-sodium" href="#men" data-shop="men" data-magnetic>Shop men</a>
+            <a class="btn btn-sodium" href="#women" data-shop="women" data-magnetic>Shop women</a>
+            <a class="btn btn-ghost promo-only" href="#fall" data-magnetic>Fall Hour −25%</a>
           </div>
         </div>
         <div class="hero-word" id="hero-word" aria-hidden="true"></div>
@@ -67,6 +70,25 @@
       </div>
     </div>
 
+    <!-- FALL HOUR PROMO -->
+    <section class="fall" id="fall" aria-labelledby="fall-title">
+      <div class="fall-head">
+        <div>
+          <p class="mono label">Limited time · Men &amp; Women</p>
+          <h2 class="display" id="fall-title">Fall <em>Hour</em></h2>
+          <p class="fall-copy">Eight limited pieces for the cold coming in: chore coats, jacquard knits, satin bombers, plaid and waffle thermals. <b>25% off the whole capsule until Oct 31</b>, then it's gone for good.</p>
+        </div>
+        <div class="countdown" role="timer" aria-label="Time left in the Fall Hour promotion">
+          <div><b id="cd-d">00</b><span class="mono">Days</span></div>
+          <div><b id="cd-h">00</b><span class="mono">Hrs</span></div>
+          <div><b id="cd-m">00</b><span class="mono">Min</span></div>
+          <div><b id="cd-s">00</b><span class="mono">Sec</span></div>
+        </div>
+      </div>
+      <div class="fall-tiles" id="fall-tiles"></div>
+      <a class="btn btn-sodium" href="#fall" data-shop="fall" data-magnetic>Shop the full capsule</a>
+    </section>
+
     <!-- SHOP -->
     <section class="shop" id="shop">
       <div class="shop-head">
@@ -74,7 +96,34 @@
           <p class="mono label">Drop 03 — 12 pieces, 30 colourways</p>
           <h2 class="display">The Night Shift</h2>
         </div>
+      </div>
+      <div class="shop-bar">
+        <div class="depts" id="depts" role="tablist" aria-label="Department">
+          <span class="dept-ind" aria-hidden="true"></span>
+          <button role="tab" data-dept="all">All</button>
+          <button role="tab" data-dept="men">Men</button>
+          <button role="tab" data-dept="women">Women</button>
+          <button role="tab" data-dept="fall" class="promo-only">Fall Hour</button>
+        </div>
+        <div class="shop-tools">
+          <label class="search"><span class="sr-only">Search products</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="search" type="search" placeholder="Search hoodies, denim, rust…" autocomplete="off" />
+          </label>
+          <label class="sort"><span class="sr-only">Sort</span>
+            <select id="sort">
+              <option value="featured">Featured</option>
+              <option value="new">Newest</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+            </select>
+          </label>
+          <button type="button" class="saved-btn" id="saved-toggle" aria-pressed="false">♥ Saved <span id="saved-count">0</span></button>
+        </div>
+      </div>
+      <div class="chips-row">
         <div class="chips" id="chips" role="tablist" aria-label="Filter by category"></div>
+        <span class="mono muted" id="result-count"></span>
       </div>
       <div class="grid" id="grid"></div>
     </section>
@@ -218,7 +267,7 @@
     <div class="pdp-panel">
       <button class="pdp-close" data-close aria-label="Close">✕</button>
       <div class="pdp-gallery">
-        <div class="pdp-main"><img id="pdp-img" alt="" /><span class="pdp-view mono" id="pdp-view"></span></div>
+        <div class="pdp-main"><img id="pdp-img" alt="" /><span class="pdp-view mono" id="pdp-view"></span><span class="pdp-hint mono">⇆ Drag to turn</span></div>
         <div class="pdp-thumbs" id="pdp-thumbs"></div>
       </div>
       <div class="pdp-info">
