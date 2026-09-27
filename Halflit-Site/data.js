@@ -158,6 +158,42 @@
     "2fb29770-2372-4d7e-99ce-d74e9b5dbe47": "hf_20260927_025719",
     "8b887063-7325-4ba0-8cde-9b697b44d126": "hf_20260927_025719",
     "fdf20bc7-9065-41f2-b370-276432e1df70": "hf_20260927_025719",
+    "05a32736-7244-4776-bd44-5a6866cb6cf6": "hf_20260927_025816",
+    "036e8fcd-3503-439f-91dc-77862dbeea2d": "hf_20260927_025816",
+    "71aed32f-98d4-4690-8fe2-22370858e519": "hf_20260927_025816",
+    "debf5f87-5230-43f8-a106-6cc62687651b": "hf_20260927_025816",
+    "7235c11c-c38c-4a16-8c46-3c35f532b261": "hf_20260927_025907",
+    "3d3030b2-0c8d-469a-817f-fa10ee379d21": "hf_20260927_025907",
+    "ac865b9c-b4fa-4fcd-a4a9-05248e09a666": "hf_20260927_025908",
+    "812fa7b3-0412-4885-916b-b1ffa4455465": "hf_20260927_025907",
+    "5271c36e-d3ca-47ad-9ee2-c5f45e553106": "hf_20260927_025958",
+    "a87197b3-1dcd-4de2-a9d0-1d07f1862083": "hf_20260927_025959",
+    "bbb5c51e-d92d-49ec-9f73-6ea669b80c88": "hf_20260927_025959",
+    "fa0057bc-5139-4dd8-ae7e-a30f6ebb84de": "hf_20260927_025959",
+    "27f0f090-1b19-4e26-8dae-fdac8c9cec3c": "hf_20260927_030055",
+    "b21dc342-0a67-474d-af03-00515e566e92": "hf_20260927_030056",
+    "d62bd54c-3469-4dc2-b434-0f4ceebb7880": "hf_20260927_030055",
+    "f946e307-7363-4717-a072-0ef428257509": "hf_20260927_030055",
+    "e32772eb-2a0c-4618-83fb-07b00e575282": "hf_20260927_030149",
+    "dcd06083-f9ef-4d5e-b8b3-89bb7e8bb8b3": "hf_20260927_030149",
+    "16583a6d-bd1c-4f61-af44-62d605b4e436": "hf_20260927_030149",
+    "4e1aae87-0548-43b6-b286-02d5b28f82ba": "hf_20260927_030149",
+    "f13c35fe-b7af-46ff-9a90-fcc65e5fcd76": "hf_20260927_030243",
+    "b3b3ddc4-bc22-42b8-bd8b-d801a48a221b": "hf_20260927_030243",
+    "6e6075ed-2ec0-4e36-b991-27f2e490afc2": "hf_20260927_030243",
+    "2e05fa15-dfd4-4ee9-b4c1-a2ae1889aab8": "hf_20260927_030243",
+    "ccaed99f-ff30-4b42-ada8-419ab9e775e6": "hf_20260927_030336",
+    "dd3d0f23-7cc6-478f-8dce-417f56fafe31": "hf_20260927_030335",
+    "183cb647-d828-4729-ac5e-3e4d24f21855": "hf_20260927_030336",
+    "09f54621-a84b-4fc4-b0ed-cdd9c71eae95": "hf_20260927_030336",
+    "7e135ca6-78e4-424e-95d6-4a9d7e279f41": "hf_20260927_030427",
+    "3039cf76-3db1-4986-90dd-063f8111dbc8": "hf_20260927_030427",
+    "adac0e4e-9aa0-42de-bf08-dd821928f194": "hf_20260927_030427",
+    "3cc201b4-dbaf-4778-b5f3-c1c10b4dec80": "hf_20260927_030427",
+    "88a4523f-cd3e-428c-88a9-10f9fa2393a4": "hf_20260927_030516",
+    "69138c87-6a28-4446-98e8-07832e31dd4b": "hf_20260927_030516",
+    "a4a989f3-93d7-4ac5-a805-5a2f72251505": "hf_20260927_030516",
+    "ebdf2c70-78e4-4695-9ba6-59c8c7605be6": "hf_20260927_030516",
   };
 
   function img(id, size) {
@@ -212,7 +248,7 @@
         { name: "Sodium", hex: "#ff6a13", flat: "b60f1933-cd7e-4b9d-a500-4352647cc7c1" },
         { name: "Bone", hex: "#e7e0d2", flat: "5511d01a-70a6-405f-94c1-f197e2ca35b4" },
       ],
-      shots: { front: "fdf20bc7-9065-41f2-b370-276432e1df70", back: "7e50b9be-3b40-4271-9cde-e2dc822337ad", detail: "0ec5fc03-efdf-4b70-b268-a42691b60861", close: "" },
+      shots: { front: "fdf20bc7-9065-41f2-b370-276432e1df70", back: "05a32736-7244-4776-bd44-5a6866cb6cf6", detail: "036e8fcd-3503-439f-91dc-77862dbeea2d", close: "" },
     },
     {
       id: "chainstitch-crew", gender: "unisex", name: "Chainstitch Crew", cat: "tops", price: 88, badge: "Embroidered",
@@ -225,7 +261,7 @@
         { name: "Forest", hex: "#24402f", flat: "b69f3182-a10d-4f78-bd1b-0af635e42659" },
         { name: "Washed Navy", hex: "#2c3550", flat: "c06e0112-1c1f-472e-8eaf-ecd8f5b2252c" },
       ],
-      shots: { front: "eb7c348d-8909-4d39-8884-764200951840", back: "", detail: "eeb9d808-fcf9-4069-b648-7280bf6d34e6", close: "f0d96d79-7b79-4b3e-961f-5fdc930a9b3b" },
+      shots: { front: "ac865b9c-b4fa-4fcd-a4a9-05248e09a666", back: "", detail: "812fa7b3-0412-4885-916b-b1ffa4455465", close: "5271c36e-d3ca-47ad-9ee2-c5f45e553106" },
     },
     {
       id: "open-late-tee", gender: "unisex", name: "Open Late Tee", cat: "tees", price: 48, badge: "Graphic",
@@ -238,7 +274,7 @@
         { name: "Black", hex: "#141414", flat: "bf784806-2c09-42fa-b67c-11b9ff51895e" },
         { name: "Faded Olive", hex: "#646447", flat: "98a1b8ea-fb7d-4eb4-aa90-5b86c6222c15" },
       ],
-      shots: { front: "4e7be762-2623-48b8-9d79-e8e10c61a498", back: "", detail: "4dab2751-7204-47fb-b626-cc056985e2b7", close: "b06d9546-975d-412f-a721-a20cd24209a9" },
+      shots: { front: "27f0f090-1b19-4e26-8dae-fdac8c9cec3c", back: "", detail: "b21dc342-0a67-474d-af03-00515e566e92", close: "d62bd54c-3469-4dc2-b434-0f4ceebb7880" },
     },
     {
       id: "arch-tee", gender: "unisex", name: "Varsity Arch Tee", cat: "tees", price: 52,
@@ -250,7 +286,7 @@
         { name: "Cream", hex: "#ede4cf", flat: "d588e579-8bc7-4d0a-8d0c-077911ad9854" },
         { name: "Maroon", hex: "#5c1c24", flat: "15c94aee-14db-4dbe-bf3e-947221511e26" },
       ],
-      shots: { front: "8b4077f9-a2b0-4688-9f87-efd1276ea0ac", back: "", detail: "6177aabf-4b8f-459e-bf1d-8b48da403d1c", close: "1a564913-c0d3-42ec-8e2e-bc35b1fa6562" },
+      shots: { front: "4e1aae87-0548-43b6-b286-02d5b28f82ba", back: "", detail: "f13c35fe-b7af-46ff-9a90-fcc65e5fcd76", close: "b3b3ddc4-bc22-42b8-bd8b-d801a48a221b" },
     },
     {
       id: "nightshift-puffer", gender: "unisex", name: "Nightshift Puffer", cat: "outerwear", price: 268, badge: "New",
@@ -263,7 +299,7 @@
         { name: "Sodium", hex: "#ff6a13", flat: "2341cdff-6d27-4a45-be1d-2e695729ae07" },
         { name: "Liquid Silver", hex: "#c9ccd1", flat: "87b30be3-224c-4d31-b300-7553adeb26b2" },
       ],
-      shots: { front: "151f4055-3935-4a04-8d04-73603ad0dfb5", back: "", detail: "2707e824-2fec-4af9-addc-8dcde548f7d2", close: "" },
+      shots: { front: "dd3d0f23-7cc6-478f-8dce-417f56fafe31", back: "", detail: "183cb647-d828-4729-ac5e-3e4d24f21855", close: "" },
     },
     {
       id: "afterhours-varsity", gender: "unisex", name: "Afterhours Varsity", cat: "outerwear", price: 295, badge: "Chenille",
@@ -275,7 +311,7 @@
         { name: "Black / Cream", hex: "linear-gradient(90deg,#121212 50%,#e9e0cb 50%)", flat: "a302a70f-bae7-4bbe-b2e6-c896e4bcce5a" },
         { name: "Navy / Grey", hex: "linear-gradient(90deg,#1f2640 50%,#b7b8bb 50%)", flat: "dd56815c-c2b0-4118-9770-11030fa25785" },
       ],
-      shots: { front: "7f97cf52-fcd8-4d58-b6fc-00d65db78fcc", back: "5f3ecbaf-10b1-4b8b-a1f4-1eab5c90bb5d", detail: "", close: "b12fad22-80ea-4848-9426-19c99fd64267" },
+      shots: { front: "adac0e4e-9aa0-42de-bf08-dd821928f194", back: "3cc201b4-dbaf-4778-b5f3-c1c10b4dec80", detail: "", close: "88a4523f-cd3e-428c-88a9-10f9fa2393a4" },
     },
     {
       id: "loose-carpenter", gender: "men", name: "Loose Carpenter Jean", cat: "denim", price: 128,
@@ -288,7 +324,7 @@
         { name: "Black Wash", hex: "#2b2b2d", flat: "3a731e8c-0b7d-485d-9d4b-0f0ff45525c4" },
         { name: "Stone", hex: "#d9cfbb", flat: "b060d1a7-8621-4ae6-9e91-ca5fe96a8c93" },
       ],
-      shots: { front: "386c25db-bf08-4392-b7ff-8fe54932a973", back: "983897c1-d31b-4302-83fc-d0453c5be493", detail: "", close: "efdce79e-f8c9-48bb-be0a-aeac750de0dd" },
+      shots: { front: "f946e307-7363-4717-a072-0ef428257509", back: "e32772eb-2a0c-4618-83fb-07b00e575282", detail: "", close: "dcd06083-f9ef-4d5e-b8b3-89bb7e8bb8b3" },
     },
     {
       id: "worker-jacket", gender: "unisex", name: "Worker Denim Jacket", cat: "denim", price: 158, badge: "Embroidered",
@@ -300,7 +336,7 @@
         { name: "Mid Indigo", hex: "#3b5378", flat: "29810115-af4b-4162-9484-8a6bb4636d3c", back: "b0388a2b-98c8-42dc-a354-145bd54a9476" },
         { name: "Washed Black", hex: "#2a2a2c", flat: "6c6f2057-d8c5-4ecb-b3bb-194a50a3a80e" },
       ],
-      shots: { front: "f6d65b42-370b-4f3f-ae05-17e0a0616823", back: "6944b169-4e2f-49ff-a1b1-b9770e6713fb", detail: "", close: "84327b99-4734-4af5-961f-4502eff5e2b2" },
+      shots: { front: "71aed32f-98d4-4690-8fe2-22370858e519", back: "debf5f87-5230-43f8-a106-6cc62687651b", detail: "", close: "7235c11c-c38c-4a16-8c46-3c35f532b261" },
     },
     {
       id: "run-club-set", gender: "unisex", name: "Run Club Track Set", cat: "active", price: 148, badge: "Set",
@@ -312,7 +348,7 @@
         { name: "Black / Sodium", hex: "linear-gradient(90deg,#111 50%,#ff6a13 50%)", flat: "59387655-3c13-4f5d-b446-fd2aad5cf0ff" },
         { name: "Royal / White", hex: "linear-gradient(90deg,#2446b8 50%,#f4f4f4 50%)", flat: "943ff9f3-996e-4c00-85f8-7038ebafaaec" },
       ],
-      shots: { front: "2a9c147c-9c21-4a5e-ab3c-9cf52ee56293", back: "13fffd53-3428-4b94-98f0-42a603f1b003", detail: "e984992d-0312-4f5e-9f10-b334ca429078", close: "" },
+      shots: { front: "a87197b3-1dcd-4de2-a9d0-1d07f1862083", back: "bbb5c51e-d92d-49ec-9f73-6ea669b80c88", detail: "e984992d-0312-4f5e-9f10-b334ca429078", close: "" },
     },
     {
       id: "motion-set", gender: "women", name: "Motion Set", cat: "active", price: 92,
@@ -325,7 +361,7 @@
         { name: "Sage", hex: "#9aa58d", flat: "e6708645-c2f7-42b3-a6d3-0753bf4bec6a" },
         { name: "Sodium", hex: "#ff6a13", flat: "f00ed8a1-725e-42da-a9b2-adca66cb9dbc" },
       ],
-      shots: { front: "087d6fc3-80c6-4bec-a33f-19ba11b280bd", back: "acba9b34-1150-4267-b259-9e6907729716", detail: "", close: "" },
+      shots: { front: "6e6075ed-2ec0-4e36-b991-27f2e490afc2", back: "2e05fa15-dfd4-4ee9-b4c1-a2ae1889aab8", detail: "", close: "" },
     },
     {
       id: "lounge-set", gender: "unisex", name: "Lounge Fleece Set", cat: "lounge", price: 118,
@@ -338,7 +374,7 @@
         { name: "Heather", hex: "#a9a8a4", flat: "4c32799e-f19f-4c3b-b067-bd6f69b9fde2" },
         { name: "Black", hex: "#1a1a1a", flat: "23c67a67-18aa-41bd-a5ee-dc856ba7c444" },
       ],
-      shots: { front: "354d4169-d10e-4e05-bbbb-37c17eecb15e", back: "", detail: "7b28da40-99b9-467d-994c-ba7bff397780", close: "" },
+      shots: { front: "a4a989f3-93d7-4ac5-a805-5a2f72251505", back: "", detail: "ebdf2c70-78e4-4695-9ba6-59c8c7605be6", close: "" },
     },
     {
       id: "phase-beanie", gender: "unisex", name: "Phase Beanie", cat: "acc", price: 38,
@@ -350,7 +386,7 @@
         { name: "Black", hex: "#141414", flat: "005bc4aa-91db-4007-bbda-a6f6dae78af7" },
         { name: "Sodium", hex: "#ff6a13", flat: "505bfd4a-9088-403d-a12b-c2bc60f71fc8" },
       ],
-      shots: { front: "93760f3d-0898-42f0-943f-0f99c2f0c973", back: "", detail: "b99678e0-9a61-4525-8118-ebda421d8071", close: "" },
+      shots: { front: "09f54621-a84b-4fc4-b0ed-cdd9c71eae95", back: "", detail: "7e135ca6-78e4-424e-95d6-4a9d7e279f41", close: "" },
     },
     /* ---------- Added: more pieces per category, men's + women's, Fall Hour capsule ---------- */
     {
@@ -573,7 +609,7 @@
       { id: "8ab846ba-56ad-488e-8325-f5cda7da1588", title: "Green light", who: "Open Late Tee — White", shop: ["open-late-tee"] },
       { id: "acd089d2-99f4-42f0-b3a7-ec68de82e300", title: "Fourth quarter", who: "Motion Set — Charcoal", shop: ["motion-set"] },
     ],
-    portraits: { kai: "c9a51c32-c81c-421c-8975-3acce1e8a162", rosa: "a6b80f79-beaa-4446-a452-9f4293135434", jun: "43e22575-fe80-42be-b0a4-dfc361c0edd1", amara: "27b79302-7311-483c-9ade-f0f16a5594c2", theo: "a758d863-997d-4271-a8e4-182ad304090e", noor: "b5db6162-97f8-446e-9fce-e98def9adbdd",},
+    portraits: { kai: "3d3030b2-0c8d-469a-817f-fa10ee379d21", rosa: "fa0057bc-5139-4dd8-ae7e-a30f6ebb84de", jun: "16583a6d-bd1c-4f61-af44-62d605b4e436", amara: "ccaed99f-ff30-4b42-ada8-419ab9e775e6", theo: "3039cf76-3db1-4986-90dd-063f8111dbc8", noor: "69138c87-6a28-4446-98e8-07832e31dd4b",},
   };
 
   // Drop calendar: every drop ships with its own phase of the mark.

@@ -18,14 +18,29 @@ Plain HTML/CSS/JS with no build step.
 - **Type:** Archivo Expanded Black (display), JetBrains Mono (labels),
   Yellowtail (chain-stitch script).
 
+## Shop structure
+
+- **Men / Women / All** departments, each with its own subsections
+  (e.g. Women: Hoodies & Knits, Tops & Baby Tees, Jackets & Coats, Denim & Skirts…).
+  Unisex pieces appear in both.
+- **Fall Hour** is a limited-time promotion: 25% off an 8-piece fall capsule until
+  Oct 31, 2026 (the viewer's local time). It includes a live countdown and For Him / For Her
+  tiles, and sale prices carry through to the product view and the bag.
+  When it ends, the section hides and prices revert. Configure it with
+  `PROMO` in `data.js`.
+- Search, sort, saved items (hearts), animated filtering.
+
 ## Drop 03 — Night Shift
 
-12 pieces with 2–3 colourways each: Dusk Hoodie (graphic), Chainstitch Crew
+29 pieces with 65 colourways. The original 12 are listed here; 17 more were added
+across every category, including fall pieces: Dusk Hoodie (graphic), Chainstitch Crew
 (embroidered), Open Late Tee, Varsity Arch Tee (puff print), Nightshift Puffer,
 Afterhours Varsity, Loose Carpenter Jean, Worker Denim Jacket, Run Club Track Set,
 Motion Set, Lounge Fleece Set and Phase Beanie.
 
 Every piece has a studio product shot per colourway, plus on-model shots
+taken in real locations (Brooklyn, East LA, Queens, an outdoor court, Manchester,
+a Toronto rooftop, autumn parks, apartments)
 (front, back and/or a second angle) on a cast of six with visible tattoos,
 freckles, vitiligo, scars and piercings. Campaign images are in the
 "After Dark" lookbook.
